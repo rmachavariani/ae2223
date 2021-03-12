@@ -17,6 +17,4 @@ if __name__ == '__main__':
 
 print("Hi")
 
-n = 5
-
-if n => 1:
+print("hello world")
