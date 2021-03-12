@@ -146,7 +146,7 @@ grid = createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax)
 
 grid = assignVectorsToGrid(dataPoints,grid)
 
-showAmountOfVectorsInBin(grid)
+#showAmountOfVectorsInBin(grid)
 
 t2 = time.time()
 print("Total time: ", t2-t1)
