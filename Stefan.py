@@ -6,7 +6,7 @@ import math
 #import earthpy as et
 
 # Import average monthly precip to numpy array
-dtype1 = np.dtype([("x".float),("y",float),("z",float),("u",float),("v",float),("w",float)])
+dtype1 = np.dtype([("x",float),("y",float),("z",float),("u",float),("v",float),("w",float)])
 datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Coding/carMirrorData.dat"
 data = np.loadtxt(datalocation,dtype=dtype1)
 
@@ -20,10 +20,10 @@ y_min, y_max = min(data["y"]), max(data["y"])
 z_min, z_max = min(data["z"]), max(data["z"])
 
 #amount of bins that are placed along the axis 
-windowx, windowy, windowz = 100, 50, 10
+windowx, windowy, windowz = 200, 100, 75
 
 #can make a offset were to start compared to the min and maximum location at the axis
-offset = [[0,0],[0,0],[0,0]]
+offset = [[100,-100],[100,-100],[100,-100]]
 delta_x = ((x_max+offset[0][1])-(x_min+offset[0][0]))/windowx
 delta_y = ((y_max+offset[1][1])-(y_min+offset[1][0]))/windowy
 delta_z = ((z_max+offset[2][1])-(z_min+offset[2][0]))/windowz
@@ -71,6 +71,7 @@ print("number of designated particles",number_processed)
 count = 0
 maximum = 0 
 averaging_field = []
+gauss_field = []
 for i in range(0,len(binxyz)):
     for k in range(0,len(binxyz[i])):
         for m in range(0,len(binxyz[i][k])):
@@ -80,18 +81,29 @@ for i in range(0,len(binxyz)):
             #for every bin sum the velocities and devide by the amount of particles inside the bin
             elif binxyz[i][k][m]!=[]:
                 u_count,v_count,w_count = 0,0,0
+                u_gauss,v_gauss,w_gauss = 0,0,0
                 for n in range(0,len(binxyz[i][k][m])):
                     u_count = u_count + binxyz[i][k][m][n][3]
                     v_count = u_count + binxyz[i][k][m][n][4]
                     w_count = u_count + binxyz[i][k][m][n][5]
+                u_ave,v_ave,w_ave = u_count/len(binxyz[i][k][m]),v_count/len(binxyz[i][k][m]),w_count/len(binxyz[i][k][m])
+                for n in range(0, len(binxyz[i][k][m])):
+                    u_gauss = u_gauss + ((binxyz[i][k][m][n][3] - u_ave) ** 2)
+                    v_gauss = v_gauss + ((binxyz[i][k][m][n][4] - v_ave) ** 2)
+                    w_gauss = w_gauss + ((binxyz[i][k][m][n][5] - w_ave) ** 2)
+                u_sd,v_sd,w_sd=math.sqrt(u_gauss / len(binxyz[i][k][m])), math.sqrt(v_gauss / len(binxyz[i][k][m])), math.sqrt(w_gauss / len(binxyz[i][k][m]))
                 #use the location list to establish the mid point of the bin
-                averaging_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_count/len(binxyz[i][k][m]),v_count/len(binxyz[i][k][m]),w_count/len(binxyz[i][k][m])])
+                averaging_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_ave,v_ave,w_ave])
+                gauss_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,])
             #check for the bin with the maximum amount of particles
             if len(binxyz[i][k][m])>maximum:
                 maximum=len(binxyz[i][k][m])
 print("Number of bins",windowx*windowy*windowz)
 print("Number of empty bins",count)
 print("Maximum amount of particles in bin",maximum)
+
+print(gauss_field[0:4])
+
 
 #define the dimensions of the measurmement volume
 print("x:", x_min,x_max)
