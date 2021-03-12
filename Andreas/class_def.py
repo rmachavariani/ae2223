@@ -28,6 +28,8 @@ class gridBin:
     widthZ = 0
     
     def __init__(self,x,y,z):
+
+        # coordinate of center of bin
         self.x = x
         self.y = y
         self.z = z

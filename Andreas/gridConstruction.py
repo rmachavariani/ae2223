@@ -5,7 +5,9 @@ import time
 
 
 def loadData():
-    
+    ''' Loads data from carMirrorData.dat
+    :return: nrVectors x 6 np array
+    '''
     # load the data 
     t1 = time.time()
     data = np.loadtxt("carMirrorData.dat")
@@ -16,7 +18,11 @@ def loadData():
     
     
 def createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax):
-    
+    '''Creates the grid by generating a 3D numpy array filled with
+    objects of class gridbin
+    :return: nrX x nrY x nrZ numpy array
+    '''
+
     t1 = time.time()
     
     # create empty 3D array
@@ -26,15 +32,16 @@ def createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax):
     widthX = (xMax-xMin) / nrBinsX
     widthY = (yMax-yMin) / nrBinsY
     widthZ = (zMax-zMin) / nrBinsZ
-    
+
+    # set widths of bin to class static members
     gridBin.widthX = widthX
     gridBin.widthY = widthX
     gridBin.widthZ = widthZ
     
-    # define x, y and z points
-    x = np.linspace(xMin,xMax-widthX,nrBinsX)
-    y = np.linspace(yMin,yMax-widthY,nrBinsY)
-    z = np.linspace(zMin,zMax-widthZ,nrBinsZ)
+    # define x, y and z coordinates of center bin
+    x = np.linspace(xMin,xMax-widthX,nrBinsX) + widthX/2
+    y = np.linspace(yMin,yMax-widthY,nrBinsY) + widthY/2
+    z = np.linspace(zMin,zMax-widthZ,nrBinsZ) + widthZ/2
     
     # fill matrix with bin objects
     for i in range(nrBinsX):
