@@ -6,7 +6,7 @@ import math
 #import earthpy as et
 
 # Import average monthly precip to numpy array
-dtype1 = np.dtype([("x",np.float),("y",np.float),("z",np.float),("u",np.float),("v",np.float),("w",np.float)])
+dtype1 = np.dtype([("x".float),("y",float),("z",float),("u",float),("v",float),("w",float)])
 datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Coding/carMirrorData.dat"
 data = np.loadtxt(datalocation,dtype=dtype1)
 
