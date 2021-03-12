@@ -10,8 +10,7 @@ def loadData():
     t1 = time.time()
     data = np.loadtxt("carMirrorData.dat")
     t2 = time.time()
-    print("Loading done")
-    print(t2-t1)
+    print("Loading done in ",t2-t1)
     
     return data
     
@@ -79,8 +78,7 @@ def assignVectorsToGrid(vectors,grid):
         
     # stop time and print message
     t2 = time.time()
-    print("Assigning of vectors to bins completed")
-    print("Total time: ",t2-t1," s")
+    print("Assigning of vectors to bins completed in ", t2-t1)
         
     return grid
 
@@ -108,8 +106,7 @@ def determineMaxMin(data):
     zMax = np.amax(data[:,2])
 
     t2 = time.time()
-    print("Max and min found")
-    print("Duration: ",t2-t1)
+    print("Max and min found in ",t2-t1)
 
     return xMin, xMax, yMin, yMax, zMin, zMax
 
@@ -121,8 +118,7 @@ def createVectorObjects(data):
         dataPoints[i] = vector(data[i,:])
         
     t2 = time.time()
-    print("Objects created")
-    print(t2-t1)
+    print("Objects created in ",t2-t1)
     
     return dataPoints
 
