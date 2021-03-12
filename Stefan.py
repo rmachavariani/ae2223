@@ -81,20 +81,27 @@ for i in range(0,len(binxyz)):
             #for every bin sum the velocities and devide by the amount of particles inside the bin
             elif binxyz[i][k][m]!=[]:
                 u_count,v_count,w_count = 0,0,0
-                u_gauss,v_gauss,w_gauss = 0,0,0
+                u_gsum,v_gsum,w_gsum = 0,0,0
                 for n in range(0,len(binxyz[i][k][m])):
                     u_count = u_count + binxyz[i][k][m][n][3]
                     v_count = u_count + binxyz[i][k][m][n][4]
                     w_count = u_count + binxyz[i][k][m][n][5]
                 u_ave,v_ave,w_ave = u_count/len(binxyz[i][k][m]),v_count/len(binxyz[i][k][m]),w_count/len(binxyz[i][k][m])
+
+                #This is all for the comments part
                 for n in range(0, len(binxyz[i][k][m])):
-                    u_gauss = u_gauss + ((binxyz[i][k][m][n][3] - u_ave) ** 2)
-                    v_gauss = v_gauss + ((binxyz[i][k][m][n][4] - v_ave) ** 2)
-                    w_gauss = w_gauss + ((binxyz[i][k][m][n][5] - w_ave) ** 2)
-                u_sd,v_sd,w_sd=math.sqrt(u_gauss / len(binxyz[i][k][m])), math.sqrt(v_gauss / len(binxyz[i][k][m])), math.sqrt(w_gauss / len(binxyz[i][k][m]))
+                    u_gsum = u_gsum + ((binxyz[i][k][m][n][3] - u_ave) ** 2)
+                    v_gsum = v_gsum + ((binxyz[i][k][m][n][4] - v_ave) ** 2)
+                    w_gsum = w_gsum + ((binxyz[i][k][m][n][5] - w_ave) ** 2)
+                u_sd,v_sd,w_sd=math.sqrt(u_gsum / len(binxyz[i][k][m])), math.sqrt(v_gsum / len(binxyz[i][k][m])), math.sqrt(w_gsum / len(binxyz[i][k][m]))
+                for n in range(0, len(binxyz[i][k][m])):
+                    u_weight = (1/(u_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][3]-u_ave)/u_sd)**2))*binxyz[i][k][m][3]
+                    v_weight = (1/(v_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][4]-v_ave)/v_sd)**2))*binxyz[i][k][m][4]
+                    w_weight = (1/(w_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][5]-w_ave)/u_sd)**2))*binxyz[i][k][m][5]
+
                 #use the location list to establish the mid point of the bin
                 averaging_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_ave,v_ave,w_ave])
-                gauss_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,])
+                gauss_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_gauss,v_gauss,w_gauss])
             #check for the bin with the maximum amount of particles
             if len(binxyz[i][k][m])>maximum:
                 maximum=len(binxyz[i][k][m])
