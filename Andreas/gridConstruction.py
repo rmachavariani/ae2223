@@ -3,7 +3,21 @@ from class_def import *
 from math import floor
 import time
 
+
+def loadData():
+    
+    # load the data 
+    t1 = time.time()
+    data = np.loadtxt("carMirrorData.dat")
+    t2 = time.time()
+    print("Loading done in ",t2-t1)
+    
+    return data
+    
+    
 def createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax):
+    
+    t1 = time.time()
     
     # create empty 3D array
     grid = np.empty((nrBinsX,nrBinsY,nrBinsZ),dtype=object)
@@ -28,6 +42,9 @@ def createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax):
             for k in range(nrBinsZ):
                 
                 grid[i,j,k] = gridBin(x[i],y[j],z[k])
+   
+    t2 = time.time()
+    print('Grid created in ', t2-t1)
    
     return grid
 
@@ -61,8 +78,7 @@ def assignVectorsToGrid(vectors,grid):
         
     # stop time and print message
     t2 = time.time()
-    print("Assigning of vectors to bins completed")
-    print("Total time: ",t2-t1," s")
+    print("Assigning of vectors to bins completed in ", t2-t1)
         
     return grid
 
@@ -79,52 +95,61 @@ def showAmountOfVectorsInBin(grid):
                 print(len(grid[i][j][k].vectors))
 
 def determineMaxMin(data):
-    
+
+    t1 = time.time()
+
     xMin = np.amin(data[:,0])
+    xMax = np.amax(data[:,0])
+    yMin = np.amin(data[:,1])
+    yMax = np.amax(data[:,1])
+    zMin = np.amin(data[:,2])
+    zMax = np.amax(data[:,2])
 
+    t2 = time.time()
+    print("Max and min found in ",t2-t1)
 
-nrBinsX = 5
-nrBinsY = 5
-nrBinsZ = 5
-xMin = -500
-xMax = 500
-yMin = -500
-yMax = 500
-zMin = 0
-zMax = 1000
+    return xMin, xMax, yMin, yMax, zMin, zMax
 
-# load the data 
-t1 = time.time()
-data = np.loadtxt("carMirrorData.dat")
-t2 = time.time()
-print("Loading done")
-print(t2-t1)
-
-
-
-
-t1 = time.time()
-dataPoints = np.empty(np.size(data,axis=0),dtype=object)
-for i in range(np.size(data,axis=0)):
-    dataPoints[i] = vector(data[i,:])
+def createVectorObjects(data):
     
-t2 = time.time()
-print("Objects created")
-print(t2-t1)
+    t1 = time.time()
+    dataPoints = np.empty(np.size(data,axis=0),dtype=object)
+    for i in range(np.size(data,axis=0)):
+        dataPoints[i] = vector(data[i,:])
+        
+    t2 = time.time()
+    print("Objects created in ",t2-t1)
+    
+    return dataPoints
+
+#------------------------------MAIN-----------------------------#
 
 t1 = time.time()
+
+data = loadData()
+minMax = determineMaxMin(data)
+
+nrBinsX = 10
+nrBinsY = 10
+nrBinsZ = 10
+xMin = minMax[0]
+xMax = minMax[1]
+yMin = minMax[2]
+yMax = minMax[3]
+zMin = minMax[4]
+zMax = minMax[5]
+
+
+dataPoints = createVectorObjects(data)
+
 grid = createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax)
-t2 = time.time()
-print("Grid created")
-print(t2-t1)
-#t1 = time.time()
-grid = assignVectorsToGrid(dataPoints[0:1000],grid)
-#t2 = time.time()
-#print("Vectors assigned")
-#print(t2-t1)
+
+grid = assignVectorsToGrid(dataPoints,grid)
 
 showAmountOfVectorsInBin(grid)
 
+t2 = time.time()
+print("Total time: ", t2-t1)
 
 
 
