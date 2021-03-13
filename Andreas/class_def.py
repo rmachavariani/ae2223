@@ -22,7 +22,7 @@ class vector:
 class gridBin:
     
 
-    # bins width
+    # bins width (static class members)
     widthX = 0
     widthY = 0
     widthZ = 0
@@ -33,7 +33,8 @@ class gridBin:
         self.x = x
         self.y = y
         self.z = z
-        
+
+        # list of vectors belonging to the bin
         self.vectors = []
         
     def addVector(self,vector):
