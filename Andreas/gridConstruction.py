@@ -12,7 +12,7 @@ def loadData():
     t1 = time.time()
     data = np.loadtxt("carMirrorData.dat")
     t2 = time.time()
-    print("Loading done in ",t2-t1)
+    print("Loading done in ","{:.2f}".format(t2-t1)," s")
     
     return data
 
@@ -33,7 +33,7 @@ def determineMaxMin(data):
 
     # report to user
     t2 = time.time()
-    print("Max and min found in ",t2-t1)
+    print("Max and min found in ","{:.2f}".format(t2-t1)," s")
 
     return xMin, xMax, yMin, yMax, zMin, zMax
 
@@ -55,7 +55,7 @@ def createVectorObjects(data):
 
     # report to user
     t2 = time.time()
-    print("Objects created in ", t2 - t1)
+    print("Objects created in ","{:.2f}".format(t2-t1)," s")
 
     return dataPoints
 
@@ -94,7 +94,7 @@ def createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax):
 
    # report to user
     t2 = time.time()
-    print('Grid created in ', t2-t1)
+    print('Grid created in ',"{:.2f}".format(t2-t1)," s")
    
     return grid
 
@@ -133,7 +133,7 @@ def assignVectorsToGrid(vectors,grid):
         
     # report to user
     t2 = time.time()
-    print("Assigning of vectors to bins completed in ", t2-t1)
+    print("Assigning of vectors to bins completed in ","{:.2f}".format(t2-t1)," s")
         
     return grid
 
@@ -156,7 +156,7 @@ def showAmountOfVectorsInBin(grid):
 
 #------------------------------MAIN-----------------------------#
 
-def getGridWithVectors(nrBinsX,nrBinsY,nrBinsZ)
+def getGridWithVectors(nrBinsX,nrBinsY,nrBinsZ):
 
     t1 = time.time()
 
@@ -187,10 +187,10 @@ def getGridWithVectors(nrBinsX,nrBinsY,nrBinsZ)
 
     # report to user
     t2 = time.time()
-    print("Total time: ", t2-t1)
+    print("Total time: ","{:.2f}".format(t2-t1)," s")
 
     return grid
 
-
+data = getGridWithVectors(10,10,10)
 
 
