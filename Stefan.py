@@ -20,7 +20,7 @@ y_min, y_max = min(data["y"]), max(data["y"])
 z_min, z_max = min(data["z"]), max(data["z"])
 
 #amount of bins that are placed along the axis 
-windowx, windowy, windowz = 200, 100, 75
+windowx, windowy, windowz = 10, 10, 10
 
 #can make a offset were to start compared to the min and maximum location at the axis
 offset = [[100,-100],[100,-100],[100,-100]]
@@ -82,25 +82,33 @@ for i in range(0,len(binxyz)):
             elif binxyz[i][k][m]!=[]:
                 u_count,v_count,w_count = 0,0,0
                 u_gsum,v_gsum,w_gsum = 0,0,0
+                u_lst,v_lst,w_lst = [],[],[]
+                u_gauss,v_gauss,w_gauss = 0,0,0
+
                 for n in range(0,len(binxyz[i][k][m])):
                     u_count = u_count + binxyz[i][k][m][n][3]
-                    v_count = u_count + binxyz[i][k][m][n][4]
-                    w_count = u_count + binxyz[i][k][m][n][5]
+                    v_count = v_count + binxyz[i][k][m][n][4]
+                    w_count = w_count + binxyz[i][k][m][n][5]
                 u_ave,v_ave,w_ave = u_count/len(binxyz[i][k][m]),v_count/len(binxyz[i][k][m]),w_count/len(binxyz[i][k][m])
 
-                #This is all for the comments part
+                #This is all for the Gaussian part
                 for n in range(0, len(binxyz[i][k][m])):
                     u_gsum = u_gsum + ((binxyz[i][k][m][n][3] - u_ave) ** 2)
                     v_gsum = v_gsum + ((binxyz[i][k][m][n][4] - v_ave) ** 2)
                     w_gsum = w_gsum + ((binxyz[i][k][m][n][5] - w_ave) ** 2)
                 u_sd,v_sd,w_sd=math.sqrt(u_gsum / len(binxyz[i][k][m])), math.sqrt(v_gsum / len(binxyz[i][k][m])), math.sqrt(w_gsum / len(binxyz[i][k][m]))
                 for n in range(0, len(binxyz[i][k][m])):
-                    u_weight = (1/(u_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][3]-u_ave)/u_sd)**2))*binxyz[i][k][m][3]
-                    v_weight = (1/(v_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][4]-v_ave)/v_sd)**2))*binxyz[i][k][m][4]
-                    w_weight = (1/(w_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][5]-w_ave)/u_sd)**2))*binxyz[i][k][m][5]
+                    u_lst.append((1/(u_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][3]-u_ave)/u_sd)**2)))
+                    v_lst.append((1/(v_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][4]-v_ave)/v_sd)**2)))
+                    w_lst.append((1/(w_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][5]-w_ave)/u_sd)**2)))
+                for n in range(0, len(binxyz[i][k][m])):
+                    u_gauss=u_gauss+((u_lst[n]/sum(u_lst))*binxyz[i][k][m][n][3])
+                    v_gauss=v_gauss+((v_lst[n]/sum(v_lst))*binxyz[i][k][m][n][4])
+                    w_gauss=w_gauss+((w_lst[n]/sum(w_lst))*binxyz[i][k][m][n][5])
 
                 #use the location list to establish the mid point of the bin
                 averaging_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_ave,v_ave,w_ave])
+                #gauss_field.append([(x_loc[i] + x_loc[i + 1]) / 2, (y_loc[k] + y_loc[k + 1]) / 2, (z_loc[m] + z_loc[m + 1]) / 2, u_sd,v_sd,w_sd])
                 gauss_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_gauss,v_gauss,w_gauss])
             #check for the bin with the maximum amount of particles
             if len(binxyz[i][k][m])>maximum:
@@ -108,7 +116,6 @@ for i in range(0,len(binxyz)):
 print("Number of bins",windowx*windowy*windowz)
 print("Number of empty bins",count)
 print("Maximum amount of particles in bin",maximum)
-
 print(gauss_field[0:4])
 
 
