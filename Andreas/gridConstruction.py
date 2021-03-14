@@ -156,7 +156,7 @@ def showAmountOfVectorsInBin(grid):
 
 #------------------------------MAIN-----------------------------#
 
-def getGridWithVectors(nrBinsX,nrBinsY,nrBinsZ):
+def getRectangularGridWithVectors(nrBinsX,nrBinsY,nrBinsZ):
 
     t1 = time.time()
 
@@ -191,6 +191,6 @@ def getGridWithVectors(nrBinsX,nrBinsY,nrBinsZ):
 
     return grid
 
-data = getGridWithVectors(10,10,10)
+data = getRectangularGridWithVectors(10,10,10)
 
 
