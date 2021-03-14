@@ -133,9 +133,9 @@ class Averaging:
                         # Convert the particle information in the bin to an array for more simple use
                         lst = np.array(self.binxyz[i][k][m], dtype=self.dtype1)
                         # Use numpy for the mean value so that no loop has to be used
-                        u_ave = np.mean(lst["u"])
-                        v_ave = np.mean(lst["v"])
-                        w_ave = np.mean(lst["w"])
+                        u_ave = np.average(lst["u"])
+                        v_ave = np.average(lst["v"])
+                        w_ave = np.average(lst["w"])
                         # append the mean average velocity components to a list with center location of bin
                         averaging_field.append([self.x_loc[i], self.y_loc[k], self.z_loc[m], u_ave, v_ave, w_ave])
                     # check for the bin with the maximum amount of particles
@@ -165,9 +165,9 @@ class Averaging:
                             # make the list a array so that information can be extracted easily
                             lst = np.array(self.binxyz[i][k][m], dtype=self.dtype1)
                             # use numpy to calculate the mean and standard deviation
-                            u_ave, u_sd = np.mean(lst["u"]), np.std(lst["u"])
-                            v_ave, v_sd = np.mean(lst["v"]), np.std(lst["v"])
-                            w_ave, w_sd = np.mean(lst["w"]), np.std(lst["w"])
+                            u_ave, u_sd = np.average(lst["u"]), np.std(lst["u"])
+                            v_ave, v_sd = np.average(lst["v"]), np.std(lst["v"])
+                            w_ave, w_sd = np.average(lst["w"]), np.std(lst["w"])
 
                             for n in range(0, len(lst)):
                                 # calculate for every velocity component the normal value and sum this together for the bin
