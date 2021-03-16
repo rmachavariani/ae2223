@@ -1,5 +1,7 @@
 import timing
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
+import matplotlib.cm as cm
 import numpy as np
 import threading
 import time
@@ -217,8 +219,8 @@ data, data_order, dtype1 = upload()
 #######################Setting up the grid###########################
 
 # define measurement volume parameters
-windowx, windowy, windowz = 50, 20, 20
-offset = [[100, -100], [100, -100], [100, -100]]
+windowx, windowy, windowz = 10, 5, 5
+offset = [[50, -100], [100, -100], [100, -100]]
 particle = GridBin(windowx, windowy, windowz, offset, data, data_order)
 
 # calculate the maximum and minimum coordinates in all 3 directions
@@ -245,7 +247,7 @@ print("Number of empty bins", count, "(", round(count / (windowx * windowy * win
 general = Averaging(binxyz, x_loc, y_loc, z_loc, dtype1)
 
 maximum, averaging_field, u_ave, v_ave, w_ave = general.mean()
-
+averaging_field = np.array(averaging_field)
 gauss_field = general.gaussian()
 print("Maximum amount of particles in bin", maximum)
 
@@ -257,17 +259,57 @@ print("z:", z_min, z_max)
 print("Volume:", (x_max - x_min) * (y_max - y_min) * (z_max - z_min) * 10 ** (-9), "m^3")
 print("Sub-volume", delta_x * delta_y * delta_z, "mm^3")
 
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# nrParticles = 500
-# dataSel = data[0:nrParticles,:]
-# ax.quiver(dataSel[:,0],dataSel[:,1],dataSel[:,2],dataSel[:,3],dataSel[:,4],dataSel[:,5])
-# plt.show()
+#####################################################################
+#                                                                   #
+#                           Plot scirpt                             #
+#                                                                   #
+#####################################################################
 
+fig = plt.figure()
+###################
+# first plot
+###################
+ax = fig.add_subplot(1, 2, 1, projection='3d')
+plt.title("Averaging")
 
-# x_min,x_max,y_min,y_max,z_min,z_max = boundaries(data)
-# #amount of bins that are placed along the axis
-# windowx, windowy, windowz = 10, 10, 10
-# offset = [[100,-100],[100,-100],[100,-100]]
-# delta_x,delta_y,delta_z,x_loc,y_loc,z_loc = bins(data_order,windowx,windowy,windowz,offset,x_min,x_max,y_min,y_max,z_min,z_max)
-# binxyz = grid(windowx,windowy,windowz)
+x, y, z, u, v, w = zip(*averaging_field)
+
+colors = np.arctan2(u, v)
+norm = Normalize()
+norm.autoscale(colors)
+colormap = cm.coolwarm
+
+average_plt = ax.quiver(x, y, z, u, v, w, length=3, color=colormap(norm(colors)), cmap=cm.coolwarm)
+fig.colorbar(average_plt, orientation='vertical')
+
+ax.set_xlim([x_min, x_max])
+ax.set_ylim([y_min, y_max])
+ax.set_zlim([z_min, z_max])
+ax.set_xlabel('x [mm]')
+ax.set_ylabel('y [mm]')
+ax.set_zlabel('z [mm]')
+
+###################
+# second plot
+###################
+ax = fig.add_subplot(1, 2, 2, projection='3d')
+plt.title("Gaussian")
+
+x, y, z, u, v, w = zip(*gauss_field)
+
+colors = np.arctan2(u, v)
+norm = Normalize()
+norm.autoscale(colors)
+colormap = cm.coolwarm
+
+gaussian_plt = ax.quiver(x, y, z, u, v, w, length=3, color=colormap(norm(colors)), cmap=cm.coolwarm)
+fig.colorbar(gaussian_plt, orientation='vertical')
+
+ax.set_xlim([x_min, x_max])
+ax.set_ylim([y_min, y_max])
+ax.set_zlim([z_min, z_max])
+ax.set_xlabel('x [mm]')
+ax.set_ylabel('y [mm]')
+ax.set_zlabel('z [mm]')
+
+plt.show()
