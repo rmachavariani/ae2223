@@ -34,7 +34,7 @@ def bincheck(binxyz):
     for i in range(0, len(binxyz)):
         for k in range(0, len(binxyz[i])):
             for m in range(0, len(binxyz[i][k])):
-                # check howmany bins are empty
+                # check how many bins are empty
                 if binxyz[i][k][m] == []:
                     count += 1
     return count
@@ -157,9 +157,9 @@ class Averaging:
                 for m in range(0, len(self.binxyz[i][k])):
                     # for every bin sum the velocities and devide by the amount of particles inside the bin
                     if self.binxyz[i][k][m] != []:
-                        u_lst, v_lst, w_lst = [], [], []
                         u_gauss, v_gauss, w_gauss = 0, 0, 0
                         u_weight, v_weight, w_weight = 0, 0, 0
+                        u_sum, v_sum, w_sum = 0, 0, 0
 
                         # If the number of particles inside a bin is equal to 1 then sd=0 and
                         # calculating the normal distrubtion results in a devision by 0
@@ -176,22 +176,22 @@ class Averaging:
                                 u_nor = (1 / (u_sd * np.sqrt(2 * np.pi))) * np.exp(
                                     (-1 / 2) * (((lst[n][3] - u_ave) / u_sd) ** 2))
                                 u_weight = u_weight + u_nor * lst[n][3]
-                                u_lst.append(u_nor)
+                                u_sum = u_sum + u_nor
 
                                 v_nor = (1 / (v_sd * np.sqrt(2 * np.pi))) * np.exp(
                                     (-1 / 2) * (((lst[n][4] - v_ave) / v_sd) ** 2))
                                 v_weight = v_weight + v_nor * lst[n][4]
-                                v_lst.append(v_nor)
+                                v_sum = v_sum + v_nor
 
                                 w_nor = (1 / (w_sd * np.sqrt(2 * np.pi))) * np.exp(
                                     (-1 / 2) * (((lst[n][5] - w_ave) / w_sd) ** 2))
                                 w_weight = w_weight + w_nor * lst[n][5]
-                                w_lst.append(w_nor)
+                                w_sum = w_sum + w_nor
 
                             # devide the sum of the normal*velocity by the sum of the normal values to get the gaussian velocity
-                            u_gauss = u_weight / (sum(u_lst))
-                            v_gauss = v_weight / (sum(v_lst))
-                            w_gauss = v_weight / (sum(v_lst))
+                            u_gauss = u_weight / (u_sum)
+                            v_gauss = v_weight / (v_sum)
+                            w_gauss = w_weight / (w_sum)
 
                         # when there is only 1 particle in a bin this is automaticly the determining particle velocity
                         elif len(binxyz[i][k][m]) == 1:
@@ -219,8 +219,8 @@ data, data_order, dtype1 = upload()
 #######################Setting up the grid###########################
 
 # define measurement volume parameters
-windowx, windowy, windowz = 10, 5, 5
-offset = [[50, -100], [100, -100], [100, -100]]
+windowx, windowy, windowz = 10, 10, 5
+offset = [[100, -100], [50, -100], [0, -100]]
 particle = GridBin(windowx, windowy, windowz, offset, data, data_order)
 
 # calculate the maximum and minimum coordinates in all 3 directions
@@ -269,18 +269,18 @@ fig = plt.figure()
 ###################
 # first plot
 ###################
-ax = fig.add_subplot(1, 2, 1, projection='3d')
+ax = fig.add_subplot(1, 3, 1, projection='3d')
 plt.title("Averaging")
 
 x, y, z, u, v, w = zip(*averaging_field)
 
-colors = np.arctan2(u, v)
-norm = Normalize()
-norm.autoscale(colors)
-colormap = cm.coolwarm
+# colors = np.arctan2(u, v)
+# norm = Normalize()
+# norm.autoscale(colors)
+# colormap = cm.coolwarm
 
-average_plt = ax.quiver(x, y, z, u, v, w, length=3, color=colormap(norm(colors)), cmap=cm.coolwarm)
-fig.colorbar(average_plt, orientation='vertical')
+average_plt = ax.quiver(x, y, z, u, v, w, length=3, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+# fig.colorbar(average_plt, orientation='vertical')
 
 ax.set_xlim([x_min, x_max])
 ax.set_ylim([y_min, y_max])
@@ -292,18 +292,18 @@ ax.set_zlabel('z [mm]')
 ###################
 # second plot
 ###################
-ax = fig.add_subplot(1, 2, 2, projection='3d')
+ax = fig.add_subplot(1, 3, 2, projection='3d')
 plt.title("Gaussian")
 
 x, y, z, u, v, w = zip(*gauss_field)
 
-colors = np.arctan2(u, v)
-norm = Normalize()
-norm.autoscale(colors)
-colormap = cm.coolwarm
+# colors = np.arctan2(u, v)
+# norm = Normalize()
+# norm.autoscale(colors)
+# #colormap = cm.coolwarm
 
-gaussian_plt = ax.quiver(x, y, z, u, v, w, length=3, color=colormap(norm(colors)), cmap=cm.coolwarm)
-fig.colorbar(gaussian_plt, orientation='vertical')
+gaussian_plt = ax.quiver(x, y, z, u, v, w, length=3, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+# fig.colorbar(gaussian_plt, orientation='vertical')
 
 ax.set_xlim([x_min, x_max])
 ax.set_ylim([y_min, y_max])
@@ -312,4 +312,34 @@ ax.set_xlabel('x [mm]')
 ax.set_ylabel('y [mm]')
 ax.set_zlabel('z [mm]')
 
+###################
+# Histogram
+###################
+ax = fig.add_subplot(1, 3, 3, projection='3d')
+plt.title("Bin")
+bin = binxyz[int(windowx / 2)][int(windowy / 2)][int(windowz / 2)]
+x, y, z, u, v, w = zip(*bin)
+
+# colors = np.arctan2(u, v)
+# norm = Normalize()
+# norm.autoscale(colors)
+# colormap = cm.coolwarm
+
+gaussian_plt = ax.quiver(x, y, z, u, v, w, length=0.1, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+# fig.colorbar(gaussian_plt, orientation='vertical')
+
+ax.set_xlim([x_bound[int(windowx / 2)], x_bound[int(windowx / 2) + 1]])
+ax.set_ylim([y_bound[int(windowy / 2)], y_bound[int(windowy / 2) + 1]])
+ax.set_zlim([z_bound[int(windowz / 2)], z_bound[int(windowz / 2) + 1]])
+ax.set_xlabel('x [mm]')
+ax.set_ylabel('y [mm]')
+ax.set_zlabel('z [mm]')
+
 plt.show()
+
+# x_min,x_max,y_min,y_max,z_min,z_max = boundaries(data)
+# #amount of bins that are placed along the axis
+# windowx, windowy, windowz = 10, 10, 10
+# offset = [[100,-100],[100,-100],[100,-100]]
+# delta_x,delta_y,delta_z,x_loc,y_loc,z_loc = bins(data_order,windowx,windowy,windowz,offset,x_min,x_max,y_min,y_max,z_min,z_max)
+# binxyz = grid(windowx,windowy,windowz)
