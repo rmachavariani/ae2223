@@ -10,12 +10,27 @@ class vector:
         self.w = particleData[5]
         
 class gridBin:
-    
 
-    # bins width (static class members)
+    # bin radius and number of bins in each direction
+    # for spherical bin (static member belonging to class)
+    radius = 0
+
+    # number of bins
+    nrBinsX = 0
+    nrBinsY = 0
+    nrBinsZ = 0
+
+    # bins width for rectangular bins (static class members)
     widthX = 0
     widthY = 0
     widthZ = 0
+
+    xMin = 0
+    xMax = 0
+    yMin = 0
+    yMax = 0
+    zMin = 0
+    zMax = 0
     
     def __init__(self,x,y,z):
 

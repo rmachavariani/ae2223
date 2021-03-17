@@ -10,7 +10,7 @@ def loadData():
     '''
     # load the data 
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat")
+    data = np.loadtxt("carMirrorData.dat",max_rows=20000)
     t2 = time.time()
     print("Loading done in ","{:.2f}".format(t2-t1)," s")
     
@@ -79,6 +79,19 @@ def createGrid(nrBinsX,nrBinsY,nrBinsZ,xMin,xMax,yMin,yMax,zMin,zMax):
     gridBin.widthX = widthX
     gridBin.widthY = widthX
     gridBin.widthZ = widthZ
+
+    # set number of bins in class
+    gridBin.nrBinsX = nrBinsX
+    gridBin.nrBinsY = nrBinsY
+    gridBin.nrBinsZ = nrBinsZ
+
+    # set min and max values
+    gridBin.xMin = xMin
+    gridBin.xMax = xMax
+    gridBin.yMin = yMin
+    gridBin.yMax = yMax
+    gridBin.zMin = zMin
+    gridBin.zMax = zMax
     
     # define x, y and z coordinates of center bin
     x = np.linspace(xMin,xMax-widthX,nrBinsX) + widthX/2
@@ -124,9 +137,20 @@ def assignVectorsToGrid(vectors,grid):
         z = vector.z
         
         # calculate index
-        iX = floor( x / widthX )
-        iY = floor( y / widthY )
-        iZ = floor( z / widthZ )
+        iX = int(floor( (x - gridBin.xMin) / widthX ))
+        iY = int(floor( (y - gridBin.yMin)/ widthY ))
+        iZ = int(floor( (z - gridBin.zMin) / widthZ ))
+
+        # correct for the edge values
+        if iX == gridBin.nrBinsX:
+            iX += -1
+
+        if iY == gridBin.nrBinsY:
+            iY += -1
+
+        if iZ == gridBin.nrBinsZ:
+            iZ += -1
+
         
         # assign to correct bin
         grid[iX,iY,iZ].addVector(vector)
@@ -173,6 +197,7 @@ def getRectangularGridWithVectors(nrBinsX,nrBinsY,nrBinsZ):
     yMax = minMax[3]
     zMin = minMax[4]
     zMax = minMax[5]
+    print(zMax)
 
     # transform raw data into vector objects
     dataPoints = createVectorObjects(data)
