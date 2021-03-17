@@ -1,135 +1,345 @@
 import timing
-#from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
+import matplotlib.cm as cm
 import numpy as np
-import math
-#import earthpy as et
-
-# Import average monthly precip to numpy array
-dtype1 = np.dtype([("x",float),("y",float),("z",float),("u",float),("v",float),("w",float)])
-datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Coding/carMirrorData.dat"
-data = np.loadtxt(datalocation,dtype=dtype1)
-
-#order the data values with x from small to large x
-data_order = np.sort(data, order="x")
-print("Number of particles",len(data_order))
-
-#define outer bounds of the measurement volume
-x_min, x_max = min(data["x"]), max(data["x"])
-y_min, y_max = min(data["y"]), max(data["y"])
-z_min, z_max = min(data["z"]), max(data["z"])
-
-#amount of bins that are placed along the axis 
-windowx, windowy, windowz = 10, 10, 10
-
-#can make a offset were to start compared to the min and maximum location at the axis
-offset = [[100,-100],[100,-100],[100,-100]]
-delta_x = ((x_max+offset[0][1])-(x_min+offset[0][0]))/windowx
-delta_y = ((y_max+offset[1][1])-(y_min+offset[1][0]))/windowy
-delta_z = ((z_max+offset[2][1])-(z_min+offset[2][0]))/windowz
-
-#List that define the locations of every bin (additional 1 is to include the last point as well)
-x_loc = np.arange(start=x_min+offset[0][0],stop=x_max+offset[0][1]+1,step=delta_x)
-y_loc = np.arange(start=y_min+offset[1][0],stop=y_max+offset[1][1]+1,step=delta_y)
-z_loc = np.arange(start=z_min+offset[2][0],stop=z_max+offset[2][1]+1,step=delta_z)
-
-#make list with all bins were the particle information can be added to
-binxyz = [[[[] for k in range(windowz)] for l in range(windowy)] for i in range(windowx)] #[x:[y:[z:[particle data:()]]]]
-
-#with the use of dividing the location of the particles by the bin width
-#the rounded number results in the bin the particle has to be placed in
-number_processed=0
-for i in range(len(data_order)):
-    #make sure that the particle is inside the measurement volume defined with offset
-    if data_order[i][0]+abs(x_min)>=offset[0][0] and data_order[i][1]+abs(y_min)>=offset[1][0] and data_order[i][2]+abs(z_min)>=offset[2][0]:
-        if data_order[i][0]<=x_max+offset[0][1] and data_order[i][1]<=y_max+offset[1][1] and data_order[i][2]<=z_max+offset[2][1]:
-            #as there are negative coordinate points add the minimum value to get positive values
-            #that can be used to determine location
-            x=data_order[i][0]+abs(x_min)-offset[0][0]
-            #int makes sure that the particle is assigned to the correct place in the list
-            pos1 = int(x/delta_x)
-
-            y=data_order[i][1]+abs(y_min)-offset[1][0] 
-            pos2 = int(y/delta_y)
-
-            z=data_order[i][2]+abs(z_min)-offset[2][0] 
-            pos3 = int(z/delta_z)
-
-            #the maximum coordinates will be assigned pos=window. This posistion is not devined in the list
-            #so for practicality place the most outer 3 (3 axis) coordinates in the last list
-            if pos1 == windowx:
-                pos1 = windowx-1
-            elif pos2 == windowy:
-                pos2 = windowy-1
-            elif pos3 ==windowz:
-                pos3 = windowz-1
-            
-            binxyz[pos1][pos2][pos3].append(data_order[i])
-            number_processed +=1
-
-print("number of designated particles",number_processed)
-count = 0
-maximum = 0 
-averaging_field = []
-gauss_field = []
-for i in range(0,len(binxyz)):
-    for k in range(0,len(binxyz[i])):
-        for m in range(0,len(binxyz[i][k])):
-            #check howmany bins are empty
-            if binxyz[i][k][m]==[]:
-                    count +=1
-            #for every bin sum the velocities and devide by the amount of particles inside the bin
-            elif binxyz[i][k][m]!=[]:
-                u_count,v_count,w_count = 0,0,0
-                u_gsum,v_gsum,w_gsum = 0,0,0
-                u_lst,v_lst,w_lst = [],[],[]
-                u_gauss,v_gauss,w_gauss = 0,0,0
-
-                for n in range(0,len(binxyz[i][k][m])):
-                    u_count = u_count + binxyz[i][k][m][n][3]
-                    v_count = v_count + binxyz[i][k][m][n][4]
-                    w_count = w_count + binxyz[i][k][m][n][5]
-                u_ave,v_ave,w_ave = u_count/len(binxyz[i][k][m]),v_count/len(binxyz[i][k][m]),w_count/len(binxyz[i][k][m])
-
-                #This is all for the Gaussian part
-                for n in range(0, len(binxyz[i][k][m])):
-                    u_gsum = u_gsum + ((binxyz[i][k][m][n][3] - u_ave) ** 2)
-                    v_gsum = v_gsum + ((binxyz[i][k][m][n][4] - v_ave) ** 2)
-                    w_gsum = w_gsum + ((binxyz[i][k][m][n][5] - w_ave) ** 2)
-                u_sd,v_sd,w_sd=math.sqrt(u_gsum / len(binxyz[i][k][m])), math.sqrt(v_gsum / len(binxyz[i][k][m])), math.sqrt(w_gsum / len(binxyz[i][k][m]))
-                for n in range(0, len(binxyz[i][k][m])):
-                    u_lst.append((1/(u_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][3]-u_ave)/u_sd)**2)))
-                    v_lst.append((1/(v_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][4]-v_ave)/v_sd)**2)))
-                    w_lst.append((1/(w_sd*math.sqrt(2*math.pi)))*math.exp((-1/2)*(((binxyz[i][k][m][5]-w_ave)/u_sd)**2)))
-                for n in range(0, len(binxyz[i][k][m])):
-                    u_gauss=u_gauss+((u_lst[n]/sum(u_lst))*binxyz[i][k][m][n][3])
-                    v_gauss=v_gauss+((v_lst[n]/sum(v_lst))*binxyz[i][k][m][n][4])
-                    w_gauss=w_gauss+((w_lst[n]/sum(w_lst))*binxyz[i][k][m][n][5])
-
-                #use the location list to establish the mid point of the bin
-                averaging_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_ave,v_ave,w_ave])
-                #gauss_field.append([(x_loc[i] + x_loc[i + 1]) / 2, (y_loc[k] + y_loc[k + 1]) / 2, (z_loc[m] + z_loc[m + 1]) / 2, u_sd,v_sd,w_sd])
-                gauss_field.append([(x_loc[i]+x_loc[i+1])/2,(y_loc[k]+y_loc[k+1])/2,(z_loc[m]+z_loc[m+1])/2,u_gauss,v_gauss,w_gauss])
-            #check for the bin with the maximum amount of particles
-            if len(binxyz[i][k][m])>maximum:
-                maximum=len(binxyz[i][k][m])
-print("Number of bins",windowx*windowy*windowz)
-print("Number of empty bins",count)
-print("Maximum amount of particles in bin",maximum)
-print(gauss_field[0:4])
+import threading
+import time
 
 
-#define the dimensions of the measurmement volume
-print("x:", x_min,x_max)
-print("y:", y_min,y_max)
-print("z:", z_min,z_max)
+#####################################################################
+#                                                                   #
+#                       Standard functions                          #
+#                                                                   #
+#####################################################################
 
-print("Volume:",(x_max-x_min)*(y_max-y_min)*(z_max-z_min)*10**(-9),"m^3")
-print("Sub-volume",delta_x*delta_y*delta_z,"mm^3")
+def upload():
+    t1 = time.time()
+    # Define the structure of the data
+    dtype1 = np.dtype([("x", float), ("y", float), ("z", float), ("u", float), ("v", float), ("w", float)])
+    # datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Coding/carMirrorData.dat"
+    datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat"
+    # upload the data from the file to a numpy array with designated structure
+    data = np.loadtxt(datalocation, dtype=dtype1)
 
-#fig = plt.figure()
-#ax = fig.add_subplot(111, projection='3d')
-#nrParticles = 500
-#dataSel = data[0:nrParticles,:]
-#ax.quiver(dataSel[:,0],dataSel[:,1],dataSel[:,2],dataSel[:,3],dataSel[:,4],dataSel[:,5])
-#plt.show()
+    # order the data values with x from small to large x
+    data_order = np.sort(data, order="x")
+    t2 = time.time()
+    print("Number of particles", len(data_order), "orderd in:", round(t2 - t1, 3), "sec")
+    return data, data_order, dtype1
+
+
+def bincheck(binxyz):
+    count = 0
+    for i in range(0, len(binxyz)):
+        for k in range(0, len(binxyz[i])):
+            for m in range(0, len(binxyz[i][k])):
+                # check how many bins are empty
+                if binxyz[i][k][m] == []:
+                    count += 1
+    return count
+
+
+#####################################################################
+#                                                                   #
+#                            Classes                                #
+#                                                                   #
+#####################################################################
+
+class GridBin:
+    def __init__(self, windowx, windowy, windowz, offset, data, data_order):
+        self.offset = offset
+        self.windowx = windowx
+        self.windowy = windowy
+        self.windowz = windowz
+        self.data = data
+        self.data_order = data_order
+
+    def boundaries(self):
+        # define outer bounds of the measurement volume
+        x_min, x_max = min(self.data["x"]), max(self.data["x"])
+        y_min, y_max = min(self.data["y"]), max(self.data["y"])
+        z_min, z_max = min(self.data["z"]), max(self.data["z"])
+
+        return x_min, x_max, y_min, y_max, z_min, z_max
+
+    def bins(self, offset, x_min, x_max, y_min, y_max, z_min, z_max):
+        # can make a offset were to start compared to the min and maximum location at the axis
+        delta_x = ((x_max + self.offset[0][1]) - (x_min + self.offset[0][0])) / self.windowx
+        delta_y = ((y_max + self.offset[1][1]) - (y_min + self.offset[1][0])) / self.windowy
+        delta_z = ((z_max + self.offset[2][1]) - (z_min + self.offset[2][0])) / self.windowz
+
+        # bound locations of all the bins (use of +1 because of np.digitize in distribute function)
+        x_bound = np.linspace(x_min + self.offset[0][0], x_max + self.offset[0][1], windowx + 1, dtype=np.float64)
+        y_bound = np.linspace(y_min + self.offset[1][0], y_max + self.offset[1][1], windowy + 1, dtype=np.float64)
+        z_bound = np.linspace(z_min + self.offset[2][0], z_max + self.offset[2][1], windowz + 1, dtype=np.float64)
+
+        # List that define the center locations of every bin
+        x_loc = np.arange(start=x_min + self.offset[0][0] + 0.5 * delta_x, stop=x_max + self.offset[0][1], step=delta_x)
+        y_loc = np.arange(start=y_min + self.offset[1][0] + 0.5 * delta_y, stop=y_max + self.offset[1][1], step=delta_y)
+        z_loc = np.arange(start=z_min + self.offset[2][0] + 0.5 * delta_z, stop=z_max + self.offset[2][1], step=delta_z)
+
+        return delta_x, delta_y, delta_z, x_bound, y_bound, z_bound, x_loc, y_loc, z_loc
+
+    def grid(self):
+        # make list with all bins were the particle information can be added to
+        binxyz = [[[[] for k in range(self.windowz)] for l in range(self.windowy)] for i in
+                  range(self.windowx)]  # [x:[y:[z:[particle data:()]]]]
+
+        return binxyz
+
+    def distribute(self, binxyz, x_bound, y_bound, z_bound):
+        t1 = time.time()
+        number_processed = 0
+
+        # np.digitize compares the location of the particle with the boundaries of the bins
+        # and returns a list with the index location of the lowest boundarie of the bin
+        x_in = np.digitize(data_order["x"], x_bound)
+        y_in = np.digitize(data_order["y"], y_bound)
+        z_in = np.digitize(data_order["z"], z_bound)
+
+        # Placing all the particles in the correct place in binxyz
+        for i in range(len(data_order)):
+            # When a particles coordinate is smaller then the smallest boundarie it is given 0. When
+            # larger then the largest boundarie it is given len(bound). So using if statement
+            # particles outside the designated measurement volume are excluded
+            if 1 <= x_in[i] < len(x_bound) and 1 <= y_in[i] < len(y_bound) and 1 <= z_in[i] < len(z_bound):
+                # use -1 as indecis are starting at 1 and list start at 0
+                binxyz[x_in[i] - 1][y_in[i] - 1][z_in[i] - 1].append(data_order[i])
+                # count the number of processed particles
+                number_processed += 1
+
+        t2 = time.time()
+        print("Number of designated particles", number_processed, "in:", round(t2 - t1, 3), "sec")
+        return binxyz, number_processed
+
+
+class Averaging:
+    def __init__(self, binxyz, x_loc, y_loc, z_loc, dtype1):
+        self.binxyz = binxyz
+        self.x_loc = x_loc
+        self.y_loc = y_loc
+        self.z_loc = z_loc
+        self.dtype1 = dtype1
+
+    def mean(self):
+        t1 = time.time()
+        maximum = 0
+        averaging_field = []
+        for i in range(0, len(self.binxyz)):
+            for k in range(0, len(self.binxyz[i])):
+                for m in range(0, len(self.binxyz[i][k])):
+                    # for every bin sum the velocities and devide by the amount of particles inside the bin
+                    # can only be done for bins with particles inside
+                    if self.binxyz[i][k][m] != []:
+                        # Convert the particle information in the bin to an array for more simple use
+                        lst = np.array(self.binxyz[i][k][m], dtype=self.dtype1)
+                        # Use numpy for the mean value so that no loop has to be used
+                        u_ave = np.average(lst["u"])
+                        v_ave = np.average(lst["v"])
+                        w_ave = np.average(lst["w"])
+                        # append the mean average velocity components to a list with center location of bin
+                        averaging_field.append([self.x_loc[i], self.y_loc[k], self.z_loc[m], u_ave, v_ave, w_ave])
+                    # check for the bin with the maximum amount of particles
+                    if len(self.binxyz[i][k][m]) > maximum:
+                        maximum = len(self.binxyz[i][k][m])
+
+        t2 = time.time()
+        print("Mean averaging takes", round(t2 - t1, 3), "sec")
+
+        return maximum, averaging_field, u_ave, v_ave, w_ave
+
+    def gaussian(self):
+        t1 = time.time()
+        gauss_field = []
+        for i in range(0, len(self.binxyz)):
+            for k in range(0, len(self.binxyz[i])):
+                for m in range(0, len(self.binxyz[i][k])):
+                    # for every bin sum the velocities and devide by the amount of particles inside the bin
+                    if self.binxyz[i][k][m] != []:
+                        u_gauss, v_gauss, w_gauss = 0, 0, 0
+                        u_weight, v_weight, w_weight = 0, 0, 0
+                        u_sum, v_sum, w_sum = 0, 0, 0
+
+                        # If the number of particles inside a bin is equal to 1 then sd=0 and
+                        # calculating the normal distrubtion results in a devision by 0
+                        if len(binxyz[i][k][m]) > 1:
+                            # make the list a array so that information can be extracted easily
+                            lst = np.array(self.binxyz[i][k][m], dtype=self.dtype1)
+                            # use numpy to calculate the mean and standard deviation
+                            u_ave, u_sd = np.average(lst["u"]), np.std(lst["u"])
+                            v_ave, v_sd = np.average(lst["v"]), np.std(lst["v"])
+                            w_ave, w_sd = np.average(lst["w"]), np.std(lst["w"])
+
+                            for n in range(0, len(lst)):
+                                # calculate for every velocity component the normal value and sum this together for the bin
+                                u_nor = (1 / (u_sd * np.sqrt(2 * np.pi))) * np.exp(
+                                    (-1 / 2) * (((lst[n][3] - u_ave) / u_sd) ** 2))
+                                u_weight = u_weight + u_nor * lst[n][3]
+                                u_sum = u_sum + u_nor
+
+                                v_nor = (1 / (v_sd * np.sqrt(2 * np.pi))) * np.exp(
+                                    (-1 / 2) * (((lst[n][4] - v_ave) / v_sd) ** 2))
+                                v_weight = v_weight + v_nor * lst[n][4]
+                                v_sum = v_sum + v_nor
+
+                                w_nor = (1 / (w_sd * np.sqrt(2 * np.pi))) * np.exp(
+                                    (-1 / 2) * (((lst[n][5] - w_ave) / w_sd) ** 2))
+                                w_weight = w_weight + w_nor * lst[n][5]
+                                w_sum = w_sum + w_nor
+
+                            # devide the sum of the normal*velocity by the sum of the normal values to get the gaussian velocity
+                            u_gauss = u_weight / (u_sum)
+                            v_gauss = v_weight / (v_sum)
+                            w_gauss = w_weight / (w_sum)
+
+                        # when there is only 1 particle in a bin this is automaticly the determining particle velocity
+                        elif len(binxyz[i][k][m]) == 1:
+                            u_gauss = self.binxyz[i][k][m][0][3]
+                            v_gauss = self.binxyz[i][k][m][0][4]
+                            w_gauss = self.binxyz[i][k][m][0][5]
+
+                        # use the location list to establish the mid point of the bin
+                        gauss_field.append([self.x_loc[i], self.y_loc[k], self.z_loc[m], u_gauss, v_gauss, w_gauss])
+        t2 = time.time()
+        print("Gaussian averaging takes", round(t2 - t1, 3), "sec")
+        return gauss_field
+
+
+#####################################################################
+#                                                                   #
+#                           Main script                             #
+#                                                                   #
+#####################################################################
+
+##########################Import data################################
+
+data, data_order, dtype1 = upload()
+
+#######################Setting up the grid###########################
+
+# define measurement volume parameters
+windowx, windowy, windowz = 10, 10, 5
+offset = [[100, -100], [50, -100], [0, -100]]
+particle = GridBin(windowx, windowy, windowz, offset, data, data_order)
+
+# calculate the maximum and minimum coordinates in all 3 directions
+x_min, x_max, y_min, y_max, z_min, z_max = particle.boundaries()
+
+# amount of bins that are placed along the axis
+delta_x, delta_y, delta_z, x_bound, y_bound, z_bound, x_loc, y_loc, z_loc = particle.bins(offset, x_min, x_max, y_min,
+                                                                                          y_max, z_min, z_max)
+
+# create the desired grid in which the particles have to be devided
+binxyz = particle.grid()
+
+#######################Filling in the grid###########################
+
+# apply all the particles that are located within the designated measurement volume to a bin
+binxyz, number_processed = particle.distribute(binxyz, x_bound, y_bound, z_bound)
+
+count = bincheck(binxyz)
+print("Number of bins", windowx * windowy * windowz)
+print("Number of empty bins", count, "(", round(count / (windowx * windowy * windowz), 2) * 100, "%)")
+
+############################Averaging#################################
+
+general = Averaging(binxyz, x_loc, y_loc, z_loc, dtype1)
+
+maximum, averaging_field, u_ave, v_ave, w_ave = general.mean()
+averaging_field = np.array(averaging_field)
+gauss_field = general.gaussian()
+print("Maximum amount of particles in bin", maximum)
+
+# define the dimensions of the measurmement volume
+print("x:", x_min, x_max)
+print("y:", y_min, y_max)
+print("z:", z_min, z_max)
+
+print("Volume:", (x_max - x_min) * (y_max - y_min) * (z_max - z_min) * 10 ** (-9), "m^3")
+print("Sub-volume", delta_x * delta_y * delta_z, "mm^3")
+
+#####################################################################
+#                                                                   #
+#                           Plot scirpt                             #
+#                                                                   #
+#####################################################################
+
+fig = plt.figure()
+###################
+# first plot
+###################
+ax = fig.add_subplot(1, 3, 1, projection='3d')
+plt.title("Averaging")
+
+x, y, z, u, v, w = zip(*averaging_field)
+
+# colors = np.arctan2(u, v)
+# norm = Normalize()
+# norm.autoscale(colors)
+# colormap = cm.coolwarm
+
+average_plt = ax.quiver(x, y, z, u, v, w, length=3, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+# fig.colorbar(average_plt, orientation='vertical')
+
+ax.set_xlim([x_min, x_max])
+ax.set_ylim([y_min, y_max])
+ax.set_zlim([z_min, z_max])
+ax.set_xlabel('x [mm]')
+ax.set_ylabel('y [mm]')
+ax.set_zlabel('z [mm]')
+
+###################
+# second plot
+###################
+ax = fig.add_subplot(1, 3, 2, projection='3d')
+plt.title("Gaussian")
+
+x, y, z, u, v, w = zip(*gauss_field)
+
+# colors = np.arctan2(u, v)
+# norm = Normalize()
+# norm.autoscale(colors)
+# #colormap = cm.coolwarm
+
+gaussian_plt = ax.quiver(x, y, z, u, v, w, length=3, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+# fig.colorbar(gaussian_plt, orientation='vertical')
+
+ax.set_xlim([x_min, x_max])
+ax.set_ylim([y_min, y_max])
+ax.set_zlim([z_min, z_max])
+ax.set_xlabel('x [mm]')
+ax.set_ylabel('y [mm]')
+ax.set_zlabel('z [mm]')
+
+###################
+# Histogram
+###################
+ax = fig.add_subplot(1, 3, 3, projection='3d')
+plt.title("Bin")
+bin = binxyz[int(windowx / 2)][int(windowy / 2)][int(windowz / 2)]
+x, y, z, u, v, w = zip(*bin)
+
+# colors = np.arctan2(u, v)
+# norm = Normalize()
+# norm.autoscale(colors)
+# colormap = cm.coolwarm
+
+gaussian_plt = ax.quiver(x, y, z, u, v, w, length=0.1, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+# fig.colorbar(gaussian_plt, orientation='vertical')
+
+ax.set_xlim([x_bound[int(windowx / 2)], x_bound[int(windowx / 2) + 1]])
+ax.set_ylim([y_bound[int(windowy / 2)], y_bound[int(windowy / 2) + 1]])
+ax.set_zlim([z_bound[int(windowz / 2)], z_bound[int(windowz / 2) + 1]])
+ax.set_xlabel('x [mm]')
+ax.set_ylabel('y [mm]')
+ax.set_zlabel('z [mm]')
+
+plt.show()
+
+# x_min,x_max,y_min,y_max,z_min,z_max = boundaries(data)
+# #amount of bins that are placed along the axis
+# windowx, windowy, windowz = 10, 10, 10
+# offset = [[100,-100],[100,-100],[100,-100]]
+# delta_x,delta_y,delta_z,x_loc,y_loc,z_loc = bins(data_order,windowx,windowy,windowz,offset,x_min,x_max,y_min,y_max,z_min,z_max)
+# binxyz = grid(windowx,windowy,windowz)
