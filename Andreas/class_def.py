@@ -1,16 +1,6 @@
 
 class vector:
     
-    # object variables
-    binX = 0
-    binY = 0
-    binZ = 0
-    
-    # static class variables
-    binL = 0
-    binW = 0
-    binH = 0
-    
     def __init__(self,particleData):
         self.x = particleData[0]
         self.y = particleData[1]
