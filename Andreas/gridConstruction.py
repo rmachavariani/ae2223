@@ -216,6 +216,8 @@ def getRectangularGridWithVectors(nrBinsX,nrBinsY,nrBinsZ):
 
     return grid
 
-#data = getRectangularGridWithVectors(10,10,10)
+data = getRectangularGridWithVectors(10,10,10)
+a = data[5,5,5].vectors[0]
+print(a.u)
 
 
