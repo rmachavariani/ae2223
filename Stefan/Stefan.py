@@ -40,6 +40,24 @@ def bincheck(binxyz):
     return count
 
 
+def histogram(binxyz, binx, biny, binz, dtype1):
+    lst = np.array(binxyz[binx][biny][binz], dtype=dtype1)
+    order = ["u", "v", "w"]
+
+    plt.figure()
+    # step_size=(max(lst[order[i]])-min(lst[order[i]]))
+    d_v = np.linspace(min(min(lst["u"]), min(lst["v"]), min(lst["w"])) + 10,
+                      max(max(lst["u"]), max(lst["v"]), max(lst["w"])) - 10, 30, dtype=np.float64)
+
+    plt.subplot(1, 1, 1)
+    plt.title("Histogram bin:" + str(binx) + "," + str(biny) + "," + str(binz))
+    plt.hist([lst["u"], lst["v"], lst["w"]], bins=d_v, label=["u", "v", "w"])
+    plt.legend(loc='upper right')
+    plt.xlabel("Velocity [m/s]")
+    plt.ylabel("Count")
+    plt.show()
+
+
 #####################################################################
 #                                                                   #
 #                            Classes                                #
@@ -219,8 +237,8 @@ data, data_order, dtype1 = upload()
 #######################Setting up the grid###########################
 
 # define measurement volume parameters
-windowx, windowy, windowz = 10, 10, 5
-offset = [[100, -100], [50, -100], [0, -100]]
+windowx, windowy, windowz = 10, 10, 10
+offset = [[0, 0], [0, 0], [0, 0]]
 particle = GridBin(windowx, windowy, windowz, offset, data, data_order)
 
 # calculate the maximum and minimum coordinates in all 3 directions
@@ -259,9 +277,12 @@ print("z:", z_min, z_max)
 print("Volume:", (x_max - x_min) * (y_max - y_min) * (z_max - z_min) * 10 ** (-9), "m^3")
 print("Sub-volume", delta_x * delta_y * delta_z, "mm^3")
 
+binx, biny, binz = int(windowx / 2), int(windowy / 2), int(windowz / 2)
+histogram_lst = histogram(binxyz, binx, biny, binz, dtype1)
+
 #####################################################################
 #                                                                   #
-#                           Plot scirpt                             #
+#                           Plot script                             #
 #                                                                   #
 #####################################################################
 
@@ -317,8 +338,8 @@ ax.set_zlabel('z [mm]')
 ###################
 ax = fig.add_subplot(1, 3, 3, projection='3d')
 plt.title("Bin")
-bin = binxyz[int(windowx / 2)][int(windowy / 2)][int(windowz / 2)]
-x, y, z, u, v, w = zip(*bin)
+test = binxyz[int(windowx / 2)][int(windowy / 2)][int(windowz / 2)]
+x, y, z, u, v, w = zip(*test)
 
 # colors = np.arctan2(u, v)
 # norm = Normalize()
