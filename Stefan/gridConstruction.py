@@ -225,5 +225,5 @@ for i in range(nrBinsX):
             data[i][j][k].calculateStandardDeviation()
             data[i][j][k].calculateGaussianAverage()
 
-print(data[1][1][1].NormalAverage)
-print(data[1][1][1].GaussianAverage)
+#print the histogram
+data[int(nrBinsX/2)][int(nrBinsY/2)][int(nrBinsZ/2)].histogram()
