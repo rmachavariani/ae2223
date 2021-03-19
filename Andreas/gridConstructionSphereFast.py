@@ -2,7 +2,6 @@ import numpy as np
 from class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
-import matplotlib.pyplot as plt
 
 
 def loadData(nrRows):
@@ -107,53 +106,6 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
 
     return grid
 
-def createGrid(nrBinsX, nrBinsY, nrBinsZ, radius, xMin, xMax, yMin, yMax, zMin, zMax):
-    '''Creates the grid by generating a 3D numpy array filled with
-    objects of class gridbin
-    :return: nrX x nrY x nrZ numpy array
-    '''
-
-    t1 = time.time()
-
-    # create empty 3D array
-    grid = np.empty((nrBinsX, nrBinsY, nrBinsZ), dtype=object)
-
-    # calculate width of bins in all directions
-    widthX = (xMax - xMin) / nrBinsX
-    widthY = (yMax - yMin) / nrBinsY
-    widthZ = (zMax - zMin) / nrBinsZ
-
-    # set widths of bin to class static members
-    gridBin.widthX = widthX
-    gridBin.widthY = widthX
-    gridBin.widthZ = widthZ
-
-    # define x, y and z coordinates of center bin
-    x = np.linspace(xMin, xMax - widthX, nrBinsX) + widthX / 2
-    y = np.linspace(yMin, yMax - widthY, nrBinsY) + widthY / 2
-    z = np.linspace(zMin, zMax - widthZ, nrBinsZ) + widthZ / 2
-
-    # fill matrix with bin objects by looping over matrix
-    for i in range(nrBinsX):
-        for j in range(nrBinsY):
-            for k in range(nrBinsZ):
-                grid[i, j, k] = gridBin(x[i], y[j], z[k])
-
-    # report to user
-    t2 = time.time()
-    print('Grid created in ', "{:.2f}".format(t2 - t1), " s")
-
-    # report amount of bins to user
-    xAmount = np.size(grid,axis=0)
-    yAmount = np.size(grid,axis=1)
-    zAmount = np.size(grid,axis=2)
-    print("Amount of bins in x direction: ", xAmount)
-    print("Amount of bins in y direction: ",yAmount)
-    print("Amount of bins in z direction: ",zAmount)
-    print("Total amount of bins: ",xAmount*yAmount*zAmount)
-
-    return grid
-
 
 def assignVectorsToGrid(vectors, grid, pitch, radius,
                         xMin, yMin, zMin):
@@ -204,65 +156,31 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 
     return grid
 
-def showBins(pitch,radius):
 
-    edge = 5
-    outermost = 2 * radius + pitch + 2 * edge
+def checkRadiusLargeEnough(pitch,radius):
 
-    try:
-        # calculate new radius
-        radius = radius * cos(asin(pitch / (2 * radius)))
+    # calculate radius in between centers
+    R = radius * cos(asin(pitch / (2 * radius)))
 
-
-        outermost = 2 * radius + pitch + 2 * edge
-        circle1 = plt.Circle((radius + edge, radius + edge),radius,edgecolor="black")
-        circle2 = plt.Circle((radius + pitch + edge,radius + edge),radius,edgecolor="black")
-        circle3 = plt.Circle((radius + edge,radius + pitch + edge),radius,edgecolor="black")
-        circle4 = plt.Circle((radius + pitch + edge,radius + pitch + edge),radius,edgecolor="black")
-
-        fig, ax = plt.subplots()  # note we must use plt.subplots, not plt.subplot
-        # (or if you have an existing figure)
-        # fig = plt.gcf()
-        # ax = fig.gca()
-
-        ax.add_patch(circle1)
-        ax.add_patch(circle2)
-        ax.add_patch(circle3)
-        ax.add_patch(circle4)
-
-        ax.set_xlim([0,outermost])
-        ax.set_ylim([0,outermost])
-
-        ax.set_xticks([])
-        ax.set_yticks([])
-
-
-        plt.show()
-
-    except:
-        print("Test")
-        fig, ax = plt.subplots()
-        ax.set_xlim([0,outermost])
-        ax.set_ylim([0,outermost])
-
-        ax.set_xticks([])
-        ax.set_yticks([])
-
-
-        plt.show()
+    # positive if radius is big enough
+    if R >= sqrt(2)/2*pitch:
+        return True
+    else:
+        return False
 
 
 #-------------------------------MAIN--------------------------------#
 
-def getSphericalGridWithVectors(pitch,radius,nrRows):
+def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
 
     t1 = time.time()
 
-    # show grid
-    showBins(pitch,radius)
-    user = input("Continue? (y/n): ")
+    # check if radius is big enough
+    cont = checkRadiusLargeEnough(pitch,radius)
 
-    if user == "y":
+    # only perform creation of grid when every particle is covered
+    if cont:
+
         # load the data
         data = loadData(nrRows)
 
@@ -295,7 +213,7 @@ def getSphericalGridWithVectors(pitch,radius,nrRows):
         return grid
 
     else:
+        print("WARNING: Set a bigger radius")
 
-        print("Grid creation was not performed")
 
-grid = getSphericalGridWithVectors(30,30,1000)
+grid = getSphericalGridWithVectorsFast(30,15,3000)
