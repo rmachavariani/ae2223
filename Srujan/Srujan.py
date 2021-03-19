@@ -1,6 +1,6 @@
 from gridConstruction import *
 import pdb
-
+import matplotlib.pyplot as plt
 
 def fetch_vector(test_bin):
     particles_val = np.empty((len(test_bin), 6))
@@ -17,7 +17,7 @@ def fetch_vector(test_bin):
             w = test_bin[i].w
 
             particles_val[i] = [x, y, z, u, v, w]
-    print(particles_val[:, 3])
+    #print(particles_val[:, 3])
     return particles_val
 
 
@@ -36,26 +36,32 @@ def basis(particles_val, cell):
 
 def solve(basis, fnc):
     coeffs = np.linalg.lstsq(basis, fnc)[0]
+
     return coeffs[0]
 
 
-
-
 data = getRectangularGridWithVectors(10, 10, 10)
-test_cell = data[5, 5, 5].vectors
-
+test_cell = data[5, 5, 5]
+test_vectors = test_cell.vectors
+pdb.set_trace()
 #print(test_cell)
 print()
 # print(f"{data[5, 5, 5].x}, {data[5, 5, 5].y}, {data[5, 5, 5].z}")
 print()
-a = fetch_vector(test_cell)
+a = fetch_vector(test_vectors)
 # print(a)
 print()
-b = basis(a, data[5,5,5])
+b = basis(a, test_cell)
 x = solve(b, a[:, 3])
 print()
 print()
 print(x)
+
+#-----------------PLOT---------------#
+#x = np.arange(test_cell.x - test_cell.widthX, test_cell.x + test_cell.widthX)
+#plt.figure()
+
+
 
 
 
