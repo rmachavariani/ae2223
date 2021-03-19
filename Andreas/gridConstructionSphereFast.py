@@ -172,6 +172,14 @@ def checkRadiusLargeEnough(pitch,radius):
 #-------------------------------MAIN--------------------------------#
 
 def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
+    '''
+
+    :param pitch: pitch between centers of bins in mm
+    :param radius: radius of bins in mm
+    :param nrRows: amount of rows to load from the datafile
+                    enter None when all have to be loaded
+    :return: grid with bins and assigned objects
+    '''
 
     t1 = time.time()
 
@@ -216,4 +224,4 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
         print("WARNING: Set a bigger radius")
 
 
-grid = getSphericalGridWithVectorsFast(30,15,3000)
+grid = getSphericalGridWithVectorsFast(30,30,None)
