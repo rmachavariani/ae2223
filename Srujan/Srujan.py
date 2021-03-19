@@ -1,6 +1,6 @@
 from gridConstruction import *
 import pdb
-
+import matplotlib.pyplot as plt
 
 def fetch_vector(test_bin):
     particles_val = np.empty((len(test_bin), 6))
@@ -17,44 +17,51 @@ def fetch_vector(test_bin):
             w = test_bin[i].w
 
             particles_val[i] = [x, y, z, u, v, w]
-    print(particles_val[:, 3])
+    #print(particles_val[:, 3])
     return particles_val
 
 
-def basis(particles_val):
+def basis(particles_val, cell):
     design_matrix = np.empty((len(particles_val), 10))
     for i in range(len(particles_val)):
-        dx = particles_val[i, 0] / 1000
-        dy = particles_val[i, 1] / 1000
-        dz = particles_val[i, 2] / 1000
+        dx = (particles_val[i, 0] - cell.x) / 1000
+        dy = (particles_val[i, 1] - cell.y) / 1000
+        dz = (particles_val[i, 2] - cell.z) / 1000
 
         design_matrix[i] = [1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2]
+
     #print(design_matrix)
     return design_matrix
 
 
 def solve(basis, fnc):
-    return np.linalg.lstsq(basis, fnc)[0]
+    coeffs = np.linalg.lstsq(basis, fnc)[0]
 
-
-
+    return coeffs[0]
 
 
 data = getRectangularGridWithVectors(10, 10, 10)
-test_cell = data[5, 5, 5].vectors
-
+test_cell = data[5, 5, 5]
+test_vectors = test_cell.vectors
+pdb.set_trace()
 #print(test_cell)
 print()
 # print(f"{data[5, 5, 5].x}, {data[5, 5, 5].y}, {data[5, 5, 5].z}")
 print()
-a = fetch_vector(test_cell)
+a = fetch_vector(test_vectors)
 # print(a)
 print()
-b = basis(a)
+b = basis(a, test_cell)
 x = solve(b, a[:, 3])
 print()
 print()
 print(x)
+
+#-----------------PLOT---------------#
+#x = np.arange(test_cell.x - test_cell.widthX, test_cell.x + test_cell.widthX)
+#plt.figure()
+
+
 
 
 
