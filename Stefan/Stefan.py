@@ -17,7 +17,6 @@ def upload():
     t1 = time.time()
     # Define the structure of the data
     dtype1 = np.dtype([("x", float), ("y", float), ("z", float), ("u", float), ("v", float), ("w", float)])
-    # datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Coding/carMirrorData.dat"
     datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat"
     # upload the data from the file to a numpy array with designated structure
     data = np.loadtxt(datalocation, dtype=dtype1)
@@ -45,7 +44,6 @@ def histogram(binxyz, binx, biny, binz, dtype1):
     order = ["u", "v", "w"]
 
     plt.figure()
-    # step_size=(max(lst[order[i]])-min(lst[order[i]]))
     d_v = np.linspace(min(min(lst["u"]), min(lst["v"]), min(lst["w"])) + 10,
                       max(max(lst["u"]), max(lst["v"]), max(lst["w"])) - 10, 30, dtype=np.float64)
 
@@ -223,6 +221,53 @@ class Averaging:
         print("Gaussian averaging takes", round(t2 - t1, 3), "sec")
         return gauss_field
 
+    def polynomialfit(self):
+        polynomial_field = []
+        t1 = time.time()
+        for i in range(0, len(self.binxyz)):
+            for k in range(0, len(self.binxyz[i])):
+                for m in range(0, len(self.binxyz[i][k])):
+                    if len(binxyz[i][k][m]) >= 3:
+                        lst = np.array(self.binxyz[i][k][m], dtype=self.dtype1)
+
+                        for axis in range(0, 3):
+                            if axis ==0:
+                                points = lst["x"]
+                                velocity = lst["u"]
+                            elif axis ==1:
+                                points = lst["y"]
+                                velocity = lst["v"]
+                            elif axis ==2:
+                                points = lst["z"]
+                                velocity = lst["w"]
+
+                            A = np.vstack([np.ones(len(points)),points,(points**2)]).T
+                            s,d,f = np.linalg.lstsq(A,velocity, rcond=None)[0]
+
+                            if axis ==0:
+                                u_pol = s+d*self.x_loc[i]+f*(self.x_loc[i]**2)
+                                if u_pol >= 15:
+                                    print("u",u_pol,i,k,m)
+                                    print(s,d,f)
+                                    print(lst["u"])
+                            elif axis ==1:
+                                v_pol = s+d*self.y_loc[k]+f*(self.y_loc[k]**2)
+                                if v_pol >= 5:
+                                    print("v",v_pol,i,k,m)
+                                    print(s,d,f)
+                                    print(lst["v"])
+                            elif axis ==2:
+                                w_pol = s+d*self.z_loc[m]+f*(self.z_loc[m]**2)
+                                if w_pol >= 5:
+                                    print("w",w_pol,i,k,m)
+                                    print(s,d,f)
+                                    print(lst["w"])
+
+                        polynomial_field.append([x_loc[i], y_loc[k], z_loc[m], u_pol, v_pol, w_pol])
+        t2 = time.time()
+        print("Polynomial fit done in", round(t2 - t1, 3), "sec")
+        return polynomial_field
+
 
 #####################################################################
 #                                                                   #
@@ -265,8 +310,11 @@ print("Number of empty bins", count, "(", round(count / (windowx * windowy * win
 general = Averaging(binxyz, x_loc, y_loc, z_loc, dtype1)
 
 maximum, averaging_field, u_ave, v_ave, w_ave = general.mean()
-averaging_field = np.array(averaging_field)
+
 gauss_field = general.gaussian()
+
+polynomial_field = general.polynomialfit()
+
 print("Maximum amount of particles in bin", maximum)
 
 # define the dimensions of the measurmement volume
@@ -277,8 +325,9 @@ print("z:", z_min, z_max)
 print("Volume:", (x_max - x_min) * (y_max - y_min) * (z_max - z_min) * 10 ** (-9), "m^3")
 print("Sub-volume", delta_x * delta_y * delta_z, "mm^3")
 
+# plot the histogram of a certain bin
 binx, biny, binz = int(windowx / 2), int(windowy / 2), int(windowz / 2)
-histogram_lst = histogram(binxyz, binx, biny, binz, dtype1)
+histogram(binxyz, binx, biny, binz, dtype1)
 
 #####################################################################
 #                                                                   #
@@ -288,19 +337,14 @@ histogram_lst = histogram(binxyz, binx, biny, binz, dtype1)
 
 fig = plt.figure()
 ###################
-# first plot
+# Normal plot
 ###################
 ax = fig.add_subplot(1, 3, 1, projection='3d')
 plt.title("Averaging")
 
 x, y, z, u, v, w = zip(*averaging_field)
 
-# colors = np.arctan2(u, v)
-# norm = Normalize()
-# norm.autoscale(colors)
-# colormap = cm.coolwarm
-
-average_plt = ax.quiver(x, y, z, u, v, w, length=3, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+average_plt = ax.quiver(x, y, z, u, v, w, length=3)  # , color="blue", colormap(norm(colors)), cmap=cm.coolwarm
 # fig.colorbar(average_plt, orientation='vertical')
 
 ax.set_xlim([x_min, x_max])
@@ -311,19 +355,14 @@ ax.set_ylabel('y [mm]')
 ax.set_zlabel('z [mm]')
 
 ###################
-# second plot
+# Guassian plot
 ###################
 ax = fig.add_subplot(1, 3, 2, projection='3d')
 plt.title("Gaussian")
 
 x, y, z, u, v, w = zip(*gauss_field)
 
-# colors = np.arctan2(u, v)
-# norm = Normalize()
-# norm.autoscale(colors)
-# #colormap = cm.coolwarm
-
-gaussian_plt = ax.quiver(x, y, z, u, v, w, length=3, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+gaussian_plt = ax.quiver(x, y, z, u, v, w, length=3)  # , color="blue", colormap(norm(colors)), cmap=cm.coolwarm
 # fig.colorbar(gaussian_plt, orientation='vertical')
 
 ax.set_xlim([x_min, x_max])
@@ -334,33 +373,45 @@ ax.set_ylabel('y [mm]')
 ax.set_zlabel('z [mm]')
 
 ###################
-# Histogram
+# Polynomial plot
 ###################
+
 ax = fig.add_subplot(1, 3, 3, projection='3d')
-plt.title("Bin")
-test = binxyz[int(windowx / 2)][int(windowy / 2)][int(windowz / 2)]
-x, y, z, u, v, w = zip(*test)
+plt.title("Polynomial")
 
-# colors = np.arctan2(u, v)
-# norm = Normalize()
-# norm.autoscale(colors)
-# colormap = cm.coolwarm
+x, y, z, u, v, w = zip(*polynomial_field)
 
-gaussian_plt = ax.quiver(x, y, z, u, v, w, length=0.1, color="black")  # colormap(norm(colors)), cmap=cm.coolwarm
+polynomial_plt = ax.quiver(x, y, z, u, v, w, length=3)  # , color="blue", colormap(norm(colors)), cmap=cm.coolwarm
 # fig.colorbar(gaussian_plt, orientation='vertical')
 
-ax.set_xlim([x_bound[int(windowx / 2)], x_bound[int(windowx / 2) + 1]])
-ax.set_ylim([y_bound[int(windowy / 2)], y_bound[int(windowy / 2) + 1]])
-ax.set_zlim([z_bound[int(windowz / 2)], z_bound[int(windowz / 2) + 1]])
+ax.set_xlim([x_min, x_max])
+ax.set_ylim([y_min, y_max])
+ax.set_zlim([z_min, z_max])
 ax.set_xlabel('x [mm]')
 ax.set_ylabel('y [mm]')
 ax.set_zlabel('z [mm]')
 
-plt.show()
+###################
+# Bin visualisation
+###################
+# ax = fig.add_subplot(1, 3, 3, projection='3d')
+# plt.title("Bin")
+# test =binxyz[int(windowx/2)][int(windowy/2)][int(windowz/2)]
+# x,y,z,u,v,w = zip(*test)
 
-# x_min,x_max,y_min,y_max,z_min,z_max = boundaries(data)
-# #amount of bins that are placed along the axis
-# windowx, windowy, windowz = 10, 10, 10
-# offset = [[100,-100],[100,-100],[100,-100]]
-# delta_x,delta_y,delta_z,x_loc,y_loc,z_loc = bins(data_order,windowx,windowy,windowz,offset,x_min,x_max,y_min,y_max,z_min,z_max)
-# binxyz = grid(windowx,windowy,windowz)
+# # colors = np.arctan2(u, v)
+# # norm = Normalize()
+# # norm.autoscale(colors)
+# # colormap = cm.coolwarm
+
+# gaussian_plt=ax.quiver(x, y, z, u, v, w, length=0.1) #c, color="blue", olormap(norm(colors)), cmap=cm.coolwarm
+# #fig.colorbar(gaussian_plt, orientation='vertical')
+
+# ax.set_xlim([x_bound[int(windowx/2)], x_bound[int(windowx/2)+1]])
+# ax.set_ylim([y_bound[int(windowy/2)], y_bound[int(windowy/2)+1]])
+# ax.set_zlim([z_bound[int(windowz/2)], z_bound[int(windowz/2)+1]])
+# ax.set_xlabel('x [mm]')
+# ax.set_ylabel('y [mm]')
+# ax.set_zlabel('z [mm]')
+
+plt.show()
