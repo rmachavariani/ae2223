@@ -2,8 +2,8 @@ from Andreas.gridConstruction import *
 
 
 def fetch_vector(test_bin):
-    particles_cord = np.empty((len(test_bin), 3))
-    particles_vel = np.empty((len(test_bin), 3))
+    particles_val = np.empty((len(test_bin), 6))
+
     if test_bin == [] or () or None:
         print("No particle")
     else:
@@ -15,11 +15,9 @@ def fetch_vector(test_bin):
             v = test_bin[i].v
             w = test_bin[i].w
 
-            particles_cord[i] = [x, y, z]
-            particles_vel[i] = [u, v, w]
+            particles_val[i] = [x, y, z, u, v, w]
 
-
-    return particles_cord, particles_vel
+    return particles_val
 
 
 def basis(particles_cord):
@@ -48,7 +46,7 @@ print()
 a = fetch_vector(test_cell)
 #print(a)
 print()
-b = basis(a[0])
+b = basis(a)
 
 
 
