@@ -13,7 +13,7 @@ class gridBin:
 
     # bin radius and number of bins in each direction
     # for spherical bin (static member belonging to class)
-    radius = 0 # spherical only
+    radius = 0
 
     # number of bins
     nrBinsX = 0
@@ -21,9 +21,9 @@ class gridBin:
     nrBinsZ = 0
 
     # bins width for rectangular bins (static class members)
-    widthX = 0 # rectangular only
-    widthY = 0 # rectangular only
-    widthZ = 0 # rectangular only
+    widthX = 0
+    widthY = 0
+    widthZ = 0
 
     xMin = 0
     xMax = 0
