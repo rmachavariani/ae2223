@@ -1,4 +1,4 @@
-from Andreas.gridConstruction import *
+from gridConstruction import *
 import pdb
 
 
@@ -17,37 +17,45 @@ def fetch_vector(test_bin):
             w = test_bin[i].w
 
             particles_val[i] = [x, y, z, u, v, w]
-
+    print(particles_val[:, 3])
     return particles_val
 
 
-def basis(particles_val):
+def basis(particles_val, cell):
     design_matrix = np.empty((len(particles_val), 10))
     for i in range(len(particles_val)):
-        dx = particles_val[i, 0]
-        dy = particles_val[i, 1]
-        dz = particles_val[i, 2]
+        dx = (particles_val[i, 0] - cell.x) / 1000
+        dy = (particles_val[i, 1] - cell.y) / 1000
+        dz = (particles_val[i, 2] - cell.z) / 1000
 
         design_matrix[i] = [1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2]
-    print(design_matrix)
+
+    #print(design_matrix)
     return design_matrix
 
 
 def solve(basis, fnc):
-    return np.linalg.solve(basis, fnc)
+    coeffs = np.linalg.lstsq(basis, fnc)[0]
+    return coeffs[0]
+
+
 
 
 data = getRectangularGridWithVectors(10, 10, 10)
 test_cell = data[5, 5, 5].vectors
 
-print(test_cell)
+#print(test_cell)
 print()
 # print(f"{data[5, 5, 5].x}, {data[5, 5, 5].y}, {data[5, 5, 5].z}")
 print()
 a = fetch_vector(test_cell)
 # print(a)
 print()
-b = basis(a)
+b = basis(a, data[5,5,5])
+x = solve(b, a[:, 3])
+print()
+print()
+print(x)
 
 
 
