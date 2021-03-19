@@ -21,21 +21,22 @@ def fetch_vector(test_bin):
     return particles_val
 
 
-def basis(particles_val):
+def basis(particles_val, cell):
     design_matrix = np.empty((len(particles_val), 10))
     for i in range(len(particles_val)):
-        dx = particles_val[i, 0] / 1000
-        dy = particles_val[i, 1] / 1000
-        dz = particles_val[i, 2] / 1000
+        dx = (particles_val[i, 0] - cell.x) / 1000
+        dy = (particles_val[i, 1] - cell.y) / 1000
+        dz = (particles_val[i, 2] - cell.z) / 1000
 
         design_matrix[i] = [1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2]
+
     #print(design_matrix)
     return design_matrix
 
 
 def solve(basis, fnc):
-    return np.linalg.lstsq(basis, fnc)[0]
-
+    coeffs = np.linalg.lstsq(basis, fnc)[0]
+    return coeffs[0]
 
 
 
@@ -50,7 +51,7 @@ print()
 a = fetch_vector(test_cell)
 # print(a)
 print()
-b = basis(a)
+b = basis(a, data[5,5,5])
 x = solve(b, a[:, 3])
 print()
 print()
