@@ -40,7 +40,7 @@ def solve(basis, fnc):
 
 data = getRectangularGridWithVectors(10, 10, 10)
 test_cell = data[5, 5, 5].vectors
-pdb.set_trace()
+
 print(test_cell)
 print()
 #print(f"{data[5, 5, 5].x}, {data[5, 5, 5].y}, {data[5, 5, 5].z}")
