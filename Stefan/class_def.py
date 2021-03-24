@@ -43,6 +43,8 @@ class gridBin:
 
         # list of vectors belonging to the bin
         self.vectors = []
+        self.NormalAverage = []
+        self.GaussianAverage = []
 
     def addVector(self, vector):
 
@@ -132,21 +134,3 @@ class gridBin:
             self.gaussW = 0
 
         self.GaussianAverage.append([self.gaussU, self.gaussV, self.gaussW])
-    def histogram(self):
-        lst_u = []
-        lst_v = []
-        lst_w = []
-        for vector in self.vectors:
-            lst_u.append(vector.u)
-            lst_v.append(vector.v)
-            lst_w.append(vector.w)
-
-        plt.figure()
-        #d_v = np.linspace(min(min(lst_u),min(lst_v),min(lst_w))+10, max(max(lst_u),max(lst_v),max(lst_w))-10, 30, dtype=np.float64)
-        plt.subplot(1,1,1)
-        plt.title("Histogram bin:"+str(5)+","+str(5)+","+str(5))
-        plt.hist([lst_u,lst_v,lst_w], bins = 30, label=["u","v","w"])
-        plt.legend(loc='upper right')
-        plt.xlabel("Velocity [m/s]")
-        plt.ylabel("Count")
-        plt.show()

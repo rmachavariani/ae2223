@@ -298,7 +298,7 @@ def getSphericalGridWithVectors(pitch,radius,nrRows):
 
         print("Grid creation was not performed")
 
-grid,xAmount,yAmount,zAmount = getSphericalGridWithVectors(30,30,1000)
+grid,xAmount,yAmount,zAmount = getSphericalGridWithVectors(50,50,500)
 
 for i in range(xAmount):
     for j in range(yAmount):
@@ -309,3 +309,4 @@ for i in range(xAmount):
             # Gaussian averaging method
             grid[i][j][k].calculateStandardDeviation()
             grid[i][j][k].calculateGaussianAverage()
+print(grid[1][1][1].NormalAverage)
