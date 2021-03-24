@@ -19,7 +19,7 @@ class Polyfit:
 
     def design_matrix(self):
         i = 0
-        matrix = np.empty(len(self.vectors), dtype=object)
+        matrix = np.empty((len(self.vectors), 10), dtype=object)
         for vector in self.vectors:
             matrix[i] = self.basis(vector[0],vector[1],vector[2])
             i += 1
@@ -27,7 +27,7 @@ class Polyfit:
 
 
     def least_squares(self):
-        coefs = np.linalg.solve(self.designmatrix, self.vectors[:,3])
+        coefs = np.linalg.lstsq(self.designmatrix, self.vectors[:,3])
         self.ensemble_average = coefs[0]
         print(coefs)
 

@@ -1,5 +1,6 @@
 import numpy as np
-from class_def import *
+from class_def2 import *
+from class_def3 import *
 from math import floor, sqrt
 import time
 
@@ -213,4 +214,24 @@ def getSphericalGridWithVectors(pitch,radius):
 
     return grid
 
-grid = getSphericalGridWithVectors(10,10)
+grid = getSphericalGridWithVectors(50,50)
+
+for i in range(nrBinsX):
+    for j in range(nrBinsY):
+        for k in range(nrBinsZ):
+            # normal averaging method
+            grid[i][j][k].calculateNormalAverage()
+
+            # Gaussian averaging method
+            grid[i][j][k].calculateStandardDeviation()
+
+biggrid = getSphericalGridWithVectors(50,75)
+
+for i in range(nrBinsX):
+    for j in range(nrBinsY):
+        for k in range(nrBinsZ):
+            # normal averaging method
+            biggrid[i][j][k].calculateNormalAverage()
+
+            # Gaussian averaging method
+            biggrid[i][j][k].calculateStandardDeviation()
