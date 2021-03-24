@@ -41,6 +41,18 @@ class gridBin:
 
         # list of vectors belonging to the bin
         self.vectors = []
+
+        # average velocity of the bin
+        self.xAverage = 0
+        self.yAverage = 0
+
+        # averages initiated as empty lists
+        self.polyfitAverage = []
+
+        # polynomial fit functions which take inputs (dx,dy,dz) from center of the bin
+        self.fitU = None
+        self.fitV = None
+        self.fitW = None
         
     def addVector(self,vector):
         
