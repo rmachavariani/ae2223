@@ -2,7 +2,6 @@ import numpy as np
 from class_def import *
 from math import floor
 import time
-import pdb
 
 
 def loadData():
@@ -11,7 +10,7 @@ def loadData():
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat", max_rows=50000)
+    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat", max_rows=20000)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
@@ -214,5 +213,13 @@ def getRectangularGridWithVectors(nrBinsX, nrBinsY, nrBinsZ):
 
 
 data = getRectangularGridWithVectors(10, 10, 10)
+nrBinsX,nrBinsY,nrBinsZ = 10,10,10
 
-#pdb.set_trace()
+for i in range(nrBinsX):
+    for j in range(nrBinsY):
+        for k in range(nrBinsZ):
+            # normal averaging method
+            data[i][j][k].calculateNormalAverage()
+
+            # Gaussian averaging method
+            data[i][j][k].calculateStandardDeviation()
