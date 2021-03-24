@@ -44,6 +44,11 @@ class gridBin:
         # list of vectors belonging to the bin
         self.vectors = []
 
+        # list of new Gaussian averages
+        self.newGaussianAverage = []
+        self.NormalAverage = []
+        self.GaussianAverage = []
+
     def addVector(self, vector):
 
         self.vectors.append(vector)
@@ -68,6 +73,8 @@ class gridBin:
 
             self.NormalAverage.append([self.averageU, self.averageV, self.averageW])
 
+   #     return self.averageU, self.averageV, self.averageW
+
     def calculateStandardDeviation(self):
 
         diffU = 0
@@ -88,14 +95,19 @@ class gridBin:
             self.sdW = np.sqrt(diffW / nrVectors)
 
     def calculateVariance(self):
+        self.varU = 0
+        self.varV = 0
+        self.varW = 0
 
         if np.size(self.vectors) >= 1:
-            for vector in self.vectors:
-                self.varU += self.sdU ** 2
-                self.varV += self.sdV ** 2
-                self.varW += self.sdW ** 2
+#            for vector in self.vectors:
+            self.varU += self.sdU ** 2
+            self.varV += self.sdV ** 2
+            self.varW += self.sdW ** 2
 
-    def calculateNewGaussianAverage(self):
+        return self.varU, self.varV, self.varW
+
+    def calculateNewGaussianAverage(self,datavarU, datavarV, datavarW, bigdatavarU, bigdatavarV, bigdatavarW):
         gaussSumU, gaussSumV, gaussSumW = 0, 0, 0
         gaussianWeightedU, gaussianWeightedV, gaussianWeightedW = 0, 0, 0
 
@@ -103,40 +115,52 @@ class gridBin:
             # use numpy to calculate the mean and standard deviation
             for vector in self.vectors:
                 # calculate for every velocity component the normal value and sum this together for the bin
-                weightU = (1 / (self.varU * np.sqrt(2 * np.pi))) * np.exp(- vector.u ** 2 / (2 * self.varU ** 2))
+                weightU = (1 / (np.sqrt(datavarU) * np.sqrt(2 * np.pi))) * np.exp(-((vector.u - self.averageU) ** 2) / (2 * datavarU))
+                weightU2 = (1 / (np.sqrt(bigdatavarU) * np.sqrt(2 * np.pi))) * np.exp(-((vector.u - self.averageU) ** 2) / (2 * bigdatavarU))
+                weightUtot = weightU2 - weightU
 
                 # multiply the gaussian weight with the velocity component and sum all in the bin
-                gaussianWeightedU += weightU * vector.u
+                gaussianWeightedU += weightUtot * vector.u
                 # sum all gaussian weights within the bin
-                gaussSumU += weightU
+                gaussSumU += weightUtot
 
-                weightV = (1 / (self.sdV * np.sqrt(2 * np.pi))) * np.exp(
-                    (-1 / 2) * (((vector.v - self.averageV) / self.sdV) ** 2))
-                gaussianWeightedV += weightV * vector.v
-                gaussSumV += weightV
+                # calculate for every velocity component the normal value and sum this together for the bin
+                weightV = (1 / (np.sqrt(datavarV) * np.sqrt(2 * np.pi))) * np.exp(-((vector.v - self.averageV) ** 2) / (2 * datavarV))
+                weightV2 = (1 / (np.sqrt(bigdatavarV) * np.sqrt(2 * np.pi))) * np.exp(-((vector.v - self.averageV) ** 2) / (2 * bigdatavarV))
+                weightVtot = weightV2 - weightV
 
-                weightW = (1 / (self.sdW * np.sqrt(2 * np.pi))) * np.exp(
-                    (-1 / 2) * (((vector.w - self.averageW) / self.sdW) ** 2))
-                gaussianWeightedW += weightW * vector.w
-                gaussSumW += weightW
+                # multiply the gaussian weight with the velocity component and sum all in the bin
+                gaussianWeightedV += weightVtot * vector.v
+                # sum all gaussian weights within the bin
+                gaussSumV += weightVtot
+
+                # calculate for every velocity component the normal value and sum this together for the bin
+                weightW = (1 / (np.sqrt(datavarW) * np.sqrt(2 * np.pi))) * np.exp(-((vector.w - self.averageW) ** 2) / (2 * datavarW))
+                weightW2 = (1 / (np.sqrt(bigdatavarW) * np.sqrt(2 * np.pi))) * np.exp(-((vector.w - self.averageW) ** 2) / (2 * bigdatavarW))
+                weightWtot = weightW2 - weightW
+
+                # multiply the gaussian weight with the velocity component and sum all in the bin
+                gaussianWeightedW += weightWtot * vector.w
+                # sum all gaussian weights within the bin
+                gaussSumW += weightWtot
 
             # devide the sum of the normal*velocity by the sum of the normal values to get the average gaussian velocity
-            self.gaussU = gaussianWeightedU / (gaussSumU)
-            self.gaussV = gaussianWeightedV / (gaussSumV)
-            self.gaussW = gaussianWeightedW / (gaussSumW)
+            self.newgaussU = gaussianWeightedU / (gaussSumU)
+            self.newgaussV = gaussianWeightedV / (gaussSumV)
+            self.newgaussW = gaussianWeightedW / (gaussSumW)
 
         elif np.size(self.vectors) == 1:
             # there is only one vector so that would mean standard deviation = 0 and Gaussian
             # method can not be appolied so the average velocity is the velocity component of the particle
             for vector in self.vectors:
-                self.gaussU = vector.u
-                self.gaussV = vector.v
-                self.gaussW = vector.w
+                self.newgaussU = vector.u
+                self.newgaussV = vector.v
+                self.newgaussW = vector.w
 
         elif np.size(self.vectors) == 0:
             # for an empty bin the velocity component is just 0
-            self.gaussU = 0
-            self.gaussV = 0
-            self.gaussW = 0
+            self.newgaussU = 0
+            self.newgaussV = 0
+            self.newgaussW = 0
 
-        self.GaussianAverage.append([self.gaussU, self.gaussV, self.gaussW])
+        self.newGaussianAverage.append([self.newgaussU, self.newgaussV, self.newgaussW])

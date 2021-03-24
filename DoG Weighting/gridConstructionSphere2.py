@@ -96,7 +96,7 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     t2 = time.time()
     print('Grid created in ', "{:.2f}".format(t2 - t1), " s")
 
-    return grid
+    return grid, nrBinsX, nrBinsY, nrBinsZ
 
 def createGrid(nrBinsX, nrBinsY, nrBinsZ, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     '''Creates the grid by generating a 3D numpy array filled with
@@ -201,7 +201,7 @@ def getSphericalGridWithVectors(pitch,radius):
     dataPoints = createVectorObjects(data)
 
     # create bins in grid
-    grid = createGridPitchAndRadius(pitch,radius,xMin,xMax,yMin,yMax,zMin,zMax)
+    grid, nrBinsX, nrBinsY, nrBinsZ = createGridPitchAndRadius(pitch,radius,xMin,xMax,yMin,yMax,zMin,zMax)
 
     # assign vector objects to correct bins
     # grid is the 3D array filled with gridBin objects containing
@@ -212,9 +212,10 @@ def getSphericalGridWithVectors(pitch,radius):
     t2 = time.time()
     print("Total time: ","{:.2f}".format(t2-t1)," s")
 
-    return grid
+    return grid, nrBinsX, nrBinsY, nrBinsZ
 
-grid = getSphericalGridWithVectors(50,50)
+grid, nrBinsX, nrBinsY, nrBinsZ = getSphericalGridWithVectors(50,50)
+biggrid, bignrBinsX, bignrBinsY, bignrBinsZ  = getSphericalGridWithVectors(50,75)
 
 for i in range(nrBinsX):
     for j in range(nrBinsY):
@@ -224,14 +225,15 @@ for i in range(nrBinsX):
 
             # Gaussian averaging method
             grid[i][j][k].calculateStandardDeviation()
+            datavarU, datavarV, datavarW = grid[i][j][k].calculateVariance()
 
-biggrid = getSphericalGridWithVectors(50,75)
 
-for i in range(nrBinsX):
-    for j in range(nrBinsY):
-        for k in range(nrBinsZ):
-            # normal averaging method
             biggrid[i][j][k].calculateNormalAverage()
 
             # Gaussian averaging method
             biggrid[i][j][k].calculateStandardDeviation()
+            bigdatavarU, bigdatavarV, bigdatavarW = biggrid[i][j][k].calculateVariance()
+
+            grid[i][j][k].calculateNewGaussianAverage(datavarU, datavarV, datavarW, bigdatavarU, bigdatavarV, bigdatavarW)
+
+print(grid[1][1][1].newGaussianAverage)

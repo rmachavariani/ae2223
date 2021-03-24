@@ -215,6 +215,7 @@ def getRectangularGridWithVectors(nrBinsX, nrBinsY, nrBinsZ):
 data = getRectangularGridWithVectors(10, 10, 10)
 nrBinsX,nrBinsY,nrBinsZ = 10,10,10
 
+
 for i in range(nrBinsX):
     for j in range(nrBinsY):
         for k in range(nrBinsZ):
@@ -223,3 +224,4 @@ for i in range(nrBinsX):
 
             # Gaussian averaging method
             data[i][j][k].calculateStandardDeviation()
+            datasdU, datasdV, datasdW = data[i][j][k].calculateVariance()
