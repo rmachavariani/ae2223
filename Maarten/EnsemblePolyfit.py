@@ -2,7 +2,7 @@ from gridConstruction import *
 import pdb
 import matplotlib.pyplot as plt
 import matplotlib
-import functools.partial as part
+from functools import partial as part
 
 matplotlib.use("Qt5Agg")
 
@@ -75,6 +75,7 @@ def polyFit(coefficients,dx,dy,dz):
 
 data = getRectangularGridWithVectors(10, 10, 10)
 test_cell = data[5, 5, 5]
+coefficients(test_cell)
 print(str(test_cell.polyfitAverage[0]))
 print(str(test_cell.polyfitAverage[1]))
 print(str(test_cell.polyfitAverage[2]))
