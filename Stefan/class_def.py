@@ -51,7 +51,9 @@ class gridBin:
         self.vectors.append(vector)
 
     def calculateNormalAverage(self):
-
+        self.averageU = 0
+        self.averageV = 0
+        self.averageW = o
         sumU = 0
         sumV = 0
         sumW = 0
@@ -68,7 +70,7 @@ class gridBin:
             self.averageV = sumV / nrVectors
             self.averageW = sumW / nrVectors
 
-            self.NormalAverage.append([self.averageU, self.averageV, self.averageW])
+        self.NormalAverage.append([self.averageU, self.averageV, self.averageW])
 
     def calculateStandardDeviation(self):
 
