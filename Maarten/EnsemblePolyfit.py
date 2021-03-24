@@ -2,6 +2,7 @@ from gridConstruction import *
 import pdb
 import matplotlib.pyplot as plt
 import matplotlib
+import functools.partial as part
 
 matplotlib.use("Qt5Agg")
 
@@ -44,10 +45,32 @@ def solve(basis, fnc):
 
     return coeffs
 
-def polyfit(bin):
+def coefficients(bin):
     data = fetch_vector(bin)
     design_matrix = basis(data, bin)
     ucoefs = solve(design_matrix, data[:,3])
     vcoefs = solve(design_matrix, data[:,4])
     wcoefs = solve(design_matrix, data[:,5])
-    return ucoefs, vcoefs, wcoefs
+    bin.fitU = createPolyFit(ucoefs)
+    bin.fitV = createPolyFit(vcoefs)
+    bin.fitW = createPolyFit(wcoefs)
+    bin.polyfitAverage.append(ucoefs[0], vcoefs[0], wcoefs[0])
+
+def createPolyFit(coefficients):
+
+    # create partical function
+    partialFit = part(polyFit,coefficients)
+
+    return partialFit
+
+def polyFit(coefficients,dx,dy,dz):
+
+    # define basis
+    basis = np.array([1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2])
+
+    # calculate value
+    functionValue = np.sum(basis * coefficients)
+
+    return functionValue
+
+
