@@ -30,9 +30,9 @@ def fetch_vector(bin):
 def basis(particles_val, cell):
     design_matrix = np.empty((len(particles_val), 10))
     for i in range(len(particles_val)):
-        dx = (particles_val[i, 0] - cell.x) / 1000
-        dy = (particles_val[i, 1] - cell.y) / 1000
-        dz = (particles_val[i, 2] - cell.z) / 1000
+        dx = (particles_val[i, 0] - cell.x)
+        dy = (particles_val[i, 1] - cell.y)
+        dz = (particles_val[i, 2] - cell.z)
 
         design_matrix[i] = [1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2]
 
@@ -54,7 +54,7 @@ def coefficients(bin):
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
-    bin.polyfitAverage.append(ucoefs[0], vcoefs[0], wcoefs[0])
+    bin.polyfitAverage.append([ucoefs[0], vcoefs[0], wcoefs[0]])
 
 def createPolyFit(coefficients):
 
@@ -73,10 +73,9 @@ def polyFit(coefficients,dx,dy,dz):
 
     return functionValue
 
-data = getRectangularGridWithVectors(10, 10, 10)
-test_cell = data[5, 5, 5]
-coefficients(test_cell)
-print(str(test_cell.polyfitAverage[0]))
-print(str(test_cell.polyfitAverage[1]))
-print(str(test_cell.polyfitAverage[2]))
+# data = getRectangularGridWithVectors(10, 10, 10)
+# test_cell = data[5, 5, 5]
+# coefficients(test_cell)
+# print(str(test_cell.polyfitAverage[0]))
+
 
