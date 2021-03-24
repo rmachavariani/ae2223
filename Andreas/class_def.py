@@ -42,10 +42,6 @@ class gridBin:
         # list of vectors belonging to the bin
         self.vectors = []
 
-        # average velocity of the bin
-        self.xAverage = 0
-        self.yAverage = 0
-
         # averages initiated as empty lists
         self.polyfitAverage = []
 
