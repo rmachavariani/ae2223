@@ -5,11 +5,16 @@ from Dana.class_def import *
 from Dana.gridConstruction import getRectangularGridWithVectors
 from Dana.gridConstruction import loadData
 from Dana.gridConstruction import createVectorObjects
+from matplotlib.cm import ScalarMappable
+
+
+
+from Dana.gridConstructionSphere import getSphericalGridWithVectors
 
 
 
 def getMostPopulated(data, n_bins):
-
+    print('getting the most populated')
     sizeX = np.size(data,axis=0)
     sizeY = np.size(data,axis=1)
     sizeZ = np.size(data,axis=2)
@@ -50,60 +55,69 @@ def getGeneralDensity():
         y_values.append(vector.y)
         z_values.append(vector.z)
 
-    plt.hexbin(y_values, x_values, C=u_values, gridsize=50, cmap=cm.jet, bins=None)
-    plt.axis([ min(y_values), max(y_values), min(x_values), max(x_values),])
-    plt.xlabel('y[mm]')
-    plt.ylabel('x[mm]')
-    cb = plt.colorbar()
-    cb.set_label('u [m/s]')
-    plt.title("Velocity Heatmap in x-y for u")
+    f = plt.figure()
+
+    plt.rcParams.update({'font.size': 6})
+
+    f, axes = plt.subplots(nrows=2, ncols=1, figsize=(2,3), gridspec_kw={'height_ratios': [1, 2]})
+    x_plot = axes[1].scatter(y_values, x_values, c=u_values, edgecolors='none', marker=".",  cmap=cm.jet)
+
+    axes[1].set_xlim([-150,150])
+    axes[1].set_ylim([0,250])
+    axes[1].yaxis.set_label_position("right")
+    axes[1].set_xlabel('y [mm]')
+    axes[1].set_ylabel('x [mm]')
+
+    z_plot = axes[0].scatter(y_values, z_values, c=u_values, edgecolors='none', marker=".",  cmap=cm.jet)
+    axes[0].set_xlim([-150,150])
+    axes[0].set_ylim([0,250])
+    axes[0].set_xticks([])
+    axes[0].set_ylabel('z [mm]')
+    axes[0].yaxis.set_label_position("right")
+
+
+    bar = f.colorbar(x_plot, ax=axes.ravel().tolist(), location="top")
+    bar.ax.set_xlabel('u [m/s]')
     plt.show()
 
-    plt.hexbin(y_values, z_values, C=u_values, gridsize=50, cmap=cm.jet, bins=None)
-    plt.axis([ min(y_values), max(y_values), min(z_values),max(z_values)])
-    plt.xlabel('y[mm]')
-    plt.ylabel('z[mm]')
-    cb = plt.colorbar()
-    cb.set_label('u [m/s]')
-    plt.title("Velocity Heatmap in z-y for u")
+
+    f, axes = plt.subplots(nrows=2, ncols=1, figsize=(2,3), gridspec_kw={'height_ratios': [1, 2]})
+    x_plot = axes[1].scatter(y_values, x_values, c=v_values, edgecolors='none', marker=".",  cmap=cm.jet)
+    axes[1].set_xlim([-150,150])
+    axes[1].set_ylim([0,250])
+    axes[1].set_xlabel('y [mm]')
+    axes[1].set_ylabel('x [mm]')
+    axes[1].yaxis.set_label_position("right")
+
+    z_plot = axes[0].scatter(y_values, z_values, c=v_values, edgecolors='none', marker=".",  cmap=cm.jet)
+    axes[0].set_xlim([-150,150])
+    axes[0].set_ylim([0,250])
+    axes[0].set_xticks([])
+    axes[0].set_ylabel('z [mm]')
+    axes[0].yaxis.set_label_position("right")
+
+    bar = f.colorbar(x_plot, ax=axes.ravel().tolist(), location="top")
+    bar.ax.set_xlabel('v [m/s]')
     plt.show()
 
-    plt.hexbin(y_values, x_values, C=v_values, gridsize=50, cmap=cm.jet, bins=None)
-    plt.axis([ min(y_values), max(y_values), min(x_values), max(x_values),])
-    plt.xlabel('y[mm]')
-    plt.ylabel('x[mm]')
-    cb = plt.colorbar()
-    cb.set_label('v [m/s]')
-    plt.title("Velocity Heatmap in x-y for v")
-    plt.show()
+    f, axes = plt.subplots(nrows=2, ncols=1, figsize=(2,3), gridspec_kw={'height_ratios': [1, 2]})
+    x_plot = axes[1].scatter(y_values, x_values, c=w_values, edgecolors='none', marker=".",  cmap=cm.jet)
+    axes[1].set_xlim([-150,150])
+    axes[1].set_ylim([0,250])
+    axes[1].set_xlabel('y [mm]')
+    axes[1].set_ylabel('x [mm]')
+    axes[1].yaxis.set_label_position("right")
 
-    plt.hexbin(y_values, z_values, C=v_values, gridsize=50, cmap=cm.jet, bins=None)
-    plt.axis([ min(y_values), max(y_values), min(z_values),max(z_values)])
-    plt.xlabel('y[mm]')
-    plt.ylabel('z[mm]')
-    cb = plt.colorbar()
-    cb.set_label('v [m/s]')
-    plt.title("Velocity Heatmap in z-y for v")
-    plt.show()
+    z_plot = axes[0].scatter(y_values, z_values, c=w_values, edgecolors='none', marker=".",  cmap=cm.jet)
+    axes[0].set_xlim([-150,150])
+    axes[0].set_ylim([0,250])
+    axes[0].set_xticks([])
+    axes[0].set_ylabel('z [mm]')
+    axes[0].yaxis.set_label_position("right")
 
-    plt.hexbin(y_values, x_values, C=w_values, gridsize=50, cmap=cm.jet, bins=None)
-    plt.axis([ min(y_values), max(y_values), min(x_values), max(x_values),])
-    plt.xlabel('y[mm]')
-    plt.ylabel('x[mm]')
-    cb = plt.colorbar()
-    cb.set_label('w [m/s]')
-    plt.title("Velocity Heatmap in x-y for w")
+    bar = f.colorbar(x_plot, ax=axes.ravel().tolist(), location="top")
+    bar.ax.set_xlabel('w [m/s]')
     plt.show()
-
-    plt.hexbin(y_values, z_values, C=w_values, gridsize=50, cmap=cm.jet, bins=None)
-    plt.axis([ min(y_values), max(y_values), min(z_values),max(z_values)])
-    plt.xlabel('y[mm]')
-    plt.ylabel('z[mm]')
-    cb = plt.colorbar()
-    cb.set_label('w [m/s]')
-    plt.title("Velocity Heatmap in z-y for w")
-    plt.show()
-
 
 
 
@@ -123,46 +137,21 @@ def getHistograms(data, bins):
             w_values.append(vector.w)
 
 
-        plt.hist(u_values, bins='auto', alpha=0.5, label="U",  rwidth=0.85, histtype='step', fc='none', lw=1.5)
-        plt.hist(v_values,  bins='auto', alpha=0.5, label="V",  rwidth=0.85, histtype='step', fc='none', lw=1.5)
-        plt.hist(w_values,  bins='auto', alpha=0.5, label="W", rwidth=0.85, histtype='step', fc='none', lw=1.5)
+        plt.hist(u_values, bins='auto', alpha=0.5, label="U", color="red", rwidth=0.85, histtype='step', fc='none', lw=1.5)
+        plt.hist(v_values,  bins='auto', alpha=0.5, label="V",  color="blue", rwidth=0.85, histtype='step', fc='none', lw=1.5)
+        plt.hist(w_values,  bins='auto', alpha=0.5, label="W", color="lime",  rwidth=0.85, histtype='step', fc='none', lw=1.5)
         plt.legend(loc='upper left')
 
 
-        plt.title("Histogram with 'auto' bins")
+        plt.title("Velocity Histogram")
+        plt.xlabel("Velocity [m/s]")
         plt.show()
 
 
-def get2dHistograms(data, bins):
-    for bin in bins:
-        bin = data[bin[0], bin[1], bin[2]]
-        vectors = bin.vectors
-        u_values = []
-        v_values = []
-        w_values = []
 
-        x_values = []
-        y_values = []
-
-        for vector in vectors:
-            u_values.append(vector.u)
-            v_values.append(vector.v)
-            w_values.append(vector.w)
-
-            x_values.append(vector.x)
-            y_values.append(vector.y)
-
-        plt.hexbin(x_values, y_values, C=u_values, gridsize=30, cmap=cm.jet, bins=None)
-        plt.axis([min(x_values), max(x_values), min(y_values), max(y_values)])
-
-        cb = plt.colorbar()
-        cb.set_label('mean value')
-
-        plt.show()
-
-
-n_bins = 10
-data = getRectangularGridWithVectors(5000, 5000, 5000)
+n_bins = 4
+# data = getRectangularGridWithVectors(5000, 5000, 5000)
+data = getSphericalGridWithVectors(50,50)
 bins = getMostPopulated(data, n_bins)
 # getGeneralDensity()
 # histograms2d = get2dHistograms(data,bins)

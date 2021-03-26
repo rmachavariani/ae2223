@@ -1,6 +1,6 @@
 import numpy as np
 from Dana.class_def import *
-from math import floor
+from math import floor, sqrt
 import time
 
 
@@ -12,7 +12,7 @@ def loadData():
     t1 = time.time()
     data = np.loadtxt("carMirrorData.dat")
     t2 = time.time()
-    print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
+    print("Loading sphere done in ", "{:.2f}".format(t2 - t1), " s")
 
     return data
 
@@ -61,7 +61,43 @@ def createVectorObjects(data):
     return dataPoints
 
 
-def createGrid(nrBinsX, nrBinsY, nrBinsZ, xMin, xMax, yMin, yMax, zMin, zMax):
+def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
+
+    t1 = time.time()
+
+    # calculate amount of bins in every direction
+    nrBinsX = floor((xMax - xMin) / pitch) + 2
+    nrBinsY = floor((yMax - yMin) / pitch) + 2
+    nrBinsZ = floor((zMax - zMin) / pitch) + 2
+
+
+    # create empty 3D array
+    grid = np.empty((nrBinsX, nrBinsY, nrBinsZ), dtype=object)
+
+    # set radius of bins and
+    gridBin.radius = radius
+    gridBin.nrBinsX = nrBinsX
+    gridBin.nrBinsY = nrBinsY
+    gridBin.nrBinsZ = nrBinsZ
+
+    # define x, y and z coordinates of center bin
+    x = np.array([(xMin + i * pitch) for i in range(nrBinsX)])
+    y = np.array([(yMin + i * pitch) for i in range(nrBinsY)])
+    z = np.array([(zMin + i * pitch) for i in range(nrBinsZ)])
+
+    # fill matrix with bin objects by looping over matrix
+    for i in range(nrBinsX):
+        for j in range(nrBinsY):
+            for k in range(nrBinsZ):
+                grid[i, j, k] = gridBin(x[i], y[j], z[k])
+
+    # report to user
+    t2 = time.time()
+    print('Grid created in ', "{:.2f}".format(t2 - t1), " s")
+
+    return grid
+
+def createGrid(nrBinsX, nrBinsY, nrBinsZ, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     '''Creates the grid by generating a 3D numpy array filled with
     objects of class gridbin
     :return: nrX x nrY x nrZ numpy array
@@ -82,19 +118,6 @@ def createGrid(nrBinsX, nrBinsY, nrBinsZ, xMin, xMax, yMin, yMax, zMin, zMax):
     gridBin.widthY = widthX
     gridBin.widthZ = widthZ
 
-    # set number of bins in class
-    gridBin.nrBinsX = nrBinsX
-    gridBin.nrBinsY = nrBinsY
-    gridBin.nrBinsZ = nrBinsZ
-
-    # set min and max values
-    gridBin.xMin = xMin
-    gridBin.xMax = xMax
-    gridBin.yMin = yMin
-    gridBin.yMax = yMax
-    gridBin.zMin = zMin
-    gridBin.zMax = zMax
-
     # define x, y and z coordinates of center bin
     x = np.linspace(xMin, xMax - widthX, nrBinsX) + widthX / 2
     y = np.linspace(yMin, yMax - widthY, nrBinsY) + widthY / 2
@@ -114,69 +137,49 @@ def createGrid(nrBinsX, nrBinsY, nrBinsZ, xMin, xMax, yMin, yMax, zMin, zMax):
 
 
 def assignVectorsToGrid(vectors, grid):
-    ''' Assigns all the vectors to correct entry of the grid
-    :param vectors: 1D numpy array with vector objects
-    :param grid: 3D numpy array with gridBin objects
-    :return: 3D numpy array with gridBin objects with corresponding
-    vector objects attached in a list
-    '''
 
     t1 = time.time()
 
-    # get bin widths
-    widthX = gridBin.widthX
-    widthY = gridBin.widthY
-    widthZ = gridBin.widthZ
+    # get bin radius and amount of bins in each direction
+    radius = gridBin.radius
+    nrBinsX = gridBin.nrBinsX
+    nrBinsY = gridBin.nrBinsY
+    nrBinsZ = gridBin.nrBinsZ
 
-    # loop through all vectors
-    for vector in vectors:
+    # loop through all bins
+    for i in range(nrBinsX):
+        for j in range(nrBinsY):
+            for k in range(nrBinsZ):
 
-        # get coordinates vector
-        x = vector.x
-        y = vector.y
-        z = vector.z
+                # get bin object
+                aBin = grid[i][j][k]
 
-        # calculate index
-        iX = int(floor((x - gridBin.xMin) / widthX))
-        iY = int(floor((y - gridBin.yMin) / widthY))
-        iZ = int(floor((z - gridBin.zMin) / widthZ))
+                # get coordinates
+                x = aBin.x
+                y = aBin.y
+                z = aBin.z
 
-        # correct for the edge values
-        if iX == gridBin.nrBinsX:
-            iX += -1
+                # loop over all vectors
+                for vector in vectors:
 
-        if iY == gridBin.nrBinsY:
-            iY += -1
+                    # get coordinates
+                    xx = vector.x
+                    yy = vector.y
+                    zz = vector.z
 
-        if iZ == gridBin.nrBinsZ:
-            iZ += -1
+                    if sqrt((xx-x)**2 + (yy-y)**2 + (zz-z)**2) <= radius:
 
-        # assign to correct bin
-        grid[iX, iY, iZ].addVector(vector)
+                        aBin.addVector(vector)
 
     # report to user
     t2 = time.time()
     print("Assigning of vectors to bins completed in ", "{:.2f}".format(t2 - t1), " s")
 
     return grid
+#-------------------------------MAIN--------------------------------#
 
+def getSphericalGridWithVectors(pitch,radius):
 
-def showAmountOfVectorsInBin(grid):
-    ''' reports on amount of vectors in every bin'''
-
-    sizeX = np.size(grid, axis=0)
-    sizeY = np.size(grid, axis=1)
-    sizeZ = np.size(grid, axis=2)
-
-    for i in range(sizeX):
-        for j in range(sizeY):
-            for k in range(sizeZ):
-                print(len(grid[i][j][k].vectors))
-
-
-# ------------------------------MAIN-----------------------------#
-
-def getRectangularGridWithVectors(nrBinsX, nrBinsY, nrBinsZ):
     t1 = time.time()
 
     # load the data
@@ -192,23 +195,21 @@ def getRectangularGridWithVectors(nrBinsX, nrBinsY, nrBinsZ):
     yMax = minMax[3]
     zMin = minMax[4]
     zMax = minMax[5]
-    print(zMax)
 
     # transform raw data into vector objects
     dataPoints = createVectorObjects(data)
 
     # create bins in grid
-    grid = createGrid(nrBinsX, nrBinsY, nrBinsZ, xMin, xMax, yMin, yMax, zMin, zMax)
+    grid = createGridPitchAndRadius(pitch,radius,xMin,xMax,yMin,yMax,zMin,zMax)
 
     # assign vector objects to correct bins
     # grid is the 3D array filled with gridBin objects containing
     # the correct vector objects
-    grid = assignVectorsToGrid(dataPoints, grid)
+    grid = assignVectorsToGrid(dataPoints,grid)
 
     # report to user
     t2 = time.time()
-    print("Total time: ", "{:.2f}".format(t2 - t1), " s")
+    print("Total time: ","{:.2f}".format(t2-t1)," s")
 
     return grid
-
 
