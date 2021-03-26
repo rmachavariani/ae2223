@@ -55,6 +55,7 @@ def solve(bin):
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
     bin.polyfitAverage.append([ucoefs[0], vcoefs[0], wcoefs[0]])
+    bin.vorticity = curl(ucoefs, vcoefs, wcoefs)
 
 def createPolyFit(coefficients):
 
@@ -72,6 +73,14 @@ def polyFit(coefficients,dx,dy,dz):
     functionValue = np.sum(basis * coefficients)
 
     return functionValue
+
+def curl(ucoefs, vcoefs, wcoefs):
+    curl = []
+    curl.append(wcoefs[2] - vcoefs[3])
+    curl.append(ucoefs[3] - wcoefs[1])
+    curl.append(vcoefs[1] - ucoefs[2])
+    return curl
+
 
 # data = getRectangularGridWithVectors(10, 10, 10)
 # test_cell = data[5, 5, 5]
