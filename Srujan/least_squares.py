@@ -43,7 +43,7 @@ def solve(basis, fnc):
 
     return coeffs
 
-
+#---------------------MAIN---------------------#
 data = getRectangularGridWithVectors(10, 10, 10)
 test_cell = data[5, 5, 5]
 test_vectors = test_cell.vectors
