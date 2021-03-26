@@ -11,7 +11,7 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = nrRows)
+    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = None)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
@@ -105,7 +105,7 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     print("Amount of bins in z direction: ", zAmount)
     print("Total amount of bins: ", xAmount * yAmount * zAmount)
 
-    return grid,xAmount,yAmount,zAmount
+    return grid
 
 def createGrid(nrBinsX, nrBinsY, nrBinsZ, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     '''Creates the grid by generating a 3D numpy array filled with
@@ -281,7 +281,7 @@ def getSphericalGridWithVectors(pitch,radius,nrRows):
         dataPoints = createVectorObjects(data)
 
         # create bins in grid
-        grid,xAmount,yAmount,zAmount = createGridPitchAndRadius(pitch,radius,xMin,xMax,yMin,yMax,zMin,zMax)
+        grid = createGridPitchAndRadius(pitch,radius,xMin,xMax,yMin,yMax,zMin,zMax)
 
         # assign vector objects to correct bins
         # grid is the 3D array filled with gridBin objects containing
@@ -292,15 +292,22 @@ def getSphericalGridWithVectors(pitch,radius,nrRows):
         t2 = time.time()
         print("Total time: ","{:.2f}".format(t2-t1)," s")
 
-        return grid,xAmount,yAmount,zAmount
+        return grid
 
     else:
 
         print("Grid creation was not performed")
 
-grid,xAmount,yAmount,zAmount = getSphericalGridWithVectors(50,50,500)
+grid = getSphericalGridWithVectors(50,50,500)
+
+xAmount = gridBin.nrBinsX
+yAmount = gridBin.nrBinsY
+zAmount = gridBin.nrBinsZ
+
+biggrid = getSphericalGridWithVectors(50,75,500)
 
 for i in range(xAmount):
+    print(i)
     for j in range(yAmount):
         for k in range(zAmount):
             # normal averaging method
@@ -309,4 +316,16 @@ for i in range(xAmount):
             # Gaussian averaging method
             grid[i][j][k].calculateStandardDeviation()
             grid[i][j][k].calculateGaussianAverage()
-print(grid[1][1][1].NormalAverage)
+
+            datavarU, datavarV, datavarW = grid[i][j][k].calculateVariance()
+
+            biggrid[i][j][k].calculateNormalAverage()
+
+            # Gaussian averaging method
+            biggrid[i][j][k].calculateStandardDeviation()
+            bigdatavarU, bigdatavarV, bigdatavarW = biggrid[i][j][k].calculateVariance()
+
+            grid[i][j][k].calculateNewGaussianAverage(datavarU, datavarV, datavarW, bigdatavarU, bigdatavarV, bigdatavarW)
+
+print(grid[4][4][4].NormalAverage)
+print(grid[4][4][4].GaussianAverage)
