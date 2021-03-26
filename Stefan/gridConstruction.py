@@ -304,6 +304,8 @@ xAmount = gridBin.nrBinsX
 yAmount = gridBin.nrBinsY
 zAmount = gridBin.nrBinsZ
 
+biggrid = getSphericalGridWithVectors(50,75,500)
+
 for i in range(xAmount):
     print(i)
     for j in range(yAmount):
@@ -314,6 +316,16 @@ for i in range(xAmount):
             # Gaussian averaging method
             grid[i][j][k].calculateStandardDeviation()
             grid[i][j][k].calculateGaussianAverage()
+
+            datavarU, datavarV, datavarW = grid[i][j][k].calculateVariance()
+
+            biggrid[i][j][k].calculateNormalAverage()
+
+            # Gaussian averaging method
+            biggrid[i][j][k].calculateStandardDeviation()
+            bigdatavarU, bigdatavarV, bigdatavarW = biggrid[i][j][k].calculateVariance()
+
+            grid[i][j][k].calculateNewGaussianAverage(datavarU, datavarV, datavarW, bigdatavarU, bigdatavarV, bigdatavarW)
 
 print(grid[4][4][4].NormalAverage)
 print(grid[4][4][4].GaussianAverage)
