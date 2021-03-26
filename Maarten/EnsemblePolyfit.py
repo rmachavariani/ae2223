@@ -75,7 +75,7 @@ def polyFit(coefficients,dx,dy,dz):
 
 # data = getRectangularGridWithVectors(10, 10, 10)
 # test_cell = data[5, 5, 5]
-# coefficients(test_cell)
+# solve(test_cell)
 # print(str(test_cell.polyfitAverage[0]))
 
 
