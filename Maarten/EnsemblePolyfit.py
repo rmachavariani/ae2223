@@ -40,17 +40,17 @@ def basis(particles_val, cell):
     return design_matrix
 
 
-def solve(basis, fnc):
+def  coefficeints(basis, fnc):
     coeffs = np.linalg.lstsq(basis, fnc)[0]
 
     return coeffs
 
-def coefficients(bin):
+def solve(bin):
     data = fetch_vector(bin)
     design_matrix = basis(data, bin)
-    ucoefs = solve(design_matrix, data[:,3])
-    vcoefs = solve(design_matrix, data[:,4])
-    wcoefs = solve(design_matrix, data[:,5])
+    ucoefs = coefficeints(design_matrix, data[:,3])
+    vcoefs = coefficeints(design_matrix, data[:,4])
+    wcoefs = coefficeints(design_matrix, data[:,5])
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
