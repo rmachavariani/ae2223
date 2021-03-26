@@ -171,6 +171,9 @@ def checkRadiusLargeEnough(pitch,radius):
 
 #-------------------------------MAIN--------------------------------#
 
+
+
+
 def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
     '''
 
@@ -224,4 +227,67 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
         print("WARNING: Set a bigger radius")
 
 
-grid = getSphericalGridWithVectorsFast(30,30,None)
+def loadParticles(nrRows):
+    # load data
+    data = loadData(nrRows)
+
+    # transform raw data into vector objects
+    dataPoints = createVectorObjects(data)
+
+    # determine min and max
+    minMax = determineMaxMin(data)
+
+    return dataPoints, minMax
+
+def allgrid(pitches,radii,nrParticles):
+
+    t1 = time.time()
+
+    contall = []
+    for i in range(len(pitches)):
+        contall.append(checkRadiusLargeEnough(pitches[i], radii[i]))
+
+    if all(contall):
+
+        # load in data
+        dataPoints, minMax = loadParticles(nrParticles)
+
+        # set parameters for bins
+        xMin = minMax[0]
+        xMax = minMax[1]
+        yMin = minMax[2]
+        yMax = minMax[3]
+        zMin = minMax[4]
+        zMax = minMax[5]
+
+        grids = []
+        # create different grids
+        for i in range(len(pitches)):
+
+            print()
+            print("---------------")
+            print("Grid ", i+1,)
+
+
+            # create the grid with certain pitch and radius
+            grid = createGridPitchAndRadius(pitches[i], radii[i], xMin, xMax, yMin, yMax, zMin, zMax)
+
+            # assign vector objects to correct bins
+            # grid is the 3D array filled with gridBin objects containing
+            # the correct vector objects
+            grid = assignVectorsToGrid(dataPoints, grid, pitches[i], radii[i], xMin, yMin, zMin)
+
+            grids.append(grid)
+
+        # report to user
+        t2 = time.time()
+        print("---------------")
+        print()
+        print("Total time: ", "{:.2f}".format(t2 - t1), " s")
+        print()
+        print("----------------------------------------")
+
+        return grids
+
+    else:
+            print("WARNING: Set a bigger radius")
