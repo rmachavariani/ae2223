@@ -53,7 +53,7 @@ class gridBin:
     def calculateNormalAverage(self):
         self.averageU = 0
         self.averageV = 0
-        self.averageW = o
+        self.averageW = 0
         sumU = 0
         sumV = 0
         sumW = 0
