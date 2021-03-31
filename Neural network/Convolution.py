@@ -8,6 +8,7 @@ def convolute(mtrx1, mtrx2):
         for xpx in range(3):
             sum += mtrx1[xpx,ypx] * mtrx2[xpx,ypx]
     return sum
+
 def get_filter(filename):
     f = open(filename, "r")
     lines = f.readlines()
