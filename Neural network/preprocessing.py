@@ -96,12 +96,14 @@ def getPreprocessedData():
     
     # pictures is list of images, names is list of strings
     pictures, labels = loadRawData()
-    
+    picturesBis = pictures
+
     # pictures is now converted to list of numpy arrays with same dimensions
-    shaped_pictures = resizePictures(pictures)
+    shaped_pictures = resizePictures(picturesBis)
+    shaped_picturesBis = shaped_pictures
     
     # flattened pictures. flat_pictures is a list of numpy array with dimensions (nrPixels x 1)
-    flat_pictures = flattenPictures(shaped_pictures)
+    flat_pictures = flattenPictures(shaped_picturesBis)
     
     return labels, pictures, shaped_pictures, flat_pictures
 
