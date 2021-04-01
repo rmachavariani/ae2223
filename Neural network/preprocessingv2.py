@@ -39,7 +39,7 @@ def getInputData(imgx, imgy):
         picNameSplit = picName.split("_")                                  # Split filename at underscore
         picNameSplit.remove(picNameSplit[-1])                              # Remove the picture number
         picName = "-".join(picNameSplit)                                   # Join name together with hyphen
-
+        print(picName)
         # Flatten the RGB image
         image_array = np.array(image.resize((imgx, imgy)))                 # Convert image to array
         image_flat = image_array.reshape(-1,1)                             # Flatten
@@ -50,24 +50,46 @@ def getInputData(imgx, imgy):
         pix = np.array(image_grey_filtered.resize((imgx, imgy)))           # Resize to set dimension
         data_gf = pix.reshape(-1,1)                                        # Flatten
 
-        pix = data_gf + image_flat                                         # Concatenate the grey and rgb image arrays
+        pix = np.concatenate((data_gf, image_flat))                                         # Concatenate the grey and rgb image arrays
 
         # Check if class of type exists, if so add data to class, if not create class of type
         if picName in names:
-                picName.data.append(pix)
+            i = names.index(picName)
+            input_list[i].data.append(pix)
         else:
             input_list.append(pix)
             names.append(picName)
             i = names.index(picName)
             input_list[i] = testObject(pix, picName)
 
-        return input_list
+    return input_list, names
+
+
+
+
+def create_arrays(imgx, imgy):
+    data_list, names = getInputData(imgx, imgy)
+    typeqty = len(data_list)
+    dataqty = 0
+    imagesize = len(data_list[0].data[0])
+    for ob in data_list:
+        datasize = len(ob.data)
+        dataqty += datasize
+
+    data_array = np.zeros((imagesize,dataqty))
+    type_array = np.zeros((typeqty, dataqty))
+
+    i = 0
+    for typedata in data_list:
+        for imagedata in typedata.data:
+            data_array[:,i] = np.reshape(imagedata,imagesize)
+            j = names.index(typedata.actype)
+            type_array[j,i] = 1
+            i += 1
+    return data_array, type_array, names
 
 #---- code for testing ------
-#stuff = getInputData(imgx, imgy)
-#print(stuff[0].actype)
+#input_list, names = getInputData(imgx, imgy)
+#data_array, type_array, names = create_arrays(input_list, names)
 
-
-
-
-
+#print(data_array.shape, type_array, names)
