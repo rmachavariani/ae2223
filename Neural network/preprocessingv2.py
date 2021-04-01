@@ -16,7 +16,17 @@ class testObject:
 
 
 def getInputData(imgx, imgy):
+    '''
+    Call function to get the preprocessed data
 
+    Returns
+    -------
+    input_list : List of testObjects
+        a testObject contains:
+         - 'data' : list which contains lists of flattened, concatenated (edgedetected) grey and RGB image data.
+        One for each picture that is in the dataset.
+         - 'actype' : string of the aircraft type.
+    '''
     # Initiale list for output
     input_list = []
     names = []
