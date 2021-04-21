@@ -51,9 +51,14 @@ def solve(bin):
     ucoefs = coefficeints(design_matrix, data[:,3])
     vcoefs = coefficeints(design_matrix, data[:,4])
     wcoefs = coefficeints(design_matrix, data[:,5])
-    inst_vel = data[:, 3:5]
+    inst_vel = data[:, 3:6]
+
     avg_vel = [ucoefs[0], vcoefs[0], wcoefs[0]]
-    bin.fluc = [turbulence(inst_vel[0], avg_vel[0]), turbulence(inst_vel[1], avg_vel[1]), turbulence(inst_vel[2], avg_vel[2])]
+    vel_prime = [turbulence(inst_vel[:, 0], avg_vel[0]), turbulence(inst_vel[:, 1], avg_vel[1]), turbulence(inst_vel[:, 2], avg_vel[2])]
+    energy = 0.5 * (vel_prime[0]**2 + vel_prime[1]**2 + vel_prime[2]**2)
+
+    bin.fluc = vel_prime
+    bin.turb_eng = energy
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
@@ -91,10 +96,12 @@ def turbulence(inst_vel, avg_vel):
     return sts.stdev(inst_vel, avg_vel)
 
 
+
 data = getRectangularGridWithVectors(10, 10, 10)
 test_cell = data[5, 5, 5]
 solve(test_cell)
 print(str(test_cell.polyfitAverage[0]))
 print(test_cell.fluc)
+print(test_cell.turb_eng)
 
 
