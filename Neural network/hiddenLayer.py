@@ -1,14 +1,17 @@
 import numpy as np
+import preprocessingv2 as v2
 
 
 def actFunc1(z):
-    
+
+    # quadratic activation function
     result = z**2
     
     return result
 
 def actFunc2(z):
-    
+
+    # cubic activation function
     result = z**3 
     
     return result
@@ -92,101 +95,55 @@ def backProp(Y,w2,z2,b2,a2,w1,z1,b1,a1,x):
         
         summW1 += product
         summB1 += productB
-    
-    
-    
-    #print(summW1.shape)
+
     dW1 = -np.sum(summW1,axis=0).T
     dB1 = -np.sum(summB1,axis=0).T
-    
-    print(dW1.shape)
         
     return dW2, dB2, dW1, dB1
 
 
+def makeEstimate(x,w1,w2,b1,b2,nrClasses):
 
+    # hidden layer
+    z1 = np.dot(w1,x) + b1
+    a1 = actFunc1(z1)
 
+    # output layer
+    z2 = np.dot(w2,a1) + b2
+    a2 = actFunc2(z2)
 
+    maxIndex = np.argmax(a2)
 
+    yGuess = np.zeros((nrClasses,1))
+    yGuess[maxIndex] = 1
 
+    return yGuess
 
-def propagateBackward(A2,A1,Y,z2,z1):
     
-    # propagate backward from cost to second layer activated value
-    # returns a matrix of size (possibilities x nrPictures)
-    try:
-        right = np.divide(1- Y, 1 - A2)
-    except RuntimeWarning:
-        right = 0
-    
-    try:
-        left = np.divide(Y,A2)
-    except RuntimeWarning:
-        left = 0
-        
-    dA =  - (left - right)
-    print(dA.shape)
-    
-    # sigmoid backward in second layer
-    s = 1/(1+np.exp(-z2))
-    dZ = dA * s * (1-s)
-    
-    # linear backward layer two
-    m = A2.shape[1]
-    dW2 = 1/m * np.dot(dZ,A2.T)
-    db2 = 1/m * np.sum(dZ,axis=1,keepdims=True)
-    
-    # backward in layer one
-    s1 = 1/(1+np.exp(-z1))
-    dZ1 = dA * s1 * (1-s1)
-    
-    # linear backward layer one
-    m1 = A1.shape[1]
-    dW1 = 1/m1 * np.dot(dZ1,A1.T)
-    db1 = 1/m1 *np.sum(dZ1,axis=1,keepdims=True)
-    
-    return dW1, dW2, db1, db2
-
-def updateWeights(w1,w2,b1,b2,dW1,dW2,db1,db2,learnRate):
-    
-    w1 = w1 - learnRate * dW1
-    w2 = w2 - learnRate * dW2
-    b1 = b1 - learnRate * db1
-    b2 = b2 - learnRate * db2
-    
-    return w1, w2, b1, b2
-    
-
+# parameters
 learnRate = 1
-nodesInHidden = 10
+nodesInHidden = 5
 iterations = 2
-learnrate = 1
+learnrate = 0.5
 
-x = np.array([[0.5,0.4,0.9],
-              [0.5,0.4,0.8],
-              [0.5,0.4,0.7]])
-y = np.array([[1,0,1],
-              [0,1,0]])
+# get the picture data
+x,y,names = v2.create_arrays(500,300)
 
+# generate initial values
 w1,b1 = generate_initial_values(x.shape[0], nodesInHidden)
 w2,b2 = generate_initial_values(nodesInHidden, y.shape[0])
 
-
+# iterate the weights
 for i in range(iterations):
-    
+
+    # perform forward propagation
     a1, a2, z1, z2, cost = propagate(w1, w2, b1, b2, x, y)
+
+    # perform backward propagation
     dW2, dB2, dW1, dB1 = backProp(y, w2, z2, b2, a2,w1,z1,b1,a1,x)
-    
-    print(w1.shape)
-    print(dW1.shape)
-    # correct
-    #w1 = w1 - learnrate * dW1
+
+    # update weights and intercept
+    w1 = w1 - learnrate * dW1
+    b2 = w1 - learnrate * dB1
     w2 = w2 - learnrate * dW2
     b2 = b2 - learnrate * dB2
-    
-#W1, dW2, db1, db2 = propagateBackward(a2,a1,y,z2,z1)
-
-#1, w2, b1, b2 = updateWeights(w1, w2, b1, b2, dW1, dW2, db1, db2, learnRate)   
-    
-
-

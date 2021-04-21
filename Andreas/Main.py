@@ -6,8 +6,8 @@ import time
 # parameters
 nrOfParticles = None
 
-pitch = [10,15,20]
-radius = [10,15,20]
+pitch = [10]
+radius = [10]
 
 # load the grids
 grids = gr.allgrid(pitch,radius,nrOfParticles)
@@ -27,14 +27,14 @@ for grid in grids:
                 thisBin = grid[i,j,k]
 
                 # calculate normal average
-                thisBin.calculateNormalAverage()
+                #thisBin.calculateNormalAverage()
 
                 # calculate variance and deviation
-                thisBin.calculateStandardDeviation()
-                thisBin.calculateVariance()
+                #thisBin.calculateStandardDeviation()
+                #thisBin.calculateVariance()
 
                 # calculate gaussian average
-                thisBin.calculateGaussianAverage()
+                #thisBin.calculateGaussianAverage()
 
                 # calculate dog gaussian average
 
