@@ -54,7 +54,7 @@ def solve(bin):
     inst_vel = data[:, 3:6]
 
     avg_vel = [ucoefs[0], vcoefs[0], wcoefs[0]]
-    vel_prime = [turbulence(inst_vel[:, 0], avg_vel[0]), turbulence(inst_vel[:, 1], avg_vel[1]), turbulence(inst_vel[:, 2], avg_vel[2])]
+    vel_prime = [standard_deviation(inst_vel[:, 0], avg_vel[0]), standard_deviation(inst_vel[:, 1], avg_vel[1]), standard_deviation(inst_vel[:, 2], avg_vel[2])]
     energy = 0.5 * (vel_prime[0]**2 + vel_prime[1]**2 + vel_prime[2]**2)
 
     bin.fluc = vel_prime
@@ -92,7 +92,7 @@ def curl(ucoefs, vcoefs, wcoefs):
     return curl
 
 
-def turbulence(inst_vel, avg_vel):
+def standard_deviation(inst_vel, avg_vel):
     return sts.stdev(inst_vel, avg_vel)
 
 
