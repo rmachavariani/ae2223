@@ -3,7 +3,7 @@ import pdb
 import matplotlib.pyplot as plt
 import matplotlib
 from functools import partial as part
-
+import statistics as sts
 matplotlib.use("Qt5Agg")
 
 
@@ -51,11 +51,16 @@ def solve(bin):
     ucoefs = coefficeints(design_matrix, data[:,3])
     vcoefs = coefficeints(design_matrix, data[:,4])
     wcoefs = coefficeints(design_matrix, data[:,5])
+    inst_vel = data[:, 3:5]
+    avg_vel = [ucoefs[0], vcoefs[0], wcoefs[0]]
+    bin.fluc = [turbulence(inst_vel[0], avg_vel[0]), turbulence(inst_vel[1], avg_vel[1]), turbulence(inst_vel[2], avg_vel[2])]
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
     bin.polyfitAverage.append([ucoefs[0], vcoefs[0], wcoefs[0]])
     bin.vorticity = curl(ucoefs, vcoefs, wcoefs)
+
+
 
 def createPolyFit(coefficients):
 
@@ -82,9 +87,14 @@ def curl(ucoefs, vcoefs, wcoefs):
     return curl
 
 
-# data = getRectangularGridWithVectors(10, 10, 10)
-# test_cell = data[5, 5, 5]
-# solve(test_cell)
-# print(str(test_cell.polyfitAverage[0]))
+def turbulence(inst_vel, avg_vel):
+    return sts.stdev(inst_vel, avg_vel)
+
+
+data = getRectangularGridWithVectors(10, 10, 10)
+test_cell = data[5, 5, 5]
+solve(test_cell)
+print(str(test_cell.polyfitAverage[0]))
+print(test_cell.fluc)
 
 

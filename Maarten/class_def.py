@@ -43,6 +43,7 @@ class gridBin:
         # averages initiated as empty lists
         self.polyfitAverage = []
         self.vorticity = None
+        self.fluc = None
 
         # polynomial fit functions which take inputs (dx,dy,dz) from center of the bin
         self.fitU = None
