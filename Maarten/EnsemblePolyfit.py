@@ -30,9 +30,9 @@ def fetch_vector(bin):
 def basis(particles_val, cell):
     design_matrix = np.empty((len(particles_val), 10))
     for i in range(len(particles_val)):
-        dx = (particles_val[i, 0] - cell.x)
-        dy = (particles_val[i, 1] - cell.y)
-        dz = (particles_val[i, 2] - cell.z)
+        dx = (particles_val[i, 0] - cell.x) / 1000
+        dy = (particles_val[i, 1] - cell.y) / 1000
+        dz = (particles_val[i, 2] - cell.z) / 1000
 
         design_matrix[i] = [1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2]
 
