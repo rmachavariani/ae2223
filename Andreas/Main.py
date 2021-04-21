@@ -5,6 +5,7 @@ import time
 
 # parameters
 nrOfParticles = None
+minParticlesForAverages = 50
 
 pitch = [10]
 radius = [10]
@@ -24,23 +25,22 @@ for grid in grids:
             for k in range(np.size(grid,axis=2)):
 
                 # current bin
-                thisBin = grid[i,j,k]
+                thisBin = grid[i, j, k]
 
-                # calculate normal average
-                #thisBin.calculateNormalAverage()
+                if len(thisBin.vectors) > minParticlesForAverages:
 
-                # calculate variance and deviation
-                #thisBin.calculateStandardDeviation()
-                #thisBin.calculateVariance()
+                    # calculate normal/top hat average
+                    thisBin.calculateNormalAverage()
 
-                # calculate gaussian average
-                #thisBin.calculateGaussianAverage()
+                    # calculate variance and deviation
+                    # for normal/top hat average
+                    thisBin.calculateStandardDeviation()
+                    thisBin.calculateVariance()
 
-                # calculate dog gaussian average
+                    # calculate gaussian average
+                    thisBin.calculateGaussianAverage()
 
-
-                # calculate poly fit
-                if len(thisBin.vectors) > 10:
+                    # calculate poly fit
                     ens.solve(thisBin)
 
 t2 = time.time()
@@ -49,4 +49,5 @@ print()
 print("Total time for taking averages: ", round(t2-t1,2))
 print()
 print("----------------------------------------")
+
 
