@@ -95,7 +95,7 @@ def vorticity(ucoefs, vcoefs, wcoefs):
     return curl
 
 
-# data = getRectangularGridWithVectors(10, 10, 10)
+data = getRectangularGridWithVectors(10, 10, 10)
 # test_cell = data[5, 5, 5]
 # solve(test_cell)
 # print(test_cell.polyfitAverage[0])
