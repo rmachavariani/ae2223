@@ -31,6 +31,12 @@ for grid in grids:
         y_values.append(vector.y)
         z_values.append(vector.z)
 
+    x_local = []
+    for value in range(len(x_values)):
+        x_loc = (value - bin.x)
+        x_local.append(x_loc)
+
+
     # #normal average plot
     # bin.calculateNormalAverage()
     # normal_average_u = bin.normalAverage[0][0]
@@ -50,9 +56,9 @@ for grid in grids:
         ens.solve(bin)
         poly_u = bin.fitU
         print(poly_u)
-        plt.plot(x_values, [poly_u(dx=item,dy=0,dz=0) for item in x_values], 'b+', label='Polyfit')
+        plt.plot(x_local, [poly_u(dx=item,dy=0,dz=0) for item in x_local], 'b+', label='Polyfit')
 
-    plt.scatter(x_values, u_values)
+    plt.scatter(x_local, u_values)
     plt.show()
 
 
