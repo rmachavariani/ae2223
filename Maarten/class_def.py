@@ -41,9 +41,10 @@ class gridBin:
         self.vectors = []
 
         # averages initiated as empty lists
-        self.polyfitAverage = []
+        self.polyfitAverage = None
         self.vorticity = None
         self.fluc = None
+        self.turb_eng = None
 
         # polynomial fit functions which take inputs (dx,dy,dz) from center of the bin
         self.fitU = None
