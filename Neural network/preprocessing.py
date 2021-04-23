@@ -12,7 +12,8 @@ def loadRawData():
     for picName in listdir("data"):
         
         # load every picture as a numpy array and add to list
-        picture = Image.open("data/"+picName)
+        picture = np.array(Image.open("data/"+picName))
+        #print(picture.shape)
         pictures.append(picture)
         
         # process pictures name and add to list
@@ -35,7 +36,7 @@ def resizePictures(pictures):
     # look for the smallest dimension in each direction
     for picture in pictures:
         
-        shapex, shapey = picture.size
+        shapex, shapey, shapez = picture.shape
         
         if shapex < smallx:
             
@@ -49,7 +50,8 @@ def resizePictures(pictures):
     for i in range(len(pictures)):
         
         # resizing all pictures to same dimensions
-        pictures[i] = np.array(pictures[i].resize((smallx,smally)))
+        picture = pictures[i]
+        pictures[i] = np.resize(picture,(smallx,smally,shapez))
     
     
     return pictures
@@ -97,6 +99,7 @@ def getPreprocessedData():
     # pictures is list of images, names is list of strings
     pictures, labels = loadRawData()
     picturesBis = pictures
+    print(pictures[0].shape)
 
     # pictures is now converted to list of numpy arrays with same dimensions
     shaped_pictures = resizePictures(picturesBis)
@@ -107,3 +110,7 @@ def getPreprocessedData():
     
     return labels, pictures, shaped_pictures, flat_pictures
 
+
+labels, pictures, shaped, flat = getPreprocessedData()
+#print(labels)
+#print(shaped[0].shape)
