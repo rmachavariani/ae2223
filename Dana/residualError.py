@@ -2,6 +2,7 @@ import Dana.gridConstructionSphereFast as gr
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import Dana.EnsemblePolyfit as ens
 
 # parameters
 nrOfParticles = None
@@ -20,19 +21,38 @@ for grid in grids:
     vectors = bin.vectors
     u_values = []
     x_values = []
+    y_values = []
+    z_values = []
 
 
     for vector in vectors:
         u_values.append(vector.u)
         x_values.append(vector.x)
+        y_values.append(vector.y)
+        z_values.append(vector.z)
 
-    mymodel = np.poly1d(np.polyfit(x_values, u_values, 3))
+    # #normal average plot
+    # bin.calculateNormalAverage()
+    # normal_average_u = bin.normalAverage[0][0]
+    # normal_average_u = np.array([normal_average_u for i in range(len(x_values))])
+    # plt.plot(x_values, normal_average_u)
+    #
+    # #gaussian average plot
+    # bin.calculateStandardDeviation()
+    # bin.calculateVariance()
+    # bin.calculateGaussianAverage()
+    # gaussian_average_u = bin.gaussianAverage[0][0]
+    # gaussian_average_u = np.array([gaussian_average_u for i in range(len(x_values))])
+    # plt.plot(x_values, gaussian_average_u)
 
-    myline = np.linspace(1, 22, 100)
+    #polynomial fit plot
+    if len(bin.vectors) > 10:
+        ens.solve(bin)
+        poly_u = bin.fitU
+        print(poly_u)
+        plt.plot(x_values, [poly_u(dx=item,dy=0,dz=0) for item in x_values], 'b+', label='Polyfit')
 
-    plt.plot(myline, mymodel(myline))
-
-    plt.scatter(x_values, x_values)
+    plt.scatter(x_values, u_values)
     plt.show()
 
 

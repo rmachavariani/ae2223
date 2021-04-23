@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from functools import partial as part
 
-matplotlib.use("Qt5Agg")
+# matplotlib.use("Qt5Agg")
 
 
 def fetch_vector(bin):
@@ -41,7 +41,7 @@ def basis(particles_val, cell):
 
 
 def  coefficeints(basis, fnc):
-    coeffs = np.linalg.lstsq(basis, fnc,rcond=None)[0]
+    coeffs = np.linalg.lstsq(basis, fnc, rcond=None)[0]
 
     return coeffs
 

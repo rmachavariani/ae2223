@@ -11,14 +11,6 @@ from scipy import stats
 import seaborn as sns
 
 
-
-
-from Dana.gridConstructionSphere import getSphericalGridWithVectors
-
-
-
-
-
 def getGeneralDensity():
 
     data = loadData()
