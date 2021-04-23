@@ -3,6 +3,7 @@ from class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 
 def loadData(nrRows):
@@ -11,7 +12,7 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = None)
+    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = nrRows)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
@@ -298,34 +299,95 @@ def getSphericalGridWithVectors(pitch,radius,nrRows):
 
         print("Grid creation was not performed")
 
-grid = getSphericalGridWithVectors(50,50,500)
+grid = getSphericalGridWithVectors(50,50,None)
 
 xAmount = gridBin.nrBinsX
 yAmount = gridBin.nrBinsY
 zAmount = gridBin.nrBinsZ
 
-biggrid = getSphericalGridWithVectors(50,75,500)
-
 for i in range(xAmount):
-    print(i)
     for j in range(yAmount):
         for k in range(zAmount):
             # normal averaging method
             grid[i][j][k].calculateNormalAverage()
-
             # Gaussian averaging method
-            grid[i][j][k].calculateStandardDeviation()
-            grid[i][j][k].calculateGaussianAverage()
+            #grid[i][j][k].calculateStandardDeviation()
+            #grid[i][j][k].calculateGaussianAverage()
 
-            datavarU, datavarV, datavarW = grid[i][j][k].calculateVariance()
 
-            biggrid[i][j][k].calculateNormalAverage()
+def plotting(plane,a):
+    t1 = time.time()
+    u_values, v_values, w_values = [],[],[]
+    x_values, y_values, z_values = [],[],[]
+    if plane == "yz":
+        for i in range(yAmount):
+            for j in range(zAmount):
+                x_values.append(grid[a][i][j].x)
+                y_values.append(grid[a][i][j].y)
+                z_values.append(grid[a][i][j].z)
 
-            # Gaussian averaging method
-            biggrid[i][j][k].calculateStandardDeviation()
-            bigdatavarU, bigdatavarV, bigdatavarW = biggrid[i][j][k].calculateVariance()
+                if grid[a][i][j].NormalAverage != []:
+                    u_values.append(grid[a][i][j].NormalAverage[0][0])
+                    v_values.append(grid[a][i][j].NormalAverage[0][1])
+                    w_values.append(grid[a][i][j].NormalAverage[0][2])
+                else:
+                    u_values.append(0)
+                    v_values.append(0)
+                    w_values.append(0)
+    elif plane == "xz":
+        for i in range(xAmount):
+            for j in range(zAmount):
+                x_values.append(grid[i][a][j].x)
+                y_values.append(grid[i][a][j].y)
+                z_values.append(grid[i][a][j].z)
 
-            grid[i][j][k].calculateNewGaussianAverage(datavarU, datavarV, datavarW, bigdatavarU, bigdatavarV, bigdatavarW)
+                if grid[i][a][j].NormalAverage != []:
+                    u_values.append(grid[i][a][j].NormalAverage[0][0])
+                    v_values.append(grid[i][a][j].NormalAverage[0][1])
+                    w_values.append(grid[i][a][j].NormalAverage[0][2])
+                else:
+                    u_values.append(0)
+                    v_values.append(0)
+                    w_values.append(0)
+    elif plane == "xy":
+        for i in range(yAmount):
+            for j in range(zAmount):
+                x_values.append(grid[i][j][a].x)
+                y_values.append(grid[i][j][a].y)
+                z_values.append(grid[i][j][a].z)
 
-print(grid[4][4][4].NormalAverage)
-print(grid[4][4][4].GaussianAverage)
+                if grid[i][j][a].NormalAverage != []:
+                    u_values.append(grid[i][j][a].NormalAverage[0][0])
+                    v_values.append(grid[i][j][a].NormalAverage[0][1])
+                    w_values.append(grid[i][j][a].NormalAverage[0][2])
+                else:
+                    u_values.append(0)
+                    v_values.append(0)
+                    w_values.append(0)
+
+    if plane == "yz":
+        a_lst = np.array(y_values).reshape(yAmount,zAmount)
+        b_lst = np.array(z_values).reshape(yAmount,zAmount)
+        c_lst = np.array(u_values).reshape(yAmount,zAmount)
+    elif plane == "xz":
+        a_lst = np.array(x_values).reshape(xAmount,zAmount)
+        b_lst = np.array(z_values).reshape(xAmount,zAmount)
+        c_lst = np.array(u_values).reshape(xAmount,zAmount)
+    elif plane == "xy":
+        a_lst = np.array(x_values).reshape(xAmount,yAmount)
+        b_lst = np.array(y_values).reshape(xAmount,yAmount)
+        c_lst = np.array(u_values).reshape(xAmount,yAmount)
+
+
+    t2 = time.time()
+    print("Time to order values",round(t2-t1,3),"sec")
+
+    plt.contourf(a_lst, b_lst, c_lst, 100, cmap=cm.jet)
+    cb = plt.colorbar()
+    cb.set_label("u [m/s]")
+    plt.title("velocity Heatmap in "+plane)
+    plt.show()
+
+plotting("yz",10)
+plotting("xz",8)
+plotting("xy",4)

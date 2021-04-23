@@ -3,6 +3,7 @@ import numpy as np
 import EnsemblePolyfit as ens
 import time
 
+
 # parameters
 nrOfParticles = None
 minParticlesForAverages = 50
@@ -36,7 +37,6 @@ for grid in grids:
                     # for normal/top hat average
                     thisBin.calculateStandardDeviation()
                     thisBin.calculateVariance()
-
                     # calculate gaussian average
                     thisBin.calculateGaussianAverage()
 

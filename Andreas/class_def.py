@@ -49,6 +49,9 @@ class gridBin:
         self.normalAverage = []
         self.gaussianAverage = []
         self.dogGaussianAverage = []
+        self.vorticity = None
+        self.fluc = None
+        self.turb_eng = None
 
         # polynomial fit functions which take inputs (dx,dy,dz) from center of the bin
         self.fitU = None

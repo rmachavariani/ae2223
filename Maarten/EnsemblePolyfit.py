@@ -46,26 +46,6 @@ def coefficients(basis, fnc):
     return coeffs
 
 
-def solve(bin):
-    data = fetch_vector(bin)
-    design_matrix = basis(data, bin)
-    ucoefs = coefficients(design_matrix, data[:, 3])
-    vcoefs = coefficients(design_matrix, data[:, 4])
-    wcoefs = coefficients(design_matrix, data[:, 5])
-    inst_vel = data[:, 3:6]
-
-    avg_vel = [ucoefs[0], vcoefs[0], wcoefs[0]]
-    vel_prime = [sts.stdev(inst_vel[:, 0], avg_vel[0]), sts.stdev(inst_vel[:, 1], avg_vel[1]), sts.stdev(inst_vel[:, 2], avg_vel[2])]
-    energy = 0.5 * (vel_prime[0]**2 + vel_prime[1]**2 + vel_prime[2]**2)
-
-    bin.fluc = vel_prime
-    bin.turb_eng = energy
-    bin.fitU = createPolyFit(ucoefs)
-    bin.fitV = createPolyFit(vcoefs)
-    bin.fitW = createPolyFit(wcoefs)
-    bin.polyfitAverage = [ucoefs[0], vcoefs[0], wcoefs[0]]
-    bin.vorticity = vorticity(ucoefs, vcoefs, wcoefs)
-
 
 def createPolyFit(coefs):
 
@@ -95,13 +75,63 @@ def vorticity(ucoefs, vcoefs, wcoefs):
     return curl
 
 
+
+def solve(bin):
+    data = fetch_vector(bin)
+    design_matrix = basis(data, bin)
+    ucoefs = coefficients(design_matrix, data[:, 3])
+    vcoefs = coefficients(design_matrix, data[:, 4])
+    wcoefs = coefficients(design_matrix, data[:, 5])
+    inst_vel = data[:, 3:6]
+
+    avg_vel = [ucoefs[0], vcoefs[0], wcoefs[0]]
+    vel_prime = [sts.stdev(inst_vel[:, 0], avg_vel[0]), sts.stdev(inst_vel[:, 1], avg_vel[1]), sts.stdev(inst_vel[:, 2], avg_vel[2])]
+    energy = 0.5 * (vel_prime[0]**2 + vel_prime[1]**2 + vel_prime[2]**2)
+
+    bin.fluc = vel_prime
+    bin.turb_eng = energy
+    bin.fitU = createPolyFit(ucoefs)
+    bin.fitV = createPolyFit(vcoefs)
+    bin.fitW = createPolyFit(wcoefs)
+    bin.polyfitAverage = [ucoefs[0], vcoefs[0], wcoefs[0]]
+    bin.vorticity = vorticity(ucoefs, vcoefs, wcoefs)
+
+
 # data = getRectangularGridWithVectors(10, 10, 10)
-# test_cell = data[5, 5, 5]
-# solve(test_cell)
-# print(test_cell.polyfitAverage)
-# print(test_cell.vorticity)
-# print(test_cell.fluc)
-# print(test_cell.turb_eng)
+#
+# sizeX = np.size(data, axis=0)
+# sizeY = np.size(data, axis=1)
+# sizeZ = np.size(data, axis=2)
+
+# for i in range(sizeX):
+#     for j in range(sizeY):
+#         for k in range(sizeZ):
+#             cell = data[i,j,k]
+#             if len(cell.vectors) > 50:
+#                 solve(cell)
+#                 print('---------')
+#                 counter  = (str(i) + ',' + str(j) + ',' + str(k))
+#                 print('particles in bin: ' + str(len(cell.vectors)))
+#                 print('cell #: ' + counter)
+#                 print('particles in bin: ')
+#                 print('cell x: ' + str(cell.x) + ' cell y: ' + str(cell.y) + ' cell z: '+ str(cell.z))
+#                 print('u: ' + str(cell.polyfitAverage[0]) + ' v: ' + str(cell.polyfitAverage[1]) + ' w: ' +str(cell.polyfitAverage[2]))
+#                 u, v, w = cell.polyfitAverage[0], cell.polyfitAverage[1], cell.polyfitAverage[2]
+#                 if u > 15 or u < -5 or abs(v) > 5 or abs(w) > 5:
+#                     print(u, v, w)
+#                     print('outlier detected!')
+#
+#
+#
+#
+#                 print('---------')
+
+
+
+#print(test_cell.polyfitAverage)
+#print(test_cell.vorticity)
+#print(test_cell.fluc)
+#print(test_cell.turb_eng)
 
 
 
