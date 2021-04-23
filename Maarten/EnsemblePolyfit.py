@@ -98,12 +98,40 @@ def solve(bin):
 
 
 # data = getRectangularGridWithVectors(10, 10, 10)
-# test_cell = data[5, 5, 5]
-# solve(test_cell)
-# print(test_cell.polyfitAverage)
-# print(test_cell.vorticity)
-# print(test_cell.fluc)
-# print(test_cell.turb_eng)
+#
+# sizeX = np.size(data, axis=0)
+# sizeY = np.size(data, axis=1)
+# sizeZ = np.size(data, axis=2)
+
+# for i in range(sizeX):
+#     for j in range(sizeY):
+#         for k in range(sizeZ):
+#             cell = data[i,j,k]
+#             if len(cell.vectors) > 50:
+#                 solve(cell)
+#                 print('---------')
+#                 counter  = (str(i) + ',' + str(j) + ',' + str(k))
+#                 print('particles in bin: ' + str(len(cell.vectors)))
+#                 print('cell #: ' + counter)
+#                 print('particles in bin: ')
+#                 print('cell x: ' + str(cell.x) + ' cell y: ' + str(cell.y) + ' cell z: '+ str(cell.z))
+#                 print('u: ' + str(cell.polyfitAverage[0]) + ' v: ' + str(cell.polyfitAverage[1]) + ' w: ' +str(cell.polyfitAverage[2]))
+#                 u, v, w = cell.polyfitAverage[0], cell.polyfitAverage[1], cell.polyfitAverage[2]
+#                 if u > 15 or u < -5 or abs(v) > 5 or abs(w) > 5:
+#                     print(u, v, w)
+#                     print('outlier detected!')
+#
+#
+#
+#
+#                 print('---------')
+
+
+
+#print(test_cell.polyfitAverage)
+#print(test_cell.vorticity)
+#print(test_cell.fluc)
+#print(test_cell.turb_eng)
 
 
 
