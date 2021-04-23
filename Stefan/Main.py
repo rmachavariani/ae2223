@@ -1,0 +1,132 @@
+import gridConstructionSphereFast as gr
+import numpy as np
+import EnsemblePolyfit as ens
+import time
+
+# parameters
+nrOfParticles = None
+
+pitch = [10,15,20]
+radius = [10,15,20]
+
+# load the grids
+grids = gr.allgrid(pitch,radius,nrOfParticles)
+
+
+t1 = time.time()
+
+# loop over grids to calculate averages
+for grid in grids:
+
+    # loop over current grid
+    for i in range(np.size(grid,axis=0)):
+        for j in range(np.size(grid,axis=1)):
+            for k in range(np.size(grid,axis=2)):
+
+                # current bin
+                thisBin = grid[i,j,k]
+
+                # calculate normal average
+                thisBin.calculateNormalAverage()
+
+                # calculate variance and deviation
+                thisBin.calculateStandardDeviation()
+                thisBin.calculateVariance()
+
+                # calculate gaussian average
+                thisBin.calculateGaussianAverage()
+
+                # calculate dog gaussian average
+
+
+                # calculate poly fit
+                if len(thisBin.vectors) > 10:
+                    ens.solve(thisBin)
+
+t2 = time.time()
+
+print()
+print("Total time for taking averages: ", round(t2-t1,2))
+print()
+print("----------------------------------------")
+
+def plotting(plane,a):
+    t1 = time.time()
+    for grid in grids:
+        u_values, v_values, w_values = [],[],[]
+        x_values, y_values, z_values = [],[],[]
+        if plane == "yz":
+            for i in range(np.size(grid,axis=1)):
+                for j in range(np.size(grid,axis=2)):
+                    thisBin = grid[a,i,j]
+                    x_values.append(thisBin.x)
+                    y_values.append(thisBin.y)
+                    z_values.append(thisBin.z)
+
+                    if thisBin.polyfitAverage != []:
+                        u_values.append(thisBin.polyfitAverage[0][0])
+                        v_values.append(thisBin.polyfitAverage[0][1])
+                        w_values.append(thisBin.polyfitAverage[0][2])
+                    else:
+                        u_values.append(0)
+                        v_values.append(0)
+                        w_values.append(0)
+        elif plane == "xz":
+            for i in range(np.size(grid,axis=0)):
+                for j in range(np.size(grid,axis=2)):
+                    thisBin = grid[i,a,j]
+                    x_values.append(thisBin.x)
+                    y_values.append(thisBin.y)
+                    z_values.append(thisBin.z)
+
+                    if thisBin.polyfitAverage != []:
+                        u_values.append(thisBin.polyfitAverage[0][0])
+                        v_values.append(thisBin.polyfitAverage[0][1])
+                        w_values.append(thisBin.polyfitAverage[0][2])
+                    else:
+                        u_values.append(0)
+                        v_values.append(0)
+                        w_values.append(0)
+        elif plane == "xy":
+            for i in range(np.size(grid,axis=0)):
+                for j in range(np.size(grid,axis=1)):
+                    thisBin = grid[i,j,a]
+                    x_values.append(thisBin.x)
+                    y_values.append(thisBin.y)
+                    z_values.append(thisBin.z)
+
+                    if thisBin.polyfitAverage != []:
+                        u_values.append(thisBin.polyfitAverage[0][0])
+                        v_values.append(thisBin.polyfitAverage[0][1])
+                        w_values.append(thisBin.polyfitAverage[0][2])
+                    else:
+                        u_values.append(0)
+                        v_values.append(0)
+                        w_values.append(0)
+
+        if plane == "yz":
+            a_lst = np.array(y_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
+            b_lst = np.array(z_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
+            c_lst = np.array(u_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
+        elif plane == "xz":
+            a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
+            b_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
+            c_lst = np.array(u_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
+        elif plane == "xy":
+            a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
+            b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
+            c_lst = np.array(u_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
+
+
+        t2 = time.time()
+        print("Time to order values",round(t2-t1,3),"sec")
+
+        plt.contourf(a_lst, b_lst, c_lst, 100, cmap=cm.jet)
+        cb = plt.colorbar()
+        cb.set_label("u [m/s]")
+        plt.title("velocity Heatmap in "+plane)
+        plt.show()
+
+plotting("yz",10)
+plotting("xz",8)
+plotting("xy",4)
