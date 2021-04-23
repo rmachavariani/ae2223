@@ -41,7 +41,7 @@ def basis(particles_val, cell):
 
 
 def coefficients(basis, fnc):
-    coeffs = np.linalg.lstsq(basis, fnc)[0]
+    coeffs = np.linalg.lstsq(basis, fnc, rcond=None)[0]
 
     return coeffs
 
