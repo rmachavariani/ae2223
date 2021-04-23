@@ -1,5 +1,5 @@
 import numpy as np
-from Dana.class_def import *
+from class_def import *
 from math import floor, sqrt
 import time
 
@@ -10,9 +10,9 @@ def loadData():
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat")
+    data = np.loadtxt("carMirrorData.dat",max_rows = 2000)
     t2 = time.time()
-    print("Loading sphere done in ", "{:.2f}".format(t2 - t1), " s")
+    print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
     return data
 
@@ -213,3 +213,4 @@ def getSphericalGridWithVectors(pitch,radius):
 
     return grid
 
+grid = getSphericalGridWithVectors(50,50)
