@@ -73,14 +73,14 @@ def plotting(plane,location):
                     z_values.append(thisBin.z)
 
                     if thisBin.polyfitAverage != []:
-                        u_values.append(thisBin.polyfitAverage[0])
-                        v_values.append(thisBin.polyfitAverage[1])
-                        w_values.append(thisBin.polyfitAverage[2])
+                        #u_values.append(thisBin.polyfitAverage[0])
+                        #v_values.append(thisBin.polyfitAverage[1])
+                        #w_values.append(thisBin.polyfitAverage[2])
                         t_values.append(thisBin.turb_eng)
                     else:
-                        u_values.append(0)
-                        v_values.append(0)
-                        w_values.append(0)
+                        #u_values.append(0)
+                        #v_values.append(0)
+                        #w_values.append(0)
                         t_values.append(0)
         elif plane == "xz":
             for i in range(np.size(grid,axis=1)):
@@ -119,14 +119,14 @@ def plotting(plane,location):
                     z_values.append(thisBin.z)
 
                     if thisBin.polyfitAverage != []:
-                        u_values.append(thisBin.polyfitAverage[0])
-                        v_values.append(thisBin.polyfitAverage[1])
-                        w_values.append(thisBin.polyfitAverage[2])
+                        #u_values.append(thisBin.polyfitAverage[0])
+                        #v_values.append(thisBin.polyfitAverage[1])
+                        #w_values.append(thisBin.polyfitAverage[2])
                         t_values.append(thisBin.turb_eng)
                     else:
-                        u_values.append(0)
-                        v_values.append(0)
-                        w_values.append(0)
+                        #u_values.append(0)
+                        #v_values.append(0)
+                        #w_values.append(0)
                         t_values.append(0)
 
         if plane == "yz":
