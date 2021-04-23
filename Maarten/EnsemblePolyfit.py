@@ -63,7 +63,7 @@ def solve(bin):
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
-    bin.polyfitAverage.append([ucoefs[0], vcoefs[0], wcoefs[0]])
+    bin.polyfitAverage = [ucoefs[0], vcoefs[0], wcoefs[0]]
     bin.vorticity = vorticity(ucoefs, vcoefs, wcoefs)
 
 
@@ -95,10 +95,10 @@ def vorticity(ucoefs, vcoefs, wcoefs):
     return curl
 
 
-data = getRectangularGridWithVectors(10, 10, 10)
+# data = getRectangularGridWithVectors(10, 10, 10)
 # test_cell = data[5, 5, 5]
 # solve(test_cell)
-# print(test_cell.polyfitAverage[0])
+# print(test_cell.polyfitAverage)
 # print(test_cell.vorticity)
 # print(test_cell.fluc)
 # print(test_cell.turb_eng)
