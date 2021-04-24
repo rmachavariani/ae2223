@@ -17,7 +17,7 @@ def upload():
     t1 = time.time()
     # Define the structure of the data
     dtype1 = np.dtype([("x", float), ("y", float), ("z", float), ("u", float), ("v", float), ("w", float)])
-    datalocation = "/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat"
+    datalocation = "C:\Users\maart\OneDrive\Documents\Python\Projects\ae2223\Maarten\carMirrorData.dat"
     # upload the data from the file to a numpy array with designated structure
     data = np.loadtxt(datalocation, dtype=dtype1)
 
