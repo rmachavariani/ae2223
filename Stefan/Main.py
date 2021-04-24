@@ -9,8 +9,8 @@ import matplotlib.cm as cm
 # parameters
 nrOfParticles = None
 
-pitch = [30]#[10,15,20]
-radius = [30]#[10,15,20]
+pitch = [10]#[10,15,20]
+radius = [10]#[10,15,20]
 
 # load the grids
 grids = gr.allgrid(pitch,radius,nrOfParticles)
@@ -43,7 +43,7 @@ for grid in grids:
 
 
                 # calculate poly fit
-                if len(thisBin.vectors) > 50:
+                if len(thisBin.vectors) > 20:
                     ens.solve(thisBin)
 
 t2 = time.time()
@@ -54,7 +54,7 @@ print()
 print("----------------------------------------")
 
 
-def plotting(plane,location):
+def plotting(plane,typ,location):
     t1 = time.time()
     for grid in grids:
         u_values, v_values, w_values = [],[],[]
@@ -72,10 +72,15 @@ def plotting(plane,location):
                     y_values.append(thisBin.y)
                     z_values.append(thisBin.z)
 
+                    if typ=="poly":
+                        lst = thisBin.polyfitAverage
+                    elif typ=="vor":
+                        lst = thisBin.vorticity
+
                     if thisBin.polyfitAverage != []:
-                        u_values.append(thisBin.polyfitAverage[0])
-                        v_values.append(thisBin.polyfitAverage[1])
-                        w_values.append(thisBin.polyfitAverage[2])
+                        u_values.append(lst[0])
+                        v_values.append(lst[1])
+                        w_values.append(lst[2])
                     else:
                         u_values.append(0)
                         v_values.append(0)
@@ -92,6 +97,12 @@ def plotting(plane,location):
                     x_values.append(thisBin.x)
                     y_values.append(thisBin.y)
                     z_values.append(thisBin.z)
+
+                    if typ=="poly":
+                        lst = thisBin.polyfitAverage
+                    elif typ=="vor":
+                        lst = thisBin.vorticity
+
 
                     if thisBin.polyfitAverage != []:
                         u_values.append(thisBin.polyfitAverage[0])
@@ -114,6 +125,11 @@ def plotting(plane,location):
                     y_values.append(thisBin.y)
                     z_values.append(thisBin.z)
 
+                    if typ=="poly":
+                        lst = thisBin.polyfitAverage
+                    elif typ=="vor":
+                        lst = thisBin.vorticity
+
                     if thisBin.polyfitAverage != []:
                         u_values.append(thisBin.polyfitAverage[0])
                         v_values.append(thisBin.polyfitAverage[1])
@@ -129,40 +145,48 @@ def plotting(plane,location):
             c_lst = np.array(z_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             d_lst = np.array(u_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             plt.contourf(b_lst, c_lst, d_lst, 100, cmap=cm.jet)
+            cb = plt.colorbar()
+            cb.set_label("u [m/s]")
+            loc = " "+str(round(thisBin.x,2))
         elif plane == "xz":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             d_lst = np.array(u_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             plt.contourf(a_lst, c_lst, d_lst, 100, cmap=cm.jet)
+            cb = plt.colorbar()
+            cb.set_label("u [m/s]")
+            loc = " "+str(round(thisBin.y,2))
         elif plane == "xy":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             d_lst = np.array(u_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             plt.contourf(a_lst, b_lst, d_lst, 100, cmap=cm.jet)
+            cb = plt.colorbar()
+            cb.set_label("u [m/s]")
+            plt.quiver(x_values, y_values, u_values, v_values, scale=280,color='Black')
+            loc = " "+str(round(thisBin.z,2))
 
         t2 = time.time()
         print("Time to order values",round(t2-t1,3),"sec")
 
-        cb = plt.colorbar()
-        cb.set_label("u [m/s]")
-        plt.title("velocity Heatmap in "+plane)
+        plt.title("velocity Heatmap in "+plane+loc+"[mm]")
         plt.show()
 
+        # fig = plt.figure(figsize=(10,6))
+        # ax1 = fig.add_subplot(111, projection='3d')
 
-        fig = plt.figure(figsize=(10,6))
-        ax1 = fig.add_subplot(111, projection='3d')
-
-        ax1.set_title('gist_earth color map')
-        surf1 = ax1.plot_surface(a_lst, b_lst, c_lst, cmap=cm.jet)
-        fig.colorbar(surf1, ax=ax1, shrink=0.5, aspect=5)
-        ax1.set_xlabel('x [mm]')
-        ax1.set_ylabel('y [mm]')
-        ax1.set_zlabel('z [mm]')
-        plt.show()
+        # ax1.set_title('2D contour plots in 3D plot for'+plane)
+        # surf1 = ax1.plot_surface(a_lst, b_lst, c_lst, facecolors=cm.jet(d_lst))
+        # fig.colorbar(surf1, ax=ax1, shrink=0.5, aspect=5)
+        # ax1.set_xlabel('x [mm]')
+        # ax1.set_ylabel('y [mm]')
+        # ax1.set_zlabel('z [mm]')
+        # plt.show()
 
 
-plotting("yz",0)
-plotting("xz",0)
-plotting("xy",0)
+plotting("yz","poly",0)
+plotting("xz","poyy",0)
+plotting("xy","poly",10)
+plotting("yz","vor",0)
