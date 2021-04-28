@@ -1,4 +1,4 @@
-from gridConstruction import *
+import numpy as np
 import pdb
 import matplotlib.pyplot as plt
 import matplotlib
