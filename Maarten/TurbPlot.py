@@ -142,18 +142,6 @@ def plotting(plane,location):
         plt.show()
 
 
-        fig = plt.figure(figsize=(10,6))
-        ax1 = fig.add_subplot(111, projection='3d')
-
-        ax1.set_title('gist_earth color map')
-        surf1 = ax1.plot_surface(a_lst, b_lst, c_lst, cmap=cm.jet)
-        fig.colorbar(surf1, ax=ax1, shrink=0.5, aspect=5)
-        ax1.set_xlabel('x [mm]')
-        ax1.set_ylabel('y [mm]')
-        ax1.set_zlabel('z [mm]')
-        plt.show()
-
-
 plotting("yz",0)
 plotting("xz",0)
 plotting("xy",0)
