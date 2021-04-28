@@ -139,7 +139,7 @@ def plotting(plane,location, locstr, number):
         plt.axis("equal")
         plt.grid()
         cb.set_label("K [J/kg]")
-        plt.title("Turbulent Kinetic Energy "+ plane + locstr + str(location))
+        plt.title("Turbulent Kinetic Energy "+ plane + "at" +  locstr + str(location))
         plt.show()
 
 
