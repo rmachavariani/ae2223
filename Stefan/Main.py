@@ -60,7 +60,6 @@ def plotting(planes, typ, location, unit, number):
     t1 = time.time()
     for grid in grids:
         # figure, axes = plt.subplots(nrows=1, ncols=3)
-        figure, axes = plt.subplots(nrows=1, ncols=3)
 
         levels = np.linspace(-10, 25, number)
 
@@ -168,37 +167,46 @@ def plotting(planes, typ, location, unit, number):
                         vsxy.append(0)
                         wxy_values.append(None)
 
+        figure, axes = plt.subplots(nrows=2, ncols=2, gridspec_kw={
+            'width_ratios': [1, ((max(yyz_values) - min(yyz_values)) / (max(xxy_values) - min(xxy_values)))],
+            'height_ratios': [1, ((max(yxy_values) - min(yxy_values)) / (max(zxz_values) - min(zxz_values)))]})
         if planes.count("yz") == 1:
             ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-            plot = axes[0].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
-            axes[0].set_title("yz plane at x=" + loc + "[m]")
-            axes[0].grid()
+            plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.RdBu_r)
+            axes[0][1].set_title("yz plane at x=" + loc + "[m]")
+            axes[0][1].set_xlabel("y [m]")
+            axes[0][1].set_ylabel("z [m]")
+            axes[0][1].grid()
         if planes.count("xz") == 1:
             axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             cxz_lst = np.array(zxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             dxz_lst = np.array(uxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             loc = " " + str(round(grid[0, b, 0].y * 0.001, 4))
-            plot = axes[1].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
-            axes[1].set_title("xz plane at y=" + loc + "[m]")
-            axes[1].grid()
+            plot = axes[0][0].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.RdBu_r)
+            axes[0][0].set_title("xz plane at y=" + loc + "[m]")
+            axes[0][0].set_xlabel("x [m]")
+            axes[0][0].set_ylabel("z [m]")
+            axes[0][0].grid()
         if planes.count("xy") == 1:
             axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
-            plot = axes[2].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)
-            axes[2].set_title("xy plane at z=" + loc + "[m]")
+            plot = axes[1][0].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.RdBu_r)
+            axes[1][0].set_title("xy plane at z=" + loc + "[m]")
+            axes[1][0].set_xlabel("x [m]")
+            axes[1][0].set_ylabel("y [m]")
+            axes[1][0].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280, color='Black')
+            axes[1][0].grid()
+        axes[1][1].axis('off')
 
-            axes[2].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280, color='Black')
-            axes[2].grid()
-
-        plt.autoscale(enable=True, axis='both', tight=None)
+        # plt.autoscale(enable=True, axis='both', tight=None)
         t2 = time.time()
         print("Time to order values", round(t2 - t1, 3), "sec")
 
