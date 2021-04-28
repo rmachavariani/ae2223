@@ -1,4 +1,5 @@
 import numpy as np
+from functools import  cached_property
 
 
 class vector:

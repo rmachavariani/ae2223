@@ -5,6 +5,8 @@ import EnsemblePolyfit as ens
 import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib
+matplotlib.use("Qt5Agg")
 
 # parameters
 nrOfParticles = None
@@ -54,11 +56,14 @@ print()
 print("----------------------------------------")
 
 
-def plotting(plane,location):
+def plotting(plane,location, locstr, number):
     t1 = time.time()
     for grid in grids:
         t_values= []
         x_values, y_values, z_values = [],[],[]
+
+        levels = np.linspace(-10, 25, number)
+
         if plane == "yz":
             for i in range(np.size(grid,axis=0)):
                 if grid[i,0,0].x >=location:
@@ -115,28 +120,30 @@ def plotting(plane,location):
             b_lst = np.array(y_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
-            plt.contourf(b_lst, c_lst, e_lst, 100, cmap=cm.jet)
+            plt.contourf(b_lst, c_lst, e_lst, 100, levels=levels, cmap=cm.RdBu_r)
         elif plane == "xz":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
-            plt.contourf(a_lst, c_lst, e_lst, 100, cmap=cm.jet)
+            plt.contourf(a_lst, c_lst, e_lst, 100, levels=levels, cmap=cm.RdBu_r)
         elif plane == "xy":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
-            plt.contourf(a_lst, b_lst, e_lst, 100, cmap=cm.jet)
+            plt.contourf(a_lst, b_lst, e_lst, 100, levels=levels, cmap=cm.RdBu_r)
 
         t2 = time.time()
         print("Time to order values",round(t2-t1,3),"sec")
 
         cb = plt.colorbar()
+        plt.axis("equal")
+        plt.grid()
         cb.set_label("K [J/kg]")
-        plt.title("Turbulent Kinetic Energy "+plane)
+        plt.title("Turbulent Kinetic Energy "+ plane + locstr + str(location))
         plt.show()
 
 
-plotting("yz",0)
-plotting("xz",0)
-plotting("xy",0)
+plotting("yz",0, " x = ", 9)
+plotting("xz",0, " y = ", 9)
+plotting("xy",0, " z = ", 9)
 
