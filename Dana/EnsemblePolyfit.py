@@ -1,10 +1,13 @@
-from Dana.gridConstruction import *
+from Dana.gridConstructionSphereFast import *
 import pdb
 import matplotlib.pyplot as plt
 import matplotlib
 from functools import partial as part
 
 # matplotlib.use("Qt5Agg")
+
+
+from functools import cache
 
 
 def fetch_vector(bin):
@@ -26,7 +29,6 @@ def fetch_vector(bin):
     # print(particles_val[:, 3])
     return particles_val
 
-
 def basis(particles_val, cell):
     design_matrix = np.empty((len(particles_val), 10))
     for i in range(len(particles_val)):
@@ -38,7 +40,6 @@ def basis(particles_val, cell):
 
     # print(design_matrix)
     return design_matrix
-
 
 def  coefficeints(basis, fnc):
     coeffs = np.linalg.lstsq(basis, fnc, rcond=None)[0]
@@ -54,6 +55,7 @@ def solve(bin):
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
+
     bin.polyfitAverage.append([ucoefs[0], vcoefs[0], wcoefs[0]])
 
 def createPolyFit(coefficients):

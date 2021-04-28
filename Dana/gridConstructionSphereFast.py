@@ -2,8 +2,9 @@ import numpy as np
 from Dana.class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
+from functools import cache
 
-
+@cache
 def loadData(nrRows):
     ''' Loads data from carMirrorData.dat
     :return: nrVectors x 6 np array
@@ -15,7 +16,6 @@ def loadData(nrRows):
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
     return data
-
 
 def determineMaxMin(data):
     '''Determines the mininum and maximum value for every dimension
@@ -38,7 +38,6 @@ def determineMaxMin(data):
 
     return xMin, xMax, yMin, yMax, zMin, zMax
 
-
 def createVectorObjects(data):
     ''' Creates objects from the particle/vector data
     :param data: raw data in numpy array
@@ -59,7 +58,6 @@ def createVectorObjects(data):
     print("Objects created in ", "{:.2f}".format(t2 - t1), " s")
 
     return dataPoints
-
 
 def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
 
@@ -105,7 +103,6 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     print("Total amount of bins: ", xAmount * yAmount * zAmount)
 
     return grid
-
 
 def assignVectorsToGrid(vectors, grid, pitch, radius,
                         xMin, yMin, zMin):
@@ -156,7 +153,6 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 
     return grid
 
-
 def checkRadiusLargeEnough(pitch,radius):
 
     # calculate radius in between centers
@@ -170,7 +166,6 @@ def checkRadiusLargeEnough(pitch,radius):
 
 
 #-------------------------------MAIN--------------------------------#
-
 
 
 
@@ -225,7 +220,6 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
 
     else:
         print("WARNING: Set a bigger radius")
-
 
 def loadParticles(nrRows):
     # load data
