@@ -62,7 +62,7 @@ def plotting(plane,location, locstr, number):
         t_values= []
         x_values, y_values, z_values = [],[],[]
 
-        levels = np.linspace(-10, 25, number)
+        levels = np.linspace(0, 30, number)
 
         if plane == "yz":
             for i in range(np.size(grid,axis=0)):
