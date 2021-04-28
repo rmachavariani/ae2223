@@ -62,7 +62,7 @@ def plotting(plane,location, locstr, number):
         t_values= []
         x_values, y_values, z_values = [],[],[]
 
-        levels = np.linspace(0, 30, number)
+        levels = np.linspace(0, 40, number)
 
         if plane == "yz":
             for i in range(np.size(grid,axis=0)):
@@ -139,7 +139,7 @@ def plotting(plane,location, locstr, number):
         plt.axis("equal")
         plt.grid()
         cb.set_label("K [J/kg]")
-        plt.title("Turbulent Kinetic Energy "+ plane + "at" +  locstr + str(location))
+        plt.title("Turbulent Kinetic Energy "+ plane + " at " + locstr + str(location))
         plt.show()
 
 
