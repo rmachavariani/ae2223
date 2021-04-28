@@ -120,17 +120,17 @@ def plotting(plane,location, locstr, number):
             b_lst = np.array(y_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
-            plt.contourf(b_lst, c_lst, e_lst, 100, levels=levels, cmap=cm.RdBu_r)
+            plt.contourf(b_lst, c_lst, e_lst, 100, levels=levels, cmap=cm.brg)
         elif plane == "xz":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
-            plt.contourf(a_lst, c_lst, e_lst, 100, levels=levels, cmap=cm.RdBu_r)
+            plt.contourf(a_lst, c_lst, e_lst, 100, levels=levels, cmap=cm.brg)
         elif plane == "xy":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
-            plt.contourf(a_lst, b_lst, e_lst, 100, levels=levels, cmap=cm.RdBu_r)
+            plt.contourf(a_lst, b_lst, e_lst, 100, levels=levels, cmap=cm.brg)
 
         t2 = time.time()
         print("Time to order values",round(t2-t1,3),"sec")
@@ -143,7 +143,7 @@ def plotting(plane,location, locstr, number):
         plt.show()
 
 
-plotting("yz",0, " x = ", 9)
-plotting("xz",0, " y = ", 9)
-plotting("xy",0, " z = ", 9)
+plotting("yz",0, " x = ", 17)
+plotting("xz",0, " y = ", 17)
+plotting("xy",0, " z = ", 17)
 
