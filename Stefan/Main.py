@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 # parameters
-nrOfParticles = 50000  # None
+nrOfParticles = None
 
-pitch = [20]  # [10,15,20]
-radius = [20]  # [10,15,20]
-types = ["nor"]  # ,"gauss","poly","dog"
+pitch = [10]  # [10,15,20]
+radius = [10]  # [10,15,20]
+types = ["nor", "gauss", "poly"]  # ,"gauss","poly","dog"
 planes = ["yz", "xz", "xy"]
 
 # load the grids
@@ -56,12 +56,12 @@ print()
 print("----------------------------------------")
 
 
-def plotting(planes, typ, location, unit, number):
+def plotting(planes, typ, location, unit, number, start, stop):
     t1 = time.time()
     for grid in grids:
         # figure, axes = plt.subplots(nrows=1, ncols=3)
 
-        levels = np.linspace(-10, 25, number)
+        levels = np.linspace(-start, stop, number)
 
         uyz_values, vyz_values, wyz_values = [], [], []
         xyz_values, yyz_values, zyz_values = [], [], []
@@ -171,38 +171,42 @@ def plotting(planes, typ, location, unit, number):
             'width_ratios': [1, ((max(yyz_values) - min(yyz_values)) / (max(xxy_values) - min(xxy_values)))],
             'height_ratios': [1, ((max(yxy_values) - min(yxy_values)) / (max(zxz_values) - min(zxz_values)))]})
         if planes.count("yz") == 1:
-            ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
-            byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
-            cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
+            ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
+            byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
+            cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
             dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-            plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.RdBu_r)
+            plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
             axes[0][1].set_title("yz plane at x=" + loc + "[m]")
-            axes[0][1].set_xlabel("y [m]")
-            axes[0][1].set_ylabel("z [m]")
+            axes[0][1].set_xlabel("y/H")
+            axes[0][1].set_ylabel("z/H")
             axes[0][1].grid()
         if planes.count("xz") == 1:
-            axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
-            bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
-            cxz_lst = np.array(zxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
+            axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
+            bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
+            cxz_lst = np.array(zxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
             dxz_lst = np.array(uxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             loc = " " + str(round(grid[0, b, 0].y * 0.001, 4))
-            plot = axes[0][0].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.RdBu_r)
+            plot = axes[0][0].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
             axes[0][0].set_title("xz plane at y=" + loc + "[m]")
-            axes[0][0].set_xlabel("x [m]")
-            axes[0][0].set_ylabel("z [m]")
+            axes[0][0].set_xlabel("x/H")
+            axes[0][0].set_ylabel("z/H")
             axes[0][0].grid()
         if planes.count("xy") == 1:
-            axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
-            bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
-            cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
-            dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
+            axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
+            bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
+            cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
+            if typ == "nor" or typ == "gauss" or typ == "poly":
+                dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
+            elif typ == "vor":
+                dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) * (0.1 / 13)
             loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
-            plot = axes[1][0].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.RdBu_r)
+            plot = axes[1][0].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)  # cm.RdBu_r
             axes[1][0].set_title("xy plane at z=" + loc + "[m]")
-            axes[1][0].set_xlabel("x [m]")
-            axes[1][0].set_ylabel("y [m]")
-            axes[1][0].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280, color='Black')
+            axes[1][0].set_xlabel("x/H")
+            axes[1][0].set_ylabel("y/H")
+            axes[1][0].quiver(axy_lst, bxy_lst, usxy, vsxy, scale=325, color='Black')
+            # axes[1][0].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280,color='Black')
             axes[1][0].grid()
         axes[1][1].axis('off')
 
@@ -220,7 +224,10 @@ def plotting(planes, typ, location, unit, number):
             name = names[2]
         cb = figure.colorbar(plot)
         cb.set_label(unit)
-        figure.suptitle("Velocity heatmap using " + name)
+        if typ == "nor" or typ == "gauss" or typ == "poly":
+            figure.suptitle("Velocity heatmap using " + name)
+        elif typ == "vor":
+            figure.suptitle("Velocity heatmap of vorticity using " + name)
         # axes.title(typ+" Velocity Heatmap in "+plane+loc+"[mm]")
         plt.show()
 
@@ -237,9 +244,9 @@ def plotting(planes, typ, location, unit, number):
 
 
 for typ in types:
-    plotting(planes, typ, 5, "u [m/s]", 10)
+    plotting(planes, typ, 5, "u [m/s]", 10. - 10, 25)
 
-# plotting("yz","poly",0)
-# plotting("xz","poly",0)
-# plotting("xy","poly",10)
-# plotting("yz","vor",0)
+plotting("xy", ["vor"], 5, "[rad/s]", 10, -1, 1)
+plotting("xy", ["vor"], 15, "[rad/s]", 10, -1, 1)
+plotting("xy", ["vor"], 25, "[rad/s]", 10, -1, 1)
+

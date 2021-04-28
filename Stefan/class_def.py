@@ -147,7 +147,7 @@ class gridBin:
             self.gaussU = gaussianWeightedU / (gaussSumU)
             self.gaussV = gaussianWeightedV / (gaussSumV)
             self.gaussW = gaussianWeightedW / (gaussSumW)
-
+            self.averageGauss = [self.gaussU, self.gaussV, self.gaussW]
         elif np.size(self.vectors) == 1:
             # there is only one vector so that would mean standard deviation = 0 and Gaussian
             # method can not be appolied so the average velocity is the velocity component of the particle
@@ -155,12 +155,12 @@ class gridBin:
                 self.gaussU = vector.u
                 self.gaussV = vector.v
                 self.gaussW = vector.w
-
+            self.averageGauss = [self.gaussU, self.gaussV, self.gaussW]
         elif np.size(self.vectors) == 0:
             # for an empty bin the velocity component is just 0
             self.gaussU = 0
             self.gaussV = 0
             self.gaussW = 0
-        self.averageGauss = [self.gaussU, self.gaussV, self.gaussW]
+            self.averageGauss = []
         self.gaussianAverage.append([self.gaussU, self.gaussV, self.gaussW])
 
