@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 class vector:
 
@@ -15,7 +15,7 @@ class vector:
 class gridBin:
     # bin radius and number of bins in each direction
     # for spherical bin (static member belonging to class)
-    radius = 0
+    radius = 0  # spherical only
 
     # number of bins
     nrBinsX = 0
@@ -23,9 +23,9 @@ class gridBin:
     nrBinsZ = 0
 
     # bins width for rectangular bins (static class members)
-    widthX = 0
-    widthY = 0
-    widthZ = 0
+    widthX = 0  # rectangular only
+    widthY = 0  # rectangular only
+    widthZ = 0  # rectangular only
 
     xMin = 0
     xMax = 0
@@ -43,8 +43,20 @@ class gridBin:
 
         # list of vectors belonging to the bin
         self.vectors = []
-        self.NormalAverage = []
-        self.GaussianAverage = []
+
+        # averages initiated as empty lists
+        self.polyfitAverage = []
+        self.normalAverage = []
+        self.gaussianAverage = []
+        self.dogGaussianAverage = []
+        self.vorticity = None
+        self.fluc = None
+        self.turb_eng = None
+
+        # polynomial fit functions which take inputs (dx,dy,dz) from center of the bin
+        self.fitU = None
+        self.fitV = None
+        self.fitW = None
 
     def addVector(self, vector):
 
@@ -69,8 +81,8 @@ class gridBin:
             self.averageU = sumU / nrVectors
             self.averageV = sumV / nrVectors
             self.averageW = sumW / nrVectors
-
-        self.NormalAverage.append([self.averageU, self.averageV, self.averageW])
+        self.averageNormal = [self.averageU, self.averageV, self.averageW]
+        self.normalAverage.append([self.averageU, self.averageV, self.averageW])
 
     def calculateStandardDeviation(self):
 
@@ -147,9 +159,8 @@ class gridBin:
             self.gaussU = 0
             self.gaussV = 0
             self.gaussW = 0
-
-        self.GaussianAverage.append([self.gaussU, self.gaussV, self.gaussW])
-
+        self.averageGauss = [self.gaussU, self.gaussV, self.gaussW]
+        self.gaussianAverage.append([self.gaussU, self.gaussV, self.gaussW])
 
     def calculateNewGaussianAverage(self,datavarU, datavarV, datavarW, bigdatavarU, bigdatavarV, bigdatavarW):
         gaussSumU, gaussSumV, gaussSumW = 0, 0, 0
@@ -207,4 +218,5 @@ class gridBin:
             self.newgaussV = 0
             self.newgaussW = 0
 
+        self.averageNewGauss =[self.newgaussU,self.newgaussV,self.newgaussW]
         self.newGaussianAverage.append([self.newgaussU, self.newgaussV, self.newgaussW])
