@@ -75,9 +75,6 @@ def plotting(plane,location):
                     if thisBin.polyfitAverage != []:
                         t_values.append(thisBin.turb_eng)
                     else:
-                        #u_values.append(0)
-                        #v_values.append(0)
-                        #w_values.append(0)
                         t_values.append(0)
         elif plane == "xz":
             for i in range(np.size(grid,axis=1)):
@@ -115,21 +112,18 @@ def plotting(plane,location):
                         t_values.append(0)
 
         if plane == "yz":
-            a_lst = np.array(x_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             plt.contourf(b_lst, c_lst, e_lst, 100, cmap=cm.jet)
         elif plane == "xz":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
-            b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             plt.contourf(a_lst, c_lst, e_lst, 100, cmap=cm.jet)
         elif plane == "xy":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
-            c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             plt.contourf(a_lst, b_lst, e_lst, 100, cmap=cm.jet)
 
