@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 # parameters
-nrOfParticles = None
+nrOfParticles = 50000  # None
 
 pitch = [20]  # [10,15,20]
 radius = [20]  # [10,15,20]
-types = ["nor", "gauss", "poly"]  # ,"dog"
+types = ["nor"]  # ,"gauss","poly","dog"
 planes = ["yz", "xz", "xy"]
 
 # load the grids
@@ -56,18 +56,19 @@ print()
 print("----------------------------------------")
 
 
-def plotting(planes, typ, location):
+def plotting(planes, typ, location, unit, number):
     t1 = time.time()
     for grid in grids:
         # figure, axes = plt.subplots(nrows=1, ncols=3)
-        figure, axes = plt.subplots(1, 3)
-        levels = np.linspace(-10, 25, 100)
+        figure, axes = plt.subplots(nrows=1, ncols=3)
+
+        levels = np.linspace(-10, 25, number)
 
         uyz_values, vyz_values, wyz_values = [], [], []
         xyz_values, yyz_values, zyz_values = [], [], []
         uxz_values, vxz_values, wxz_values = [], [], []
         xxz_values, yxz_values, zxz_values = [], [], []
-        uxy_values, vxy_values, wxy_values = [], [], []
+        uxy_values, usxy, vxy_values, vsxy, wxy_values = [], [], [], [], []
         xxy_values, yxy_values, zxy_values = [], [], []
 
         if planes.count("yz"):
@@ -78,9 +79,9 @@ def plotting(planes, typ, location):
             for i in range(np.size(grid, axis=1)):
                 for j in range(np.size(grid, axis=2)):
                     thisBin = grid[a, i, j]
-                    xyz_values.append(thisBin.x)
-                    yyz_values.append(thisBin.y)
-                    zyz_values.append(thisBin.z)
+                    xyz_values.append(thisBin.x * 0.001)
+                    yyz_values.append(thisBin.y * 0.001)
+                    zyz_values.append(thisBin.z * 0.001)
 
                     if typ == "poly":
                         lst = thisBin.polyfitAverage
@@ -97,9 +98,9 @@ def plotting(planes, typ, location):
                         vyz_values.append(lst[1])
                         wyz_values.append(lst[2])
                     else:
-                        uyz_values.append(0)
-                        vyz_values.append(0)
-                        wyz_values.append(0)
+                        uyz_values.append(None)
+                        vyz_values.append(None)
+                        wyz_values.append(None)
         if planes.count("xz") == 1:
             for i in range(np.size(grid, axis=1)):
                 if grid[0, i, 0].y >= location:
@@ -108,9 +109,9 @@ def plotting(planes, typ, location):
             for i in range(np.size(grid, axis=0)):
                 for j in range(np.size(grid, axis=2)):
                     thisBin = grid[i, b, j]
-                    xxz_values.append(thisBin.x)
-                    yxz_values.append(thisBin.y)
-                    zxz_values.append(thisBin.z)
+                    xxz_values.append(thisBin.x * 0.001)
+                    yxz_values.append(thisBin.y * 0.001)
+                    zxz_values.append(thisBin.z * 0.001)
 
                     if typ == "poly":
                         lst = thisBin.polyfitAverage
@@ -128,9 +129,9 @@ def plotting(planes, typ, location):
                         vxz_values.append(lst[1])
                         wxz_values.append(lst[2])
                     else:
-                        uxz_values.append(0)
-                        vxz_values.append(0)
-                        wxz_values.append(0)
+                        uxz_values.append(None)
+                        vxz_values.append(None)
+                        wxz_values.append(None)
         if planes.count("xy") == 1:
             for i in range(np.size(grid, axis=2)):
                 if grid[0, 0, i].z >= location:
@@ -139,9 +140,9 @@ def plotting(planes, typ, location):
             for i in range(np.size(grid, axis=0)):
                 for j in range(np.size(grid, axis=1)):
                     thisBin = grid[i, j, c]
-                    xxy_values.append(thisBin.x)
-                    yxy_values.append(thisBin.y)
-                    zxy_values.append(thisBin.z)
+                    xxy_values.append(thisBin.x * 0.001)
+                    yxy_values.append(thisBin.y * 0.001)
+                    zxy_values.append(thisBin.z * 0.001)
 
                     if typ == "poly":
                         lst = thisBin.polyfitAverage
@@ -156,40 +157,48 @@ def plotting(planes, typ, location):
 
                     if lst != []:
                         uxy_values.append(lst[0])
+                        usxy.append(lst[0])
                         vxy_values.append(lst[1])
+                        vsxy.append(lst[1])
                         wxy_values.append(lst[2])
                     else:
-                        uxy_values.append(0)
-                        vxy_values.append(0)
-                        wxy_values.append(0)
+                        uxy_values.append(None)
+                        usxy.append(0)
+                        vxy_values.append(None)
+                        vsxy.append(0)
+                        wxy_values.append(None)
 
         if planes.count("yz") == 1:
             ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
-            loc = " " + str(round(grid[a, 0, 0].x, 2))
+            loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
             plot = axes[0].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
-            axes[0].set_title("yz plane at x=" + loc + "[mm]")
+            axes[0].set_title("yz plane at x=" + loc + "[m]")
+            axes[0].grid()
         if planes.count("xz") == 1:
             axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             cxz_lst = np.array(zxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             dxz_lst = np.array(uxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
-            loc = " " + str(round(grid[0, b, 0].y, 2))
+            loc = " " + str(round(grid[0, b, 0].y * 0.001, 4))
             plot = axes[1].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
-            axes[1].set_title("xz plane at y=" + loc + "[mm]")
+            axes[1].set_title("xz plane at y=" + loc + "[m]")
+            axes[1].grid()
         if planes.count("xy") == 1:
             axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
-            loc = " " + str(round(grid[0, 0, c].z, 2))
+            loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
             plot = axes[2].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)
-            axes[2].set_title("xy plane at z=" + loc + "[mm]")
+            axes[2].set_title("xy plane at z=" + loc + "[m]")
 
-            axes[2].quiver(xxy_values, yxy_values, uxy_values, vxy_values, scale=280, color='Black')
+            axes[2].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280, color='Black')
+            axes[2].grid()
 
+        plt.autoscale(enable=True, axis='both', tight=None)
         t2 = time.time()
         print("Time to order values", round(t2 - t1, 3), "sec")
 
@@ -202,7 +211,7 @@ def plotting(planes, typ, location):
         elif typ == "poly":
             name = names[2]
         cb = figure.colorbar(plot)
-        cb.set_label("u [m/s]")
+        cb.set_label(unit)
         figure.suptitle("Velocity heatmap using " + name)
         # axes.title(typ+" Velocity Heatmap in "+plane+loc+"[mm]")
         plt.show()
@@ -220,7 +229,7 @@ def plotting(planes, typ, location):
 
 
 for typ in types:
-    plotting(planes, typ, 5)
+    plotting(planes, typ, 5, "u [m/s]", 10)
 
 # plotting("yz","poly",0)
 # plotting("xz","poly",0)
