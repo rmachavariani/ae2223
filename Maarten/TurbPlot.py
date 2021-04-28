@@ -57,7 +57,7 @@ print("----------------------------------------")
 def plotting(plane,location):
     t1 = time.time()
     for grid in grids:
-        t_values, u_values, v_values, w_values = [],[],[],[]
+        t_values= []
         x_values, y_values, z_values = [],[],[]
         if plane == "yz":
             for i in range(np.size(grid,axis=0)):
@@ -73,9 +73,6 @@ def plotting(plane,location):
                     z_values.append(thisBin.z)
 
                     if thisBin.polyfitAverage != []:
-                        #u_values.append(thisBin.polyfitAverage[0])
-                        #v_values.append(thisBin.polyfitAverage[1])
-                        #w_values.append(thisBin.polyfitAverage[2])
                         t_values.append(thisBin.turb_eng)
                     else:
                         #u_values.append(0)
@@ -96,14 +93,8 @@ def plotting(plane,location):
                     z_values.append(thisBin.z)
 
                     if thisBin.polyfitAverage != []:
-                        u_values.append(thisBin.polyfitAverage[0])
-                        v_values.append(thisBin.polyfitAverage[1])
-                        w_values.append(thisBin.polyfitAverage[2])
                         t_values.append(thisBin.turb_eng)
                     else:
-                        u_values.append(0)
-                        v_values.append(0)
-                        w_values.append(0)
                         t_values.append(0)
         elif plane == "xy":
             for i in range(np.size(grid,axis=2)):
@@ -119,35 +110,26 @@ def plotting(plane,location):
                     z_values.append(thisBin.z)
 
                     if thisBin.polyfitAverage != []:
-                        #u_values.append(thisBin.polyfitAverage[0])
-                        #v_values.append(thisBin.polyfitAverage[1])
-                        #w_values.append(thisBin.polyfitAverage[2])
                         t_values.append(thisBin.turb_eng)
                     else:
-                        #u_values.append(0)
-                        #v_values.append(0)
-                        #w_values.append(0)
                         t_values.append(0)
 
         if plane == "yz":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
-            d_lst = np.array(u_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=1),np.size(grid,axis=2))
             plt.contourf(b_lst, c_lst, e_lst, 100, cmap=cm.jet)
         elif plane == "xz":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
-            d_lst = np.array(u_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=2))
             plt.contourf(a_lst, c_lst, e_lst, 100, cmap=cm.jet)
         elif plane == "xy":
             a_lst = np.array(x_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             b_lst = np.array(y_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             c_lst = np.array(z_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
-            d_lst = np.array(u_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             e_lst = np.array(t_values).reshape(np.size(grid,axis=0),np.size(grid,axis=1))
             plt.contourf(a_lst, b_lst, e_lst, 100, cmap=cm.jet)
 
@@ -155,8 +137,8 @@ def plotting(plane,location):
         print("Time to order values",round(t2-t1,3),"sec")
 
         cb = plt.colorbar()
-        cb.set_label("u [m/s]")
-        plt.title("velocity Heatmap in "+plane)
+        cb.set_label("K [J/kg]")
+        plt.title("Turbulent Kinetic Energy "+plane)
         plt.show()
 
 
