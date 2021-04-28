@@ -60,7 +60,7 @@ def plotting(planes, typ, location):
     t1 = time.time()
     for grid in grids:
         # figure, axes = plt.subplots(nrows=1, ncols=3)
-        figure, axes = plt.subplots(1, len(places))
+        figure, axes = plt.subplots(1, 3)
         levels = np.linspace(-10, 25, 100)
 
         uyz_values, vyz_values, wyz_values = [], [], []
