@@ -136,9 +136,9 @@ def plotting(plane,location, locstr, number):
         print("Time to order values",round(t2-t1,3),"sec")
 
         cb = plt.colorbar()
-        plt.axis("equal")
+        #plt.axis("equal")
         plt.grid()
-        cb.set_label("K [J/kg]")
+        cb.set_label("k [J/kg]")
         plt.title("Turbulent Kinetic Energy "+ plane + " at " + locstr + str(location))
         plt.show()
 
