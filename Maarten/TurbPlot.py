@@ -5,6 +5,8 @@ import EnsemblePolyfit as ens
 import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib
+matplotlib.use("Qt5Agg")
 
 # parameters
 nrOfParticles = None
@@ -54,11 +56,14 @@ print()
 print("----------------------------------------")
 
 
-def plotting(plane,location):
+def plotting(plane,location, locstr, number):
     t1 = time.time()
     for grid in grids:
         t_values= []
         x_values, y_values, z_values = [],[],[]
+
+        levels = np.linspace(-10, 25, number)
+
         if plane == "yz":
             for i in range(np.size(grid,axis=0)):
                 if grid[i,0,0].x >=location:
