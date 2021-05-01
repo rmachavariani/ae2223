@@ -62,8 +62,8 @@ def plotting(plane, location, locstr, number):
         x_values, y_values, z_values = [], [], []
 
         levels_1 = np.linspace(0, 35, number)
-        levels_2 = np.linspace(0, 25, number-2)
-        levels_3 = np.linspace(0, 30, number-1)
+        levels_2 = np.linspace(0, 25, number)
+        levels_3 = np.linspace(0, 30, number)
 
         if plane == "yz":
             for i in range(np.size(grid, axis=0)):
@@ -144,7 +144,7 @@ def plotting(plane, location, locstr, number):
         plt.show()
 
 
-plotting("yz", 0, " x = ", 8)
-plotting("xz", 0, " y = ", 8)
-plotting("xy", 0, " z = ", 8)
+plotting("yz", 0, " x = ", 17)
+plotting("xz", 0, " y = ", 17)
+plotting("xy", 0, " z = ", 17)
 
