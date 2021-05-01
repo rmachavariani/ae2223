@@ -9,9 +9,9 @@ import matplotlib.cm as cm
 # parameters
 nrOfParticles = None
 
-pitch = [10]  # [10,15,20]
-radius = [10]  # [10,15,20]
-types = ["nor", "gauss", "poly"]  # ,"gauss","poly","dog"
+pitch = [10]  # [10,15,20] 6.95,13.9,27.8
+radius = [5]  # [10,15,20] 5,10,20
+types = ["poly"]  # "nor","gauss","poly","dog"
 planes = ["yz", "xz", "xy"]
 
 # load the grids
@@ -61,7 +61,7 @@ def plotting(planes, typ, location, unit, number, start, stop):
     for grid in grids:
         # figure, axes = plt.subplots(nrows=1, ncols=3)
 
-        levels = np.linspace(-start, stop, number)
+        levels = np.linspace(start, stop, number)
 
         uyz_values, vyz_values, wyz_values = [], [], []
         xyz_values, yyz_values, zyz_values = [], [], []
@@ -92,10 +92,15 @@ def plotting(planes, typ, location, unit, number, start, stop):
                         lst = thisBin.dogGaussianAverage
                     elif typ == "vor":
                         lst = thisBin.vorticity
-                    if lst != []:
+
+                    if lst != [] and type(lst) != type(None):
                         uyz_values.append(lst[0])
                         vyz_values.append(lst[1])
                         wyz_values.append(lst[2])
+                    elif typ == "vor" and type(lst) == type(None):
+                        uyz_values.append(0)
+                        vyz_values.append(0)
+                        wyz_values.append(0)
                     else:
                         uyz_values.append(None)
                         vyz_values.append(None)
@@ -167,20 +172,35 @@ def plotting(planes, typ, location, unit, number, start, stop):
                         vsxy.append(0)
                         wxy_values.append(None)
 
-        figure, axes = plt.subplots(nrows=2, ncols=2, gridspec_kw={
-            'width_ratios': [1, ((max(yyz_values) - min(yyz_values)) / (max(xxy_values) - min(xxy_values)))],
-            'height_ratios': [1, ((max(yxy_values) - min(yxy_values)) / (max(zxz_values) - min(zxz_values)))]})
+        if typ == "nor" or typ == "gauss" or typ == "poly":
+            figure, axes = plt.subplots(nrows=2, ncols=2, gridspec_kw={
+                'width_ratios': [1, ((max(yyz_values) - min(yyz_values)) / (max(xxy_values) - min(xxy_values)))],
+                'height_ratios': [1, ((max(yxy_values) - min(yxy_values)) / (max(zxz_values) - min(zxz_values)))]})
+        elif typ == "vor":
+            figure, axes = plt.subplots(nrows=1, ncols=1)
+
         if planes.count("yz") == 1:
             ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
             byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
             cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
-            dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
-            loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-            plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
-            axes[0][1].set_title("yz plane at x=" + loc + "[m]")
-            axes[0][1].set_xlabel("y/H")
-            axes[0][1].set_ylabel("z/H")
-            axes[0][1].grid()
+            if typ == "nor" or typ == "gauss" or typ == "poly":
+                dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
+                plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
+                loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
+                axes[0][1].set_title("yz plane at x=" + loc + "[m]")
+                axes[0][1].set_xlabel("y/H")
+                axes[0][1].set_ylabel("z/H")
+                axes[0][1].grid()
+            elif typ == "vor":
+                dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) * (0.1 / 12)
+                plot = axes.contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
+                loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
+                axes.set_title("yz plane at x=" + loc + "[m]")
+                axes.set_xlabel("y/H")
+                axes.set_ylabel("z/H")
+                axes.grid()
+                # plt.axis('square')
+
         if planes.count("xz") == 1:
             axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
             bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
@@ -196,10 +216,7 @@ def plotting(planes, typ, location, unit, number, start, stop):
             axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
             bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
             cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
-            if typ == "nor" or typ == "gauss" or typ == "poly":
-                dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
-            elif typ == "vor":
-                dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) * (0.1 / 13)
+            dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
             plot = axes[1][0].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)  # cm.RdBu_r
             axes[1][0].set_title("xy plane at z=" + loc + "[m]")
@@ -208,7 +225,8 @@ def plotting(planes, typ, location, unit, number, start, stop):
             axes[1][0].quiver(axy_lst, bxy_lst, usxy, vsxy, scale=325, color='Black')
             # axes[1][0].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280,color='Black')
             axes[1][0].grid()
-        axes[1][1].axis('off')
+        if typ != "vor":
+            axes[1][1].axis('off')
 
         # plt.autoscale(enable=True, axis='both', tight=None)
         t2 = time.time()
@@ -222,6 +240,8 @@ def plotting(planes, typ, location, unit, number, start, stop):
             name = names[1]
         elif typ == "poly":
             name = names[2]
+        elif typ == "vor":
+            name = "vorticity"
         cb = figure.colorbar(plot)
         cb.set_label(unit)
         if typ == "nor" or typ == "gauss" or typ == "poly":
@@ -244,9 +264,13 @@ def plotting(planes, typ, location, unit, number, start, stop):
 
 
 for typ in types:
-    plotting(planes, typ, 5, "u [m/s]", 10. - 10, 25)
+    plotting(planes, typ, 5, "u [m/s]", 18, -10, 25)
 
-plotting("xy", ["vor"], 5, "[rad/s]", 10, -1, 1)
-plotting("xy", ["vor"], 15, "[rad/s]", 10, -1, 1)
-plotting("xy", ["vor"], 25, "[rad/s]", 10, -1, 1)
+# plotting("yz","vor",5,"[rad/s]",10,-1,1)
+# plotting("yz","vor",15,"[rad/s]",10,-1,1)\
+# plotting("yz","vor",5,"[rad/s] w*(H/U)",18,-1.5,1.5)
+# plotting("yz","vor",10,"[rad/s] w*(H/U)",18,1.5,1.5)
+# plotting("yz","vor",25,"[rad/s] w*(H/U)",18,1.5,1.5)
+# plotting("yz","vor",50,"[rad/s] w*(H/U)",18,1.5,1.5)
+
 
