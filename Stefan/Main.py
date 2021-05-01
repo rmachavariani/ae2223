@@ -9,8 +9,8 @@ import matplotlib.cm as cm
 # parameters
 nrOfParticles = None
 
-pitch = [10]  # [10,15,20] 6.95,13.9,27.8
-radius = [5]  # [10,15,20] 5,10,20
+pitch = [6.95, 13.9, 27.8]  # [10,20,40] 6.95,13.9,27.8
+radius = [5, 10, 20]  # [10,15,20] 5,10,20
 types = ["poly"]  # "nor","gauss","poly","dog"
 planes = ["yz", "xz", "xy"]
 
@@ -21,7 +21,6 @@ t1 = time.time()
 
 # loop over grids to calculate averages
 for grid in grids:
-
     # loop over current grid
     for i in range(np.size(grid, axis=0)):
         for j in range(np.size(grid, axis=1)):
@@ -29,7 +28,6 @@ for grid in grids:
 
                 # current bin
                 thisBin = grid[i, j, k]
-
                 # calculate normal average
                 if types.count("nor") == 1:
                     thisBin.calculateNormalAverage()
@@ -187,17 +185,17 @@ def plotting(planes, typ, location, unit, number, start, stop):
                 dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
                 plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
                 loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-                axes[0][1].set_title("yz plane at x=" + loc + "[m]")
-                axes[0][1].set_xlabel("y/H")
-                axes[0][1].set_ylabel("z/H")
+                axes[0][1].set_title("yz plane at x=" + loc + "[m]", fontsize=14)
+                axes[0][1].set_xlabel("y/H", fontsize=14)
+                axes[0][1].set_ylabel("z/H", fontsize=14)
                 axes[0][1].grid()
             elif typ == "vor":
                 dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) * (0.1 / 12)
                 plot = axes.contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
                 loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-                axes.set_title("yz plane at x=" + loc + "[m]")
-                axes.set_xlabel("y/H")
-                axes.set_ylabel("z/H")
+                axes.set_title("yz plane at x=" + loc + "[m]", fontsize=14)
+                axes.set_xlabel("y/H", fontsize=14)
+                axes.set_ylabel("z/H", fontsize=14)
                 axes.grid()
                 # plt.axis('square')
 
@@ -208,9 +206,9 @@ def plotting(planes, typ, location, unit, number, start, stop):
             dxz_lst = np.array(uxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             loc = " " + str(round(grid[0, b, 0].y * 0.001, 4))
             plot = axes[0][0].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
-            axes[0][0].set_title("xz plane at y=" + loc + "[m]")
-            axes[0][0].set_xlabel("x/H")
-            axes[0][0].set_ylabel("z/H")
+            axes[0][0].set_title("xz plane at y=" + loc + "[m]", fontsize=14)
+            axes[0][0].set_xlabel("x/H", fontsize=14)
+            axes[0][0].set_ylabel("z/H", fontsize=14)
             axes[0][0].grid()
         if planes.count("xy") == 1:
             axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
@@ -219,9 +217,9 @@ def plotting(planes, typ, location, unit, number, start, stop):
             dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
             plot = axes[1][0].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)  # cm.RdBu_r
-            axes[1][0].set_title("xy plane at z=" + loc + "[m]")
-            axes[1][0].set_xlabel("x/H")
-            axes[1][0].set_ylabel("y/H")
+            axes[1][0].set_title("xy plane at z=" + loc + "[m]", fontsize=14)
+            axes[1][0].set_xlabel("x/H", fontsize=14)
+            axes[1][0].set_ylabel("y/H", fontsize=14)
             axes[1][0].quiver(axy_lst, bxy_lst, usxy, vsxy, scale=325, color='Black')
             # axes[1][0].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280,color='Black')
             axes[1][0].grid()

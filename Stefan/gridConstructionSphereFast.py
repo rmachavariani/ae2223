@@ -129,9 +129,9 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
         indexZHigh = int(floor((z + radius - zMin) / pitch))
 
         # create range of indices in every direction
-        xRange = range(indexXLow,indexXHigh)
-        yRange = range(indexYLow,indexYHigh)
-        zRange = range(indexZLow,indexZHigh)
+        xRange = range(indexXLow,indexXHigh + 1)
+        yRange = range(indexYLow,indexYHigh + 1)
+        zRange = range(indexZLow,indexZHigh + 1)
 
         # loop through all relevant bins
         for i in xRange:
@@ -167,6 +167,7 @@ def checkRadiusLargeEnough(pitch,radius):
         return True
     else:
         return False
+
 
 
 #-------------------------------MAIN--------------------------------#
