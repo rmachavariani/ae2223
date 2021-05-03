@@ -9,10 +9,10 @@ import matplotlib.cm as cm
 # parameters
 nrOfParticles = None
 
-pitch = [6.95, 13.9, 27.8]  # [10,20,40] 6.95,13.9,27.8
-radius = [5, 10, 20]  # [10,15,20] 5,10,20
+pitch = [18.08]  # [10,6.95,26,18.081,40,27.8]#[10,20,40] 6.95,13.9,27.8
+radius = [13]  # [5,5,13,13,20,20]#[10,15,20] 5,10,20
 types = ["poly"]  # "nor","gauss","poly","dog"
-planes = ["yz", "xz", "xy"]
+planes = ["yz", "xz", "xy"]  # "yz","xz","xy"
 
 # load the grids
 grids = gr.allgrid(pitch, radius, nrOfParticles)
@@ -174,57 +174,73 @@ def plotting(planes, typ, location, unit, number, start, stop):
             figure, axes = plt.subplots(nrows=2, ncols=2, gridspec_kw={
                 'width_ratios': [1, ((max(yyz_values) - min(yyz_values)) / (max(xxy_values) - min(xxy_values)))],
                 'height_ratios': [1, ((max(yxy_values) - min(yxy_values)) / (max(zxz_values) - min(zxz_values)))]})
+            ticksx = int((max(yxz_values) - min(yxz_values)) / (0.5 * 0.15))
+            ticksy = int((max(yxz_values) - min(yxz_values)) / (0.5 * 0.15))
+            ticksz = int((max(yxz_values) - min(yxz_values)) / (0.5 * 0.15))
         elif typ == "vor":
             figure, axes = plt.subplots(nrows=1, ncols=1)
 
         if planes.count("yz") == 1:
-            ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
-            byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
-            cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.1
+            ayz_lst = np.array(xyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.15
+            byz_lst = np.array(yyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.15
+            cyz_lst = np.array(zyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 0.15
             if typ == "nor" or typ == "gauss" or typ == "poly":
                 dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
                 plot = axes[0][1].contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
                 loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-                axes[0][1].set_title("yz plane at x=" + loc + "[m]", fontsize=14)
-                axes[0][1].set_xlabel("y/H", fontsize=14)
-                axes[0][1].set_ylabel("z/H", fontsize=14)
+                axes[0][1].set_xticks(
+                    np.arange(round((min(yyz_values) / 0.15) * 2) / 2, (max(yyz_values) / 0.15), step=0.5))
+                axes[0][1].set_yticks(
+                    np.arange(round((min(zyz_values) / 0.15) * 2) / 2, (max(zyz_values) / 0.15), step=0.5))
+                axes[0][1].set_title("yz plane at x=" + loc + "[m]", fontsize=16)
+                axes[0][1].set_xlabel("y/H", fontsize=16)
+                axes[0][1].set_ylabel("z/H", fontsize=16)
                 axes[0][1].grid()
             elif typ == "vor":
-                dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) * (0.1 / 12)
+                dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) * (0.15 / 12)
                 plot = axes.contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
                 loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
-                axes.set_title("yz plane at x=" + loc + "[m]", fontsize=14)
-                axes.set_xlabel("y/H", fontsize=14)
-                axes.set_ylabel("z/H", fontsize=14)
+                axes.set_title("yz plane at x=" + loc + "[m]", fontsize=16)
+                axes.set_xlabel("y/H", fontsize=16)
+                axes.set_ylabel("z/H", fontsize=16)
                 axes.grid()
                 # plt.axis('square')
 
         if planes.count("xz") == 1:
-            axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
-            bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
-            cxz_lst = np.array(zxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.1
+            axz_lst = np.array(xxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.15
+            bxz_lst = np.array(yxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.15
+            cxz_lst = np.array(zxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 0.15
             dxz_lst = np.array(uxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             loc = " " + str(round(grid[0, b, 0].y * 0.001, 4))
             plot = axes[0][0].contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
-            axes[0][0].set_title("xz plane at y=" + loc + "[m]", fontsize=14)
-            axes[0][0].set_xlabel("x/H", fontsize=14)
-            axes[0][0].set_ylabel("z/H", fontsize=14)
+            axes[0][0].set_xticks(
+                np.arange(round((min(xxz_values) / 0.15) * 2) / 2, (max(xxz_values) / 0.15), step=0.5))
+            axes[0][0].set_yticks(
+                np.arange(round((min(zxz_values) / 0.15) * 2) / 2, (max(zxz_values) / 0.15), step=0.5))
+            axes[0][0].set_title("xz plane at y=" + loc + "[m]", fontsize=16)
+            axes[0][0].set_xlabel("x/H", fontsize=16)
+            axes[0][0].set_ylabel("z/H", fontsize=16)
             axes[0][0].grid()
         if planes.count("xy") == 1:
-            axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
-            bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
-            cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.1
+            axy_lst = np.array(xxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.15
+            bxy_lst = np.array(yxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.15
+            cxy_lst = np.array(zxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 0.15
             dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
             plot = axes[1][0].contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)  # cm.RdBu_r
-            axes[1][0].set_title("xy plane at z=" + loc + "[m]", fontsize=14)
-            axes[1][0].set_xlabel("x/H", fontsize=14)
-            axes[1][0].set_ylabel("y/H", fontsize=14)
+            axes[1][0].set_xticks(
+                np.arange(round((min(xxy_values) / 0.15) * 2) / 2, (max(xxy_values) / 0.15), step=0.5))
+            axes[1][0].set_xticks(
+                np.arange(round((min(yxy_values) / 0.15) * 2) / 2, (max(yxy_values) / 0.15), step=0.5))
+            axes[1][0].set_title("xy plane at z=" + loc + "[m]", fontsize=16)
+            axes[1][0].set_xlabel("x/H", fontsize=16)
+            axes[1][0].set_ylabel("y/H", fontsize=16)
             axes[1][0].quiver(axy_lst, bxy_lst, usxy, vsxy, scale=325, color='Black')
             # axes[1][0].quiver(xxy_values, yxy_values, usxy, vsxy, scale=280,color='Black')
             axes[1][0].grid()
         if typ != "vor":
             axes[1][1].axis('off')
+            figure.tight_layout()
 
         # plt.autoscale(enable=True, axis='both', tight=None)
         t2 = time.time()
