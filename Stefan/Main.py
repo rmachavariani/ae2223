@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 # parameters
-nrOfParticles = None
+nrOfParticles = 1000000  # None
 
 pitch = [18.08]  # [10,6.95,26,18.081,40,27.8]#[10,20,40] 6.95,13.9,27.8
 radius = [13]  # [5,5,13,13,20,20]#[10,15,20] 5,10,20
@@ -56,6 +56,8 @@ print("----------------------------------------")
 
 def plotting(planes, typ, location, unit, number, start, stop):
     t1 = time.time()
+    m = 0
+    n = 0
     for grid in grids:
         # figure, axes = plt.subplots(nrows=1, ncols=3)
 
@@ -230,11 +232,11 @@ def plotting(planes, typ, location, unit, number, start, stop):
                 axes[0][0].grid()
             elif typ == "vor":
                 dxz_lst = np.array(uxz_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) * (0.15 / 12)
-                plot = axes.contourf(bxz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
-                loc = " " + str(round(grid[0, b, 0].x * 0.001, 4))
+                plot = axes.contourf(axz_lst, cxz_lst, dxz_lst, levels=levels, cmap=cm.jet)
+                loc = " " + str(round(grid[0, b, 0].y * 0.001, 4))
                 axes.set_xticks(np.arange(round((min(xxz_values) / 0.15) * 2) / 2, (max(xxz_values) / 0.15), step=0.5))
                 axes.set_yticks(np.arange(round((min(zxz_values) / 0.15) * 2) / 2, (max(zxz_values) / 0.15), step=0.5))
-                axes.set_title("xz plane at x=" + loc + "[m]", fontsize=16)
+                axes.set_title("xz plane at y=" + loc + "[m]", fontsize=16)
                 axes.set_xlabel("y/H", fontsize=16)
                 axes.set_ylabel("z/H", fontsize=16)
                 axes.grid()
@@ -258,11 +260,11 @@ def plotting(planes, typ, location, unit, number, start, stop):
                 axes[1][0].grid()
             elif typ == "vor":
                 dxy_lst = np.array(uxy_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) * (0.15 / 12)
-                plot = axes.contourf(bxy_lst, cxy_lst, dxy_lst, levels=levels, cmap=cm.jet)
-                loc = " " + str(round(grid[0, 0, c].x * 0.001, 4))
+                plot = axes.contourf(axy_lst, bxy_lst, dxy_lst, levels=levels, cmap=cm.jet)
+                loc = " " + str(round(grid[0, 0, c].z * 0.001, 4))
                 axes.set_xticks(np.arange(round((min(xxy_values) / 0.15) * 2) / 2, (max(xxy_values) / 0.15), step=0.5))
                 axes.set_yticks(np.arange(round((min(yxy_values) / 0.15) * 2) / 2, (max(yxy_values) / 0.15), step=0.5))
-                axes.set_title("xy plane at x=" + loc + "[m]", fontsize=16)
+                axes.set_title("xy plane at z=" + loc + "[m]", fontsize=16)
                 axes.set_xlabel("y/H", fontsize=16)
                 axes.set_ylabel("z/H", fontsize=16)
                 axes.grid()
@@ -300,9 +302,8 @@ for typ in types:
 
 # plotting("yz","vor",5,"[rad/s]",10,-1,1)
 # plotting("yz","vor",15,"[rad/s]",10,-1,1)\
-plotting("yz", "vor", 5, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
-plotting("yz", "vor", 10, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
-plotting("xy", "vor", 25, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
-plotting("xz", "vor", 50, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
-
+# plotting("yz","vor",5 ,"$\omega$*(H/U)",18,-1.5,1.5)
+plotting("yz", "vor", 10, "$\omega$*(H/U)", 18, -1.5, 1.5)
+plotting("xy", "vor", 25, "$\omega$*(H/U)", 18, -1.5, 1.5)
+# plotting("xz","vor",50,"$\omega$*(H/U)",18,-1.5,1.5)
 
