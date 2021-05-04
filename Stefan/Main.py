@@ -174,9 +174,6 @@ def plotting(planes, typ, location, unit, number, start, stop):
             figure, axes = plt.subplots(nrows=2, ncols=2, gridspec_kw={
                 'width_ratios': [1, ((max(yyz_values) - min(yyz_values)) / (max(xxy_values) - min(xxy_values)))],
                 'height_ratios': [1, ((max(yxy_values) - min(yxy_values)) / (max(zxz_values) - min(zxz_values)))]})
-            ticksx = int((max(yxz_values) - min(yxz_values)) / (0.5 * 0.15))
-            ticksy = int((max(yxz_values) - min(yxz_values)) / (0.5 * 0.15))
-            ticksz = int((max(yxz_values) - min(yxz_values)) / (0.5 * 0.15))
         elif typ == "vor":
             figure, axes = plt.subplots(nrows=1, ncols=1)
 
@@ -200,6 +197,8 @@ def plotting(planes, typ, location, unit, number, start, stop):
                 dyz_lst = np.array(uyz_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) * (0.15 / 12)
                 plot = axes.contourf(byz_lst, cyz_lst, dyz_lst, levels=levels, cmap=cm.jet)
                 loc = " " + str(round(grid[a, 0, 0].x * 0.001, 4))
+                axes.set_xticks(np.arange(round((min(yyz_values) / 0.15) * 2) / 2, (max(yyz_values) / 0.15), step=0.5))
+                axes.set_yticks(np.arange(round((min(zyz_values) / 0.15) * 2) / 2, (max(zyz_values) / 0.15), step=0.5))
                 axes.set_title("yz plane at x=" + loc + "[m]", fontsize=16)
                 axes.set_xlabel("y/H", fontsize=16)
                 axes.set_ylabel("z/H", fontsize=16)
@@ -282,9 +281,9 @@ for typ in types:
 
 # plotting("yz","vor",5,"[rad/s]",10,-1,1)
 # plotting("yz","vor",15,"[rad/s]",10,-1,1)\
-# plotting("yz","vor",5,"[rad/s] w*(H/U)",18,-1.5,1.5)
-# plotting("yz","vor",10,"[rad/s] w*(H/U)",18,1.5,1.5)
-# plotting("yz","vor",25,"[rad/s] w*(H/U)",18,1.5,1.5)
-# plotting("yz","vor",50,"[rad/s] w*(H/U)",18,1.5,1.5)
+plotting("yz", "vor", 5, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
+plotting("yz", "vor", 10, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
+plotting("yz", "vor", 25, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
+plotting("yz", "vor", 50, "[rad/s] w*(H/U)", 18, -1.5, 1.5)
 
 
