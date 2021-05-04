@@ -65,15 +65,16 @@ def polyFit(coefs, dx, dy, dz):
 
     return functionValue
 
+# Calculates angular velocity of the vorticity field
+
 
 def vorticity(ucoefs, vcoefs, wcoefs):
     curl = np.empty(3)
-    curl[0] = wcoefs[2] - vcoefs[3]
-    curl[1] = ucoefs[3] - wcoefs[1]
-    curl[2] = vcoefs[1] - ucoefs[2]
+    curl[0] = (wcoefs[2] - vcoefs[3]) / 2
+    curl[1] = (ucoefs[3] - wcoefs[1]) / 2
+    curl[2] = (vcoefs[1] - ucoefs[2]) / 2
 
     return curl
-
 
 
 def solve(bin):

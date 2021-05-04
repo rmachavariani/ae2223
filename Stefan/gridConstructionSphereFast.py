@@ -10,7 +10,7 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
+    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = nrRows)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
@@ -160,13 +160,14 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 def checkRadiusLargeEnough(pitch,radius):
 
     # calculate radius in between centers
-    R = radius * cos(asin(pitch / (2 * radius)))
-
+    #R = radius * cos(asin(pitch / (2 * radius)))
+    dis = sqrt(pitch**2)
     # positive if radius is big enough
-    if R >= sqrt(2)/2*pitch:
+    if dis <= 2*radius:#R >= sqrt(2)/2*pitch:
         return True
     else:
         return False
+
 
 
 #-------------------------------MAIN--------------------------------#
