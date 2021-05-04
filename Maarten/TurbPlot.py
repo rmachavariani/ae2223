@@ -11,8 +11,8 @@ matplotlib.use("Qt5Agg")
 # parameters
 nrOfParticles = None
 
-pitch = [30]    # [10,15,20]
-radius = [30]   # [10,15,20]
+pitch = [19.473]    # [10,15,20]
+radius = [14]   # [10,15,20]
 
 # load the grids
 grids = gr.allgrid(pitch, radius, nrOfParticles)
@@ -81,7 +81,7 @@ def plotting(plane, location, locstr, number):
                     if thisBin.polyfitAverage != []:
                         t_values.append(thisBin.turb_eng)
                     else:
-                        t_values.append(0)
+                        t_values.append(None)
         elif plane == "xz":
             for i in range(np.size(grid, axis=1)):
                 if grid[0, i, 0].y >= location:
@@ -98,7 +98,7 @@ def plotting(plane, location, locstr, number):
                     if thisBin.polyfitAverage != []:
                         t_values.append(thisBin.turb_eng)
                     else:
-                        t_values.append(0)
+                        t_values.append(None)
         elif plane == "xy":
             for i in range(np.size(grid, axis=2)):
                 if grid[0,0,i].z >= location:
@@ -115,7 +115,7 @@ def plotting(plane, location, locstr, number):
                     if thisBin.polyfitAverage != []:
                         t_values.append(thisBin.turb_eng)
                     else:
-                        t_values.append(0)
+                        t_values.append(None)
 
         if plane == "yz":
             b_lst = np.array(y_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
@@ -144,7 +144,7 @@ def plotting(plane, location, locstr, number):
         plt.show()
 
 
-plotting("yz", 0, " x = ", 17)
-plotting("xz", 0, " y = ", 17)
-plotting("xy", 0, " z = ", 17)
+plotting("yz", 5, " x = ", 18)
+plotting("xz", 5, " y = ", 18)
+plotting("xy", 5, " z = ", 18)
 

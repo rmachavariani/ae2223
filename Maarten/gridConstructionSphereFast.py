@@ -160,13 +160,14 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 def checkRadiusLargeEnough(pitch,radius):
 
     # calculate radius in between centers
-    R = radius * cos(asin(pitch / (2 * radius)))
-
+    #R = radius * cos(asin(pitch / (2 * radius)))
+    dis = sqrt(pitch**2)
     # positive if radius is big enough
-    if R >= sqrt(2)/2*pitch:
+    if dis <= 2*radius:#R >= sqrt(2)/2*pitch:
         return True
     else:
         return False
+
 
 
 #-------------------------------MAIN--------------------------------#
