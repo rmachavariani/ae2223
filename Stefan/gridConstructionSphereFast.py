@@ -2,6 +2,7 @@ import numpy as np
 from class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
+import h5py
 
 
 def loadData(nrRows):
@@ -10,7 +11,16 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = nrRows)
+
+    #use for 2.7 million particles
+    #data = np.loadtxt("/Users/stefanrooze/Downloads/dataset.txt",max_rows = nrRows)
+
+    #use for 91 million particles
+    raw_data = h5py.File('/Users/stefanrooze/Downloads/completeDatasetCarMirrorTracksNikhilesh.dat', 'r')
+    data_column = raw_data['output']
+    data_column = np.array(data_column)
+    data = np.transpose(data_column)
+    print(data[100])
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
