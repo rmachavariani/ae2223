@@ -2,10 +2,7 @@ import numpy as np
 from Dana2.class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
-from streamlit import caching
 
-from functools import cache
-caching.clear_cache()
 
 def loadData(nrRows):
     ''' Loads data from carMirrorData.dat
@@ -13,7 +10,7 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("Dana2/carMirrorData.dat",max_rows = nrRows)
+    data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 

@@ -7,8 +7,6 @@ from functools import partial as part
 # matplotlib.use("Qt5Agg")
 
 
-from functools import cache
-
 
 def fetch_vector(bin):
     test_vectors = bin.vectors
