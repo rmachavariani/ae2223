@@ -11,8 +11,8 @@ matplotlib.use("Qt5Agg")
 # parameters
 nrOfParticles = None
 
-pitch = [19.473]    # [10,15,20]
-radius = [14]   # [10,15,20]
+pitch = [18.081]    # [10,15,20]
+radius = [13]   # [10,15,20]
 
 # load the grids
 grids = gr.allgrid(pitch, radius, nrOfParticles)
@@ -61,9 +61,9 @@ def plotting(plane, location, locstr, number):
         t_values= []
         x_values, y_values, z_values = [], [], []
 
-        levels_1 = np.linspace(0, 35, number)
-        levels_2 = np.linspace(0, 25, number)
-        levels_3 = np.linspace(0, 30, number)
+        levels_1 = np.linspace(0, 34, number)
+        levels_2 = np.linspace(0, 24, number)
+        levels_3 = np.linspace(0, 32, number)
 
         if plane == "yz":
             for i in range(np.size(grid, axis=0)):
@@ -117,30 +117,40 @@ def plotting(plane, location, locstr, number):
                     else:
                         t_values.append(None)
 
+
         if plane == "yz":
-            b_lst = np.array(y_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
-            c_lst = np.array(z_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
+            b_lst = np.array(y_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 150
+            c_lst = np.array(z_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2)) / 150
             e_lst = np.array(t_values).reshape(np.size(grid, axis=1), np.size(grid, axis=2))
             plt.contourf(b_lst, c_lst, e_lst, 100, levels=levels_1, cmap=cm.jet)
+            plt.xlabel("y / H", fontsize=20)
+            plt.ylabel("z / H", fontsize=20)
         elif plane == "xz":
-            a_lst = np.array(x_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
-            c_lst = np.array(z_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
+            a_lst = np.array(x_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 150
+            c_lst = np.array(z_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2)) / 150
             e_lst = np.array(t_values).reshape(np.size(grid, axis=0), np.size(grid, axis=2))
             plt.contourf(a_lst, c_lst, e_lst, 100, levels=levels_2, cmap=cm.jet)
+            plt.xlabel("x / H", fontsize=20)
+            plt.ylabel("z / H", fontsize=20)
         elif plane == "xy":
-            a_lst = np.array(x_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
-            b_lst = np.array(y_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
+            a_lst = np.array(x_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 150
+            b_lst = np.array(y_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1)) / 150
             e_lst = np.array(t_values).reshape(np.size(grid, axis=0), np.size(grid, axis=1))
             plt.contourf(a_lst, b_lst, e_lst, 100, levels=levels_3, cmap=cm.jet)
+            plt.xlabel("x / H", fontsize=20)
+            plt.ylabel("y / H", fontsize=20)
 
         t2 = time.time()
         print("Time to order values", round(t2-t1, 3), "sec")
 
         cb = plt.colorbar()
+        cb.ax.tick_params(labelsize=15)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=15)
         plt.axis("square")
         plt.grid()
-        cb.set_label("k [J/kg]", fontsize=15)
-        plt.title("Turbulent Kinetic Energy " + plane + " at " + locstr + str(location), fontsize=20)
+        cb.set_label("k [J/kg]", fontsize=20)
+        plt.title("Turbulent Kinetic Energy " + plane + " at " + locstr + str(location/1000) + "[m]", fontsize=25)
         plt.show()
 
 
