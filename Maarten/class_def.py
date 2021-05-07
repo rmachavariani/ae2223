@@ -34,13 +34,17 @@ class gridBin:
     zMin = 0
     zMax = 0
 
-    def __init__(self, x, y, z):
+    def __init__(self, x, y, z, i, j, k):
 
         # coordinate of center of bin
         self.x = x
         self.y = y
         self.z = z
 
+
+        self.i = i
+        self.j = j
+        self.k = k
         # list of vectors belonging to the bin
         self.vectors = []
 
