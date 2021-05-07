@@ -1,19 +1,7 @@
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import numpy as np
-from Dana.class_def import *
-from Dana.gridConstruction import getRectangularGridWithVectors
-from Dana.gridConstruction import loadData
-from Dana.gridConstruction import createVectorObjects
-from matplotlib.cm import ScalarMappable
-from astropy.convolution import convolve, Gaussian2DKernel
-from scipy import stats
+from Dana2.class_def import *
 import seaborn as sns
-
-
-
-
-from Dana.gridConstructionSphereFast import getSphericalGridWithVectorsFast
+from Dana2.gridConstructionSphereFast import getSphericalGridWithVectorsFast
 
 
 

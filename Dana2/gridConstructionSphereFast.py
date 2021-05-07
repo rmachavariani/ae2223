@@ -1,10 +1,9 @@
 import numpy as np
-from Dana.class_def import *
+from Dana2.class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
-from functools import cache
 
-@cache
+
 def loadData(nrRows):
     ''' Loads data from carMirrorData.dat
     :return: nrVectors x 6 np array

@@ -48,6 +48,7 @@ def getGeneralDensity():
     plt.rcParams.update({'font.size': 6})
 
     f, axes = plt.subplots(nrows=2, ncols=1, figsize=(2,3), gridspec_kw={'height_ratios': [1, 2]})
+
     x_plot = axes[1].scatter(y_values, x_values, c=u_values, edgecolors='none', marker=".",  cmap=cm.jet)
 
     axes[1].set_xlim([-150,150])

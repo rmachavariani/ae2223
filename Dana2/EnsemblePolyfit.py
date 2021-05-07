@@ -1,4 +1,4 @@
-from Dana.gridConstructionSphereFast import *
+from Dana2.gridConstructionSphereFast import *
 import pdb
 import matplotlib.pyplot as plt
 import matplotlib
@@ -6,8 +6,6 @@ from functools import partial as part
 
 # matplotlib.use("Qt5Agg")
 
-
-from functools import cache
 
 
 def fetch_vector(bin):
