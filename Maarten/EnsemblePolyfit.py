@@ -76,6 +76,9 @@ def vorticity(ucoefs, vcoefs, wcoefs):
 
 
 
+
+
+
 def solve(bin):
     data = fetch_vector(bin)
     design_matrix = basis(data, bin)

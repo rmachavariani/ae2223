@@ -11,7 +11,7 @@ def loadData(nrRows):
     # load the data
     t1 = time.time()
     data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
-    t2 = time.time()
+    t2 =  ime()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
     return data

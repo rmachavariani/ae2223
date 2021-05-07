@@ -1,105 +1,74 @@
 import class_def
+import numpy as np
 from gridConstructionSphereFast import *
+from gridConstruction import *
+def get_nodes_array(location, scheme, direction):
+    scheme_dict_shift = {'forward': 0, 'center': -2, 'backward': -4}
 
-def vorticity(grid, bin):
-
-    # lists to loop over the bin
-    bin_loc = [bin.i, bin.j, bin.k]
-    grid_size = [gridBin.nrBinsX, gridBin.nrBinsY, gridBin.nrBinsZ]
-    pdus = [[],[],[]]
-
-    h = grid[0,0,0].x - grid[1,0,0].x
-
-    for cmp in bin_loc:
-
-        if cmp < 2 or cmp > (grid_size[bin_loc.index(cmp)]-2):
-            partial_derivative1 = edge_scheme()
-
-
-        else:
-            central_scheme()
-
-
-
-def calc_vorticity(grid, bin):
-    # initialize the six pd's
-    h = grid[0, 0, 0].x - grid[1, 0, 0].x
-    pdes = [dwdy, dvdz, dudz, dwdx, dvdx, dudy]
-    veldir = [2,1,0,2,1,0]
-    griddir = [0, 2, 2, 0, 0, 1]
-    poss = np.array([bin.i, bin.j, bin.k])
-    limits = [gridBin.nrBinsX - 1, gridBin.nrBinsY - 1, gridBin.nrBinsZ -1]
-    idx = 0
-    for pd in griddir:
-
-        if poss[pd] < 2:
-
-
-
-            shift = np.zeros(4,3)
-            for i in range(np.size(shift, axis=0)):
-                for j in range(np.size(shift, axis=1)):
-                    if j == pd:
-                        shift[i,j] = i+1
-            umin = bin.polyfitAverage[veldir[idx]]
-            u1 =
-            jcor =
-            kcor =
-            pdes[idx] = edge_scheme(grid, pd, veldir[idx] poss, h)
-
-        elif poss[pd] > (limits[pd] - 2):
-
-
-        else:
-            central_scheme()
-
-        idx += 1
-
-
-
-
-    # calculate pd1 for vcomp --> identify suitable scheme
-    # calculate pd2 for vcomp --> identify suitable scheme
-    # return the vorticity
-
-    # direction of partial derivative: griddir
-    # grid[i,j,k]
-    # griddir[idx]: varying
-    # other values fixed
-    # np.zeros(5,3)
-
-
-def central_scheme(grid, direction, component, location, h):
-    nodes = [node_1, node_2, node_3, node_4, node_5]
-    shift = np.zeros(5,3)
+    shift = np.zeros((5, 3))
     for i in range(np.size(shift, axis=0)):
         for j in range(np.size(shift, axis=1)):
             if j == direction:
-                shift[i,j] = j
+                shift[i, j] = i + scheme_dict_shift[scheme]
 
-    for rows in shift:
-       nodes[rows] = shift[i,:] + position
-    umin2 = location[0] + shift[0,0]
-    umin1 =
-    u1 =
-    u2 =
+    for i in range(np.size(shift, axis=0)):
+        shift[i,:] += location
 
-    return (1*umin2-8*umin1+8*u1-1*u2)/(12.0*h)
+    return shift.astype(int)
+
+def partial_approx(grid, scheme, veldir, griddir,poss,h):
+
+    scheme_weights = {'forward': np.array([-25,48,-36,16,-3]), 'central' : np.array([1,-8,0,8,-1]), 'backward' : np.array([3,-16,36,-48,25])}
+
+    nodes = get_nodes_array(poss, scheme, griddir)
+
+    weighted_node_sum = 0
+
+    for i in range(np.size(nodes, axis=0)):
+        print(nodes[i,1])
+        #print(grid[nodes[i,1]])
+        print(range(np.size(nodes,axis=0)))
+        i = nodes[i,0]
+        j = nodes[i,1]
+        k = nodes[i,2]
+        weighted_node_sum += grid[i,j,k].polyfitAverage[veldir]*scheme_weights[scheme][i]
+
+    return weighted_node_sum / (12 * h)
 
 
-def left_scheme(grid, direction, location, h):
-    uzero =
-    u1 =
-    u2 =
-    u3 =
-    u4 =
-    return (-25*uzero+48*u1-36*u2+16*u3-3*u4)/(12.0*h)
+def vorticity(grid, bin):
+    # determine step size [m]
+    h = (grid[0, 0, 0].x - grid[1, 0, 0].x) / 1000
 
-def right_scheme(grid, direction, location, h):
-    umin4 =
-    umin3 =
-    umin2 =
-    umin1 =
-    uzero =
+    # Initialize the curl definition
+    pdes = ['dwdy', 'dvdz', 'dudz', 'dwdx', 'dvdx', 'dudy']
+    veldir = [2, 1, 0, 2, 1, 0]     # velocity components in vorticity defintion ()
+    griddir = [0, 2, 2, 0, 0, 1]
 
-    return (3*umin4-16*umin3+36*umin2-48*umin1+25*uzero)/(12.0*h)
+    # Get position of the bin
+    poss = np.array([bin.i, bin.j, bin.k])
+    limits = [gridBin.nrBinsX - 1, gridBin.nrBinsY - 1, gridBin.nrBinsZ - 1]
+    idx = 0
+    scheme = None
+
+    # Determine scheme for the partial derivative
+    for pd in griddir:
+
+        if poss[pd] < 2:
+            scheme = 'forward'
+        elif poss[pd] > (limits[pd] - 2):
+            scheme = 'backward'
+        else:
+            scheme = 'central'
+
+        pdes[idx] = partial_approx(grid, scheme, veldir, griddir, poss, h)
+    idx += 1
+
+    return [pdes[0] - pdes[1], pdes[2] - pdes[3], pdes[4] - pdes[5]]
+
+
+# DEBUGGING:
+testGrid = getRectangularGridWithVectors(15,15,15)
+print(testGrid[5,5,5])
+print(vorticity(testGrid,testGrid[5,5,5]))
+
