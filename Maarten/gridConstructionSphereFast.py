@@ -89,7 +89,7 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     for i in range(nrBinsX):
         for j in range(nrBinsY):
             for k in range(nrBinsZ):
-                grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k)
+                grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k) # SEE i,j,k ADDED!!!!
 
     # report to user
     t2 = time.time()

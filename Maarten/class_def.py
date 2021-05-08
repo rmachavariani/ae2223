@@ -40,9 +40,9 @@ class gridBin:
         self.x = x
         self.y = y
         self.z = z
-        self.i = i
-        self.j = j
-        self.k = k
+        self.i = i # ADDED i - > ALSO IN __init__ ARGUMENT!!
+        self.j = j # ADDED j - > ALSO IN __init__ ARGUMENT!!
+        self.k = k # ADDED k  > ALSO IN __init__ ARGUMENT!!
 
         # list of vectors belonging to the bin
         self.vectors = []
