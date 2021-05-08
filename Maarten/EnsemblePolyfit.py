@@ -1,11 +1,12 @@
-from gridConstruction import *
+#from gridConstruction import *
 import pdb
 import matplotlib.pyplot as plt
+import numpy as np
 import matplotlib
 from functools import partial as part
 import statistics as sts
 matplotlib.use("Qt5Agg")
-
+import Vorticity as vort
 
 def fetch_vector(bin):
     test_vectors = bin.vectors
@@ -80,6 +81,7 @@ def vorticity(ucoefs, vcoefs, wcoefs):
 
 
 def solve(bin):
+    #print('SOLVE EXECUTED')
     data = fetch_vector(bin)
     design_matrix = basis(data, bin)
     ucoefs = coefficients(design_matrix, data[:, 3])
@@ -96,8 +98,10 @@ def solve(bin):
     bin.fitU = createPolyFit(ucoefs)
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
+    #print(ucoefs[0], vcoefs[0], wcoefs[0])
     bin.polyfitAverage = [ucoefs[0], vcoefs[0], wcoefs[0]]
-    bin.vorticity = vorticity(ucoefs, vcoefs, wcoefs)
+    #print('POLYFIT EXECUTED')
+    #bin.vorticity = vort.vorticity(grid, bin, limits)
 
 
 # data = getRectangularGridWithVectors(10, 10, 10)

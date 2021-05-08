@@ -11,7 +11,7 @@ def loadData(nrRows):
     # load the data
     t1 = time.time()
     data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
-    t2 =  ime()
+    t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
     return data
@@ -89,7 +89,7 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     for i in range(nrBinsX):
         for j in range(nrBinsY):
             for k in range(nrBinsZ):
-                grid[i, j, k] = gridBin(x[i], y[j], z[k])
+                grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k)
 
     # report to user
     t2 = time.time()
@@ -160,14 +160,13 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 def checkRadiusLargeEnough(pitch,radius):
 
     # calculate radius in between centers
-    #R = radius * cos(asin(pitch / (2 * radius)))
-    dis = sqrt(pitch**2)
+    R = radius * cos(asin(pitch / (2 * radius)))
+
     # positive if radius is big enough
-    if dis <= 2*radius:#R >= sqrt(2)/2*pitch:
+    if R >= sqrt(2)/2*pitch:
         return True
     else:
         return False
-
 
 
 #-------------------------------MAIN--------------------------------#
