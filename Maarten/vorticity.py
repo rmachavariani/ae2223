@@ -1,3 +1,13 @@
+#   Using vorticity:
+#   1. See Main.py in my folder, an extra loop is made: this is essential because
+#   all bin averaging has to be completed before the vorticity can be calculated
+#
+#   2. the class definition has the i, j and k added to gridBin, this must also be added in the
+#   gridConstructionSphereFast function were the instances of gridbin are placed in the grid
+#
+#   3. class_def imported in Main.py -> needed for the argument of vorticity()
+
+# ========================================================
 import class_def
 import numpy as np
 import gridConstructionSphereFast as gr
