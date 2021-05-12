@@ -2,7 +2,7 @@ import gridConstructionSphereFast as gr
 from class_def import * # class_def IMPORTED !!!
 import numpy as np
 import EnsemblePolyfit as ens
-import Vorticity as vort
+import vorticity as vort
 import time
 
 
@@ -59,8 +59,8 @@ for grid in grids:
                 thisBin = grid[i, j, k]
 
                 if len(thisBin.vectors) > minParticlesForAverages:
-                    thisBin.vorticity = vort.vorticity(grid, thisBin, [gridBin.nrBinsX - 1, gridBin.nrBinsY - 1, gridBin.nrBinsZ - 1])
-
+                    thisBin.vorticity = vort.vorticity(grid, thisBin, [gridBin.nrBinsX - 1, gridBin.nrBinsY - 1, gridBin.nrBinsZ - 1], 3)
+                    print(thisBin.vorticity)
 
 # TESTING::
-#print(grids[0][50,30,25].vorticity)
+print(grids[0][50,30,25].vorticity)

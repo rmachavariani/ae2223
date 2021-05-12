@@ -83,7 +83,7 @@ def vorticity(grid, bin, limits, node_qty):
     # Initialize the curl definition
     pdes = ['dwdy', 'dvdz', 'dudz', 'dwdx', 'dvdx', 'dudy']
     veldir = [2, 1, 0, 2, 1, 0]     # velocity components in vorticity defintion ()
-    griddir = [0, 2, 2, 0, 0, 1]
+    griddir = [1, 2, 2, 0, 0, 1]
 
     # Get position of the bin
     poss = np.array([bin.i, bin.j, bin.k])
@@ -104,10 +104,13 @@ def vorticity(grid, bin, limits, node_qty):
 
         pdes[idx], noData = partial_approx(grid, scheme, veldir[idx], pd, poss, h, noData, node_qty)
         idx += 1
+
     if not noData:
         return [pdes[0] - pdes[1], pdes[2] - pdes[3], pdes[4] - pdes[5]]
+
     else:
         return []
 
 
 # DEBUGGING:
+# print(get_nodes_array(np.array([5,8,13]), 'forward', 1, 5))

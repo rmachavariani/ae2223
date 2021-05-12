@@ -53,6 +53,7 @@ class gridBin:
         self.gaussianAverage = []
         self.dogGaussianAverage = []
         self.vorticity = None
+        self.pde = []
         self.fluc = None
         self.turb_eng = None
 

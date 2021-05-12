@@ -6,7 +6,7 @@ import matplotlib
 from functools import partial as part
 import statistics as sts
 matplotlib.use("Qt5Agg")
-import Vorticity as vort
+#import vorticity as vort
 
 def fetch_vector(bin):
     test_vectors = bin.vectors
@@ -96,6 +96,7 @@ def solve(bin):
     bin.fluc = vel_prime
     bin.turb_eng = energy
     bin.fitU = createPolyFit(ucoefs)
+
     bin.fitV = createPolyFit(vcoefs)
     bin.fitW = createPolyFit(wcoefs)
     #print(ucoefs[0], vcoefs[0], wcoefs[0])
