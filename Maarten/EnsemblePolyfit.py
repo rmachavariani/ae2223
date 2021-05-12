@@ -1,4 +1,5 @@
-#from gridConstruction import *
+# from gridConstruction import *
+
 import pdb
 import matplotlib.pyplot as plt
 import numpy as np
@@ -53,6 +54,7 @@ def createPolyFit(coefs):
     # create partical function
     partialFit = part(polyFit, coefs)
 
+
     return partialFit
 
 
@@ -62,7 +64,7 @@ def polyFit(coefs, dx, dy, dz):
     basis = np.array([1, dx, dy, dz, dx * dy, dx * dz, dy * dz, dx ** 2, dy ** 2, dz ** 2])
 
     # calculate value
-    functionValue = np.sum(basis * coefs)
+    functionValue = np.dot(basis, coefs)
 
     return functionValue
 
@@ -105,8 +107,10 @@ def solve(bin):
     #bin.vorticity = vort.vorticity(grid, bin, limits)
 
 
-# data = getRectangularGridWithVectors(10, 10, 10)
-#
+#data = getRectangularGridWithVectors(10, 10, 10)
+#test_cell = data[5,5,5]
+#solve(test_cell)
+
 # sizeX = np.size(data, axis=0)
 # sizeY = np.size(data, axis=1)
 # sizeZ = np.size(data, axis=2)

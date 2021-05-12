@@ -12,7 +12,7 @@ import class_def
 import numpy as np
 import gridConstructionSphereFast as gr
 #from gridConstruction import *
-import EnsemblePolyfit as ens
+# import EnsemblePolyfit as ens
 def get_nodes_array(location, scheme, direction, node_qty):
     #print(location, scheme, direction)
 
@@ -70,6 +70,7 @@ def partial_approx(grid, scheme, veldir, griddir,poss,h, noData, node_qty):
             return 1, noData
 
 
+# noinspection PyUnresolvedReferences
 def vorticity(grid, bin, limits, node_qty):
 
     if int(node_qty) == 5:
@@ -106,6 +107,7 @@ def vorticity(grid, bin, limits, node_qty):
         idx += 1
 
     if not noData:
+        bin.pde = [pdes[-1], pdes[2]]
         return [pdes[0] - pdes[1], pdes[2] - pdes[3], pdes[4] - pdes[5]]
 
     else:
