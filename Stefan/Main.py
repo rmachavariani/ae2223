@@ -25,9 +25,12 @@ t1 = time.time()
 for grid in grids:
     # loop over current grid
     for i in range(np.size(grid, axis=0)):
+        nex = True
         for j in range(np.size(grid, axis=1)):
             for k in range(np.size(grid, axis=2)):
-
+                if i % 10 ==0 and nex == True:
+                    print(i)
+                    nex = False
                 # current bin
                 thisBin = grid[i, j, k]
                 # calculate normal average
@@ -67,7 +70,7 @@ for grid in grids:
                 thisBin = grid[i, j, k]
 
                 if len(thisBin.vectors) > minParticlesForAverages:
-                    thisBin.vorticity = vort.vorticity(grid, thisBin, [np.size(grid, axis=0) - 1, np.size(grid, axis=1) - 1, np.size(grid, axis=2) - 1])
+                    thisBin.vorticity = vort.vorticity(grid, thisBin, [np.size(grid, axis=0) - 1, np.size(grid, axis=1) - 1, np.size(grid, axis=2) - 1],3)
 
 
 def plotting(planes, typ, location, unit, number, start, stop, title):
@@ -115,7 +118,7 @@ def plotting(planes, typ, location, unit, number, start, stop, title):
                     elif typ == "vor":
                         lst = thisBin.vorticity
 
-                    if typ == "vor" or typ=="poly" or typ=="gauss" or typ=="nor":
+                    if typ != "ke":
                         if lst!=[] and type(lst)!=type(None):
                             if typ != "vor":
                                 uyz_values.append(lst[0])
@@ -167,7 +170,7 @@ def plotting(planes, typ, location, unit, number, start, stop, title):
                         energy = thisBin.turb_eng
                         lst = thisBin.polyfitAverage
 
-                    if typ == "vor" or typ=="poly" or typ=="gauss" or typ=="nor":
+                    if typ != "ke":
                         if lst!=[] and type(lst)!=type(None):
                             if typ != "vor":
                                 uxz_values.append(lst[0])
@@ -216,7 +219,7 @@ def plotting(planes, typ, location, unit, number, start, stop, title):
                     elif typ == "vor":
                         lst = thisBin.vorticity
 
-                    if typ == "vor" or typ=="poly" or typ=="gauss" or typ=="nor":
+                    if typ != "ke":
                         if lst!=[] and type(lst)!=type(None):
                             if typ != "vor":
                                 uxy_values.append(lst[0])
@@ -366,27 +369,27 @@ def plotting(planes, typ, location, unit, number, start, stop, title):
         elif typ == "vor":
             figure.suptitle("Vorticity using " + name)
 
-        plt.savefig(title[l])
-        #plt.show()
+        #plt.savefig(title[l])
+        plt.show()
         l+=1
 
 
 filename = ['/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7/poly_50_75','/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7/poly_30_45','/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7/poly_15_225','/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7/poly_10_15']
 plotting(planes, "poly", "spec", "u [m/s]", 19, -10, 25,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/trash"])
 
-plotting("yz","ke",0,"k [J/kg]",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/ke_yz"])
-plotting("xz","ke",0,"k [J/kg]",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/ke_xz"])
-plotting("xy","ke",0,"k [J/kg]",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/ke_xy"])
+plotting("yz","ke",50,"k [J/kg]",19,0,40,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/ke_yz_50"])
+plotting("xz","ke",0,"k [J/kg]",19,0,40,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/ke_xz_0"])
+plotting("xy","ke",50,"k [J/kg]",19,0,40,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/ke_xy_50"])
 
-plotting("yz","vor",30,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_30"])
-plotting("yz","vor",50,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_50"])
-plotting("yz","vor",75,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_75"])
-plotting("yz","vor",100,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_100"])
-plotting("yz","vor",150,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_150"])
-plotting("yz","vor",200,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_200"])
-plotting("xz","vor",0,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_xz_0"])
-plotting("xy","vor",10,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_xy_10"])
-plotting("xy","vor",75,"\omega(H/U)",19,0,35,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_xy_75"])
+plotting("yz","vor",30,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_30"])
+plotting("yz","vor",50,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_50"])
+plotting("yz","vor",75,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_75"])
+plotting("yz","vor",100,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_100"])
+plotting("yz","vor",150,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_150"])
+plotting("yz","vor",200,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_yz_200"])
+plotting("xz","vor",0,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_xz_0"])
+plotting("xy","vor",10,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_xy_10"])
+plotting("xy","vor",75,"\u03C9(H/U)",19,-2.5,2.5,["/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/Images/V7_2.7/vor_xy_75"])
 
 # plotting("yz","vor",5,"[rad/s]",10,-1,1)
 # plotting("yz","vor",15,"[rad/s]",10,-1,1)\
