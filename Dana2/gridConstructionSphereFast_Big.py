@@ -2,6 +2,7 @@ import numpy as np
 from class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
+import h5py
 
 
 def loadData(nrRows):
@@ -10,11 +11,21 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
+
+    #use for 2.7 million particles
+    #data = np.loadtxt("/Users/stefanrooze/Downloads/dataset.txt",max_rows = nrRows)
+
+    #use for 91 million particles
+    raw_data = h5py.File('completeDatasetCarMirrorTracksNikhilesh.dat', 'r')
+    data_column = raw_data['output']
+    data_column = np.array(data_column)
+    data = np.transpose(data_column)
+    print(data[100])
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
     return data
+
 
 def determineMaxMin(data):
     '''Determines the mininum and maximum value for every dimension
@@ -37,6 +48,7 @@ def determineMaxMin(data):
 
     return xMin, xMax, yMin, yMax, zMin, zMax
 
+
 def createVectorObjects(data):
     ''' Creates objects from the particle/vector data
     :param data: raw data in numpy array
@@ -57,6 +69,7 @@ def createVectorObjects(data):
     print("Objects created in ", "{:.2f}".format(t2 - t1), " s")
 
     return dataPoints
+
 
 def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
 
@@ -103,48 +116,56 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
 
     return grid
 
+
 def assignVectorsToGrid(vectors, grid, pitch, radius,
                         xMin, yMin, zMin):
 
     t1 = time.time()
 
+
+
     # loop though all the vectors
     for vector in vectors:
 
-        # get coordinates
-        x = vector.x
-        y = vector.y
-        z = vector.z
+        if 0 < vector.x < 100 and 45 < vector.y < 150 and 0 < vector.z < 170:
+            # get coordinates
+            x = vector.x
+            y = vector.y
+            z = vector.z
 
-        # calculate indices in every direction
-        indexXLow = int(ceil((x-radius-xMin) / pitch))
-        indexXHigh = int(floor((x + radius - xMin) / pitch))
-        indexYLow = int(ceil((y - radius - yMin) / pitch))
-        indexYHigh = int(floor((y + radius - yMin) / pitch))
-        indexZLow = int(ceil((z - radius - zMin) / pitch))
-        indexZHigh = int(floor((z + radius - zMin) / pitch))
+            # calculate indices in every direction
+            indexXLow = int(ceil((x-radius-xMin) / pitch))
+            indexXHigh = int(floor((x + radius - xMin) / pitch))
+            indexYLow = int(ceil((y - radius - yMin) / pitch))
+            indexYHigh = int(floor((y + radius - yMin) / pitch))
+            indexZLow = int(ceil((z - radius - zMin) / pitch))
+            indexZHigh = int(floor((z + radius - zMin) / pitch))
 
-        # create range of indices in every direction
-        xRange = range(indexXLow,indexXHigh + 1)
-        yRange = range(indexYLow,indexYHigh + 1)
-        zRange = range(indexZLow,indexZHigh + 1)
+            # create range of indices in every direction
+            xRange = range(indexXLow,indexXHigh + 1)
+            yRange = range(indexYLow,indexYHigh + 1)
+            zRange = range(indexZLow,indexZHigh + 1)
 
-        # loop through all relevant bins
-        for i in xRange:
-            for j in yRange:
-                for k in zRange:
+            # loop through all relevant bins
+            for i in xRange:
+                for j in yRange:
+                    for k in zRange:
 
-                    # get bin object
-                    aBin = grid[i][j][k]
+                        # get bin object
+                        try:
+                            aBin = grid[i][j][k]
 
-                    # get coordinates
-                    xx = aBin.x
-                    yy = aBin.y
-                    zz = aBin.z
+                            # get coordinates
+                            xx = aBin.x
+                            yy = aBin.y
+                            zz = aBin.z
 
-                    if sqrt((xx-x)**2 + (yy-y)**2 + (zz-z)**2) <= radius:
+                            if sqrt((xx - x) ** 2 + (yy - y) ** 2 + (zz - z) ** 2) <= radius:
+                                aBin.addVector(vector)
+                        except:
+                            print('Bin out of bounds')
 
-                        aBin.addVector(vector)
+
 
     # report to user
     t2 = time.time()
@@ -152,19 +173,22 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 
     return grid
 
+
 def checkRadiusLargeEnough(pitch,radius):
 
     # calculate radius in between centers
-    R = radius * cos(asin(pitch / (2 * radius)))
-
+    #R = radius * cos(asin(pitch / (2 * radius)))
+    dis = sqrt(pitch**2)
     # positive if radius is big enough
-    if R >= sqrt(2)/2*pitch:
+    if dis <= 2*radius:#R >= sqrt(2)/2*pitch:
         return True
     else:
         return False
 
 
+
 #-------------------------------MAIN--------------------------------#
+
 
 
 
@@ -220,6 +244,7 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
     else:
         print("WARNING: Set a bigger radius")
 
+
 def loadParticles(nrRows):
     # load data
     data = loadData(nrRows)
@@ -233,54 +258,54 @@ def loadParticles(nrRows):
     return dataPoints, minMax
 
 def allgrid(pitches,radii,nrParticles):
+
     t1 = time.time()
 
-    contall = []
+    # contall = []
+    # for i in range(len(pitches)):
+    #     contall.append(checkRadiusLargeEnough(pitches[i], radii[i]))
+    #
+    # if all(contall):
+
+    # load in data
+    dataPoints, minMax = loadParticles(nrParticles)
+
+    # # set parameters for bins
+    # xMin = minMax[0]
+    # xMax = minMax[1]
+    # yMin = minMax[2]
+    # yMax = minMax[3]
+    # zMin = minMax[4]
+    # zMax = minMax[5]
+
+    grids = []
+    # create different grids
     for i in range(len(pitches)):
-        contall.append(checkRadiusLargeEnough(pitches[i], radii[i]))
 
-    all(contall)
-    if all(contall):
-
-        # load in data
-        dataPoints, minMax = loadParticles(nrParticles)
-
-        # set parameters for bins
-        xMin = minMax[0]
-        xMax = minMax[1]
-        yMin = minMax[2]
-        yMax = minMax[3]
-        zMin = minMax[4]
-        zMax = minMax[5]
-
-        grids = []
-        # create different grids
-        for i in range(len(pitches)):
-
-            print()
-            print("---------------")
-            print("Grid ", i+1,)
-
-
-            # create the grid with certain pitch and radius
-            grid = createGridPitchAndRadius(pitches[i], radii[i], xMin, xMax, yMin, yMax, zMin, zMax)
-
-            # assign vector objects to correct bins
-            # grid is the 3D array filled with gridBin objects containing
-            # the correct vector objects
-            grid = assignVectorsToGrid(dataPoints, grid, pitches[i], radii[i], xMin, yMin, zMin)
-
-            grids.append(grid)
-
-        # report to user
-        t2 = time.time()
+        print()
         print("---------------")
-        print()
-        print("Total time: ", "{:.2f}".format(t2 - t1), " s")
-        print()
-        print("----------------------------------------")
+        print("Grid ", i+1,)
 
-        return grids
 
-    else:
-            print("WARNING: Set a bigger radius")
+        # create the grid with certain pitch and radius
+        grid = createGridPitchAndRadius(pitches[i], radii[i], 0, 100, 45, 150, 0, 170)
+
+        # assign vector objects to correct bins
+        # grid is the 3D array filled with gridBin objects containing
+        # the correct vector objects
+        grid = assignVectorsToGrid(dataPoints, grid, pitches[i], radii[i], 0, 45, 0)
+
+        grids.append(grid)
+
+    # report to user
+    t2 = time.time()
+    print("---------------")
+    print()
+    print("Total time: ", "{:.2f}".format(t2 - t1), " s")
+    print()
+    print("----------------------------------------")
+
+    return grids
+
+    # else:
+    #         print("WARNING: Set a bigger radius")

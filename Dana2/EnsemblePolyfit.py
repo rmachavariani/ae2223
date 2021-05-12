@@ -1,4 +1,4 @@
-from Dana2.gridConstructionSphereFast import *
+from gridConstructionSphereFast import *
 import pdb
 import matplotlib.pyplot as plt
 import matplotlib
