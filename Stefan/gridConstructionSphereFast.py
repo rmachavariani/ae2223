@@ -11,16 +11,11 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-
-    #use for 2.7 million particles
-    #data = np.loadtxt("/Users/stefanrooze/Downloads/dataset.txt",max_rows = nrRows)
-
-    #use for 91 million particles
-    raw_data = h5py.File('/Users/stefanrooze/Downloads/completeDatasetCarMirrorTracksNikhilesh.dat', 'r')
-    data_column = raw_data['output']
-    data_column = np.array(data_column)
-    data = np.transpose(data_column)
-    print(data[100])
+    data = np.loadtxt("/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/carMirrorData.dat",max_rows = nrRows)
+    # raw_data = h5py.File('/Users/stefanrooze/Documents/TU Delft/Quarter 3/AE2223-I Test analysees & Simulation/My coding/completeDatasetCarMirrorTracksNikhilesh1.dat', 'r')
+    # data_column = raw_data['output']
+    # data_column = np.array(data_column)
+    # data = np.transpose(data_column)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
@@ -99,7 +94,7 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     for i in range(nrBinsX):
         for j in range(nrBinsY):
             for k in range(nrBinsZ):
-                grid[i, j, k] = gridBin(x[i], y[j], z[k])
+                grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k)
 
     # report to user
     t2 = time.time()
@@ -139,9 +134,14 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
         indexZHigh = int(floor((z + radius - zMin) / pitch))
 
         # create range of indices in every direction
-        xRange = range(indexXLow,indexXHigh + 1)
-        yRange = range(indexYLow,indexYHigh + 1)
-        zRange = range(indexZLow,indexZHigh + 1)
+        if radius <= pitch:
+            xRange = range(indexXLow,indexXHigh+1)
+            yRange = range(indexYLow,indexYHigh+1)
+            zRange = range(indexZLow,indexZHigh+1)
+        elif radius > pitch:
+            xRange = range(indexXLow,indexXHigh)
+            yRange = range(indexYLow,indexYHigh)
+            zRange = range(indexZLow,indexZHigh)
 
         # loop through all relevant bins
         for i in xRange:
@@ -168,15 +168,7 @@ def assignVectorsToGrid(vectors, grid, pitch, radius,
 
 
 def checkRadiusLargeEnough(pitch,radius):
-
-    # calculate radius in between centers
-    #R = radius * cos(asin(pitch / (2 * radius)))
-    dis = sqrt(pitch**2)
-    # positive if radius is big enough
-    if dis <= 2*radius:#R >= sqrt(2)/2*pitch:
-        return True
-    else:
-        return False
+    return True
 
 
 

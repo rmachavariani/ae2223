@@ -6,8 +6,6 @@ import matplotlib
 from functools import partial as part
 import statistics as sts
 matplotlib.use("Qt5Agg")
-import Vorticity as vort
-
 def fetch_vector(bin):
     test_vectors = bin.vectors
     particles_val = np.empty((len(test_vectors), 6))
@@ -103,7 +101,6 @@ def solve(bin):
     #print('POLYFIT EXECUTED')
     #bin.vorticity = vort.vorticity(grid, bin, limits)
 
-
 # data = getRectangularGridWithVectors(10, 10, 10)
 #
 # sizeX = np.size(data, axis=0)
@@ -139,6 +136,5 @@ def solve(bin):
 #print(test_cell.vorticity)
 #print(test_cell.fluc)
 #print(test_cell.turb_eng)
-
 
 
