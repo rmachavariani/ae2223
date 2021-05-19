@@ -1,64 +1,76 @@
+import gridConstructionSphereFast as gr
+from class_def import * # class_def IMPORTED !!!
 import numpy as np
-from class_def import *
-from math import ceil, floor, sqrt, cos, asin
+import EnsemblePolyfit as ens
+
 import time
 
+pitch = [7.5]
+radius = [15]
 
-def loadData(nrRows):
-    ''' Loads data from carMirrorData.dat
-    :return: nrVectors x 6 np array
-    '''
-    # load the data
+class aveObject:
+    def __init__(self, inputAve):
+        self.polyAve = inputAve
+def saveGrid(nrOfParticles, minParticlesForAverages, pitch, radius):
+    # load the grids
+    grids = gr.allgrid(pitch,radius,nrOfParticles)
+
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
-    t2 = time.time()
-    print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
-    return data
+    # loop over grids to calculate averages
+    for grid in grids:
+
+        limitArray = gridBin.minmax
+        dataArray = np.empty((np.size(grid, axis=0), np.size(grid, axis=1), np.size(grid, axis=2), 3), dtype=float)
 
 
-def determineMaxMin(data):
+        # loop over current grid
+
+        for i in range(np.size(grid,axis=0)):
+            for j in range(np.size(grid,axis=1)):
+                for k in range(np.size(grid,axis=2)):
+
+                    # current bin
+                    thisBin = grid[i, j, k]
+
+                    if len(thisBin.vectors) > minParticlesForAverages:
+                        # do the polyfit
+                        ens.solve(thisBin)
+
+                        dataArray[i,j,k, :] = np.array(thisBin.polyfitAverage)
+            print('i', i)
+        np.save('ensave', dataArray)
+        np.save('limits', limitArray)
+        print('done saving')
+saveGrid(None, 50, pitch, radius)
+
+############################ USING THE SAVED GRID ##################################
+
+
+
+from math import ceil, floor, sqrt, cos, asin
+import h5py
+
+velocitydata = np.load('ensave.npy')
+
+
+def determineMaxMin():
     '''Determines the mininum and maximum value for every dimension
     :return: xMin, xMax, yMin, yMax, zMin, zMax
     '''
 
     t1 = time.time()
 
-    # determine min and max
-    xMin = np.amin(data[:, 0])
-    xMax = np.amax(data[:, 0])
-    yMin = np.amin(data[:, 1])
-    yMax = np.amax(data[:, 1])
-    zMin = np.amin(data[:, 2])
-    zMax = np.amax(data[:, 2])
+    limitdata = list(np.load('limits.npy'))
 
     # report to user
     t2 = time.time()
     print("Max and min found in ", "{:.2f}".format(t2 - t1), " s")
 
-    return xMin, xMax, yMin, yMax, zMin, zMax
+    return limitdata
 
 
-def createVectorObjects(data):
-    ''' Creates objects from the particle/vector data
-    :param data: raw data in numpy array
-    :return: 1D numpy array with vectors as vector objects
-    '''
 
-    t1 = time.time()
-
-    # create empty numpy array
-    dataPoints = np.empty(np.size(data, axis=0), dtype=object)
-
-    # loop over data and create vector object for each particle row
-    for i in range(np.size(data, axis=0)):
-        dataPoints[i] = vector(data[i, :])
-
-    # report to user
-    t2 = time.time()
-    print("Objects created in ", "{:.2f}".format(t2 - t1), " s")
-
-    return dataPoints
 
 
 def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
@@ -79,7 +91,6 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     gridBin.nrBinsX = nrBinsX
     gridBin.nrBinsY = nrBinsY
     gridBin.nrBinsZ = nrBinsZ
-    gridBin.minmax = np.array([xMin, xMax,yMin, yMax,zMin, zMax])
 
     # define x, y and z coordinates of center bin
     x = np.array([(xMin + i * pitch) for i in range(nrBinsX)])
@@ -90,7 +101,8 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     for i in range(nrBinsX):
         for j in range(nrBinsY):
             for k in range(nrBinsZ):
-                grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k) # SEE i,j,k ADDED!!!!
+                grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k)
+                grid[i,j,k].polyfitAverage = velocitydata[i,j,k]
 
     # report to user
     t2 = time.time()
@@ -108,55 +120,6 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
     return grid
 
 
-def assignVectorsToGrid(vectors, grid, pitch, radius,
-                        xMin, yMin, zMin):
-
-    t1 = time.time()
-
-    # loop though all the vectors
-    for vector in vectors:
-
-        # get coordinates
-        x = vector.x
-        y = vector.y
-        z = vector.z
-
-        # calculate indices in every direction
-        indexXLow = int(ceil((x-radius-xMin) / pitch))
-        indexXHigh = int(floor((x + radius - xMin) / pitch))
-        indexYLow = int(ceil((y - radius - yMin) / pitch))
-        indexYHigh = int(floor((y + radius - yMin) / pitch))
-        indexZLow = int(ceil((z - radius - zMin) / pitch))
-        indexZHigh = int(floor((z + radius - zMin) / pitch))
-
-        # create range of indices in every direction
-        xRange = range(indexXLow,indexXHigh)
-        yRange = range(indexYLow,indexYHigh)
-        zRange = range(indexZLow,indexZHigh)
-
-        # loop through all relevant bins
-        for i in xRange:
-            for j in yRange:
-                for k in zRange:
-
-                    # get bin object
-                    aBin = grid[i][j][k]
-
-                    # get coordinates
-                    xx = aBin.x
-                    yy = aBin.y
-                    zz = aBin.z
-
-                    if sqrt((xx-x)**2 + (yy-y)**2 + (zz-z)**2) <= radius:
-
-                        aBin.addVector(vector)
-
-    # report to user
-    t2 = time.time()
-    print("Assigning of vectors to bins completed in ", "{:.2f}".format(t2 - t1), " s")
-
-    return grid
-
 
 def checkRadiusLargeEnough(pitch,radius):
 
@@ -168,6 +131,7 @@ def checkRadiusLargeEnough(pitch,radius):
         return True
     else:
         return False
+
 
 
 #-------------------------------MAIN--------------------------------#
@@ -194,11 +158,9 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
     if cont:
 
         # load the data
-        data = loadData(nrRows)
+        #data = loadData(nrRows)
 
         # determine max and min of data in every dimension
-        minMax = determineMaxMin(data)
-
 
         # set parameters for bins
         xMin = minMax[0]
@@ -209,7 +171,7 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
         zMax = minMax[5]
 
         # transform raw data into vector objects
-        dataPoints = createVectorObjects(data)
+        #dataPoints = createVectorObjects(data)
 
         # create bins in grid
         grid = createGridPitchAndRadius(pitch,radius,xMin,xMax,yMin,yMax,zMin,zMax)
@@ -217,7 +179,7 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
         # assign vector objects to correct bins
         # grid is the 3D array filled with gridBin objects containing
         # the correct vector objects
-        grid = assignVectorsToGrid(dataPoints,grid,pitch,radius,xMin,yMin,zMin)
+        #grid = assignVectorsToGrid(dataPoints,grid,pitch,radius,xMin,yMin,zMin)
 
         # report to user
         t2 = time.time()
@@ -229,19 +191,7 @@ def getSphericalGridWithVectorsFast(pitch,radius,nrRows):
         print("WARNING: Set a bigger radius")
 
 
-def loadParticles(nrRows):
-    # load data
-    data = loadData(nrRows)
-
-    # transform raw data into vector objects
-    dataPoints = createVectorObjects(data)
-
-    # determine min and max
-    minMax = determineMaxMin(data)
-
-    return dataPoints, minMax
-
-def allgrid(pitches,radii,nrParticles):
+def allgrid(pitches,radii):
 
     t1 = time.time()
 
@@ -252,7 +202,7 @@ def allgrid(pitches,radii,nrParticles):
     if all(contall):
 
         # load in data
-        dataPoints, minMax = loadParticles(nrParticles)
+        minMax = determineMaxMin()
 
         # set parameters for bins
         xMin = minMax[0]
@@ -277,7 +227,7 @@ def allgrid(pitches,radii,nrParticles):
             # assign vector objects to correct bins
             # grid is the 3D array filled with gridBin objects containing
             # the correct vector objects
-            grid = assignVectorsToGrid(dataPoints, grid, pitches[i], radii[i], xMin, yMin, zMin)
+            #grid = assignVectorsToGrid(dataPoints, grid, pitches[i], radii[i], xMin, yMin, zMin)
 
             grids.append(grid)
 
@@ -293,3 +243,6 @@ def allgrid(pitches,radii,nrParticles):
 
     else:
             print("WARNING: Set a bigger radius")
+
+def getGrid():
+    return allgrid(pitch, radius)

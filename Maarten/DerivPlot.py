@@ -42,8 +42,8 @@ for grid in grids:
 
 #############################################################
 
-input_z = 10
-input_x = 10
+input_z = 75
+input_x = 75
 # Find the i corresponding to x and the k corresponding to z
 x = 0
 z = 0
@@ -91,6 +91,8 @@ for j in range(np.size(grid, axis=1)):
     #for elements
     #y_coords.append(grids[0][x, j, z].y)
     #z_coords.append(grids[0][x, j, z].z)
+print(deriv_uy)
+print(y_coords)
 
 plt.plot(y_coords, deriv_uy)
 plt.xlabel('y position', fontsize=15)

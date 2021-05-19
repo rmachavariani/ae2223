@@ -33,6 +33,8 @@ class gridBin:
     yMax = 0
     zMin = 0
     zMax = 0
+
+    minmax = None
     
     def __init__(self,x,y,z,i,j,k):
 
@@ -56,6 +58,7 @@ class gridBin:
         self.pde = []
         self.fluc = None
         self.turb_eng = None
+
 
         # polynomial fit functions which take inputs (dx,dy,dz) from center of the bin
         self.fitU = None

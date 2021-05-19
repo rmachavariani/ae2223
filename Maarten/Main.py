@@ -47,6 +47,8 @@ for grid in grids:
                     ens.solve(thisBin)
 
 
+
+
 print('Commencing vorticity calculation')
 for grid in grids:
 
@@ -63,4 +65,6 @@ for grid in grids:
                     print(thisBin.vorticity)
 
 # TESTING::
+
+
 print(grids[0][50,30,25].vorticity)
