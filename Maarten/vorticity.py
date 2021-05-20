@@ -48,6 +48,7 @@ def partial_approx(grid, scheme, veldir, griddir,poss,h, noData, node_qty):
     nodes = get_nodes_array(poss, scheme, griddir, node_qty)
     #print(nodes)
     weighted_node_sum = 0
+    #print('---------------papprox begin----------------')
     for cntr in range(np.size(nodes, axis=0)):
 
         i = nodes[cntr,0]
@@ -60,15 +61,18 @@ def partial_approx(grid, scheme, veldir, griddir,poss,h, noData, node_qty):
             noData = True
 
         else:
+            #print('bin: ' + str(cntr) + ' location: ', i, j, k)
             node_val = node_bin.polyfitAverage[veldir]
             node_weight = scheme_weights[scheme][cntr]
+            #print('weight: ', node_weight)
+            #print('factor: ', fac, ' h: ', h)
             weighted_node_sum += node_val * node_weight
 
-        if not noData:
-            return weighted_node_sum / (fac * h), noData
-        else:
-            return 1, noData
-
+    if not noData:
+        return weighted_node_sum / (fac * h), noData
+    else:
+        return 1, noData
+    #print('---------------papprox end----------------')
 
 # noinspection PyUnresolvedReferences
 def vorticity(grid, bin, limits, node_qty):
@@ -79,7 +83,7 @@ def vorticity(grid, bin, limits, node_qty):
         margin = 1
 
     # determine step size [m]
-    h = (grid[0, 0, 0].x - grid[1, 0, 0].x) / 1000
+    h = (grid[1, 0, 0].x - grid[0, 0, 0].x) / 1000
 
     # Initialize the curl definition
     pdes = ['dwdy', 'dvdz', 'dudz', 'dwdx', 'dvdx', 'dudy']

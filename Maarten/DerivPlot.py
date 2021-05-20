@@ -6,6 +6,7 @@ import numpy as np
 import EnsemblePolyfit as ens
 import class_def
 import pdb
+import ArrayGenerator as ag
 
 
 # parameters
@@ -17,24 +18,13 @@ pitch = [7.5]
 radius = [15]
 
 # load the grids
-grids = gr.allgrid(pitch,radius,nrOfParticles)
+grids = ag.getGrid()
 
 
 t1 = time.time()
 
 # loop over grids to calculate averages
-for grid in grids:
 
-    # loop over current grid
-    for i in range(np.size(grid,axis=0)):
-        for j in range(np.size(grid,axis=1)):
-            for k in range(np.size(grid,axis=2)):
-
-                # current bin
-                thisBin = grid[i, j, k]
-
-                if len(thisBin.vectors) > minParticlesForAverages:
-                    ens.solve(thisBin)
 
 
 
@@ -48,14 +38,14 @@ input_x = 75
 x = 0
 z = 0
 
-for i in range(np.size(grid, axis=0)):
-    if abs(grid[i, 0, 0].x - input_x) < radius[0]:
+for i in range(np.size(grids[0], axis=0)):
+    if abs(grids[0][i, 0, 0].x - input_x) < radius[0]:
         x = i
 
 # Find index for bin with bin.z closest to z specified --> k
 
-for k in range(np.size(grid, axis=2)):
-    if abs(grid[0, 0, k].z - input_z) < radius[0]:
+for k in range(np.size(grids[0], axis=2)):
+    if abs(grids[0][0, 0, k].z - input_z) < radius[0]:
         z = k
 
 # get plot limits: ymin, ymax
@@ -68,9 +58,9 @@ for grid in grids:
     # loop over current grid
     for j in range(np.size(grid,axis=1)):
         thisBin = grid[x, j, z]
-        if len(thisBin.vectors) > minParticlesForAverages:
+        #print(thisBin.polyfitAverage)
+        if thisBin.polyfitAverage:
             thisBin.vorticity = vort.vorticity(grid, thisBin, [np.size(grid, axis=0) - 1, np.size(grid, axis=1) - 1, np.size(grid, axis=2) - 1], 3)
-
 
 
 
@@ -87,12 +77,13 @@ for j in range(np.size(grid, axis=1)):
         y_coords.append(cbin.y)
         deriv_uy.append(pd)
 
+
     #deriv_uz.append(grids[0][x, j, z].pde[1])
     #for elements
     #y_coords.append(grids[0][x, j, z].y)
     #z_coords.append(grids[0][x, j, z].z)
-print(deriv_uy)
-print(y_coords)
+#print(deriv_uy)
+#print(y_coords)
 
 plt.plot(y_coords, deriv_uy)
 plt.xlabel('y position', fontsize=15)

@@ -42,7 +42,7 @@ def saveGrid(nrOfParticles, minParticlesForAverages, pitch, radius):
         np.save('ensave', dataArray)
         np.save('limits', limitArray)
         print('done saving')
-saveGrid(None, 50, pitch, radius)
+#saveGrid(None, 50, pitch, radius)
 
 ############################ USING THE SAVED GRID ##################################
 
@@ -102,7 +102,11 @@ def createGridPitchAndRadius(pitch, radius, xMin, xMax, yMin, yMax, zMin, zMax):
         for j in range(nrBinsY):
             for k in range(nrBinsZ):
                 grid[i, j, k] = gridBin(x[i], y[j], z[k], i, j, k)
-                grid[i,j,k].polyfitAverage = velocitydata[i,j,k]
+                #print(velocitydata[i,j,k])
+                ref = np.array([0.,0.,0.])
+                comparison = ref == velocitydata[i,j,k]
+                if not comparison.all():
+                    grid[i,j,k].polyfitAverage = list(velocitydata[i,j,k])
 
     # report to user
     t2 = time.time()
@@ -246,3 +250,7 @@ def allgrid(pitches,radii):
 
 def getGrid():
     return allgrid(pitch, radius)
+
+
+#a = getGrid()
+#print(a[0][25,25,25].polyfitAverage)
