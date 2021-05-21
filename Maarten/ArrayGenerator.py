@@ -39,8 +39,8 @@ def saveGrid(nrOfParticles, minParticlesForAverages, pitch, radius):
 
                         dataArray[i,j,k, :] = np.array(thisBin.polyfitAverage)
             print('i', i)
-        np.save('ensave', dataArray)
-        np.save('limits', limitArray)
+        np.save('ensaveFull', dataArray)
+        np.save('limitsFull', limitArray)
         print('done saving')
 #saveGrid(None, 50, pitch, radius)
 

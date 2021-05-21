@@ -2,7 +2,7 @@ import numpy as np
 from class_def import *
 from math import ceil, floor, sqrt, cos, asin
 import time
-
+import h5py
 
 def loadData(nrRows):
     ''' Loads data from carMirrorData.dat
@@ -10,7 +10,11 @@ def loadData(nrRows):
     '''
     # load the data
     t1 = time.time()
-    data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
+    #data = np.loadtxt("carMirrorData.dat",max_rows = nrRows)
+    raw_data = h5py.File('completeDatasetCarMirrorTracksNikhilesh1.dat', 'r')
+    data_column = raw_data['output']
+    data_column = np.array(data_column)
+    data = np.transpose(data_column)
     t2 = time.time()
     print("Loading done in ", "{:.2f}".format(t2 - t1), " s")
 
