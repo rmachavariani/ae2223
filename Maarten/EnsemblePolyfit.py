@@ -109,6 +109,30 @@ def solve(bin):
     #bin.vorticity = vort.vorticity(grid, bin, limits)
 
 
+
+
+
+# points = np.linspace(-7.5,7.5,100)
+#
+# uy = solve()[0,0] + solve()[0, 2]*points + solve()[0, 6]*points**2
+#
+# plt.plot(points, uy)
+# plt.grid()
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #data = getRectangularGridWithVectors(10, 10, 10)
 #test_cell = data[5,5,5]
 #solve(test_cell)
